@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
 import vm from 'node:vm';
 import {mediaOffset} from '../assets/js/editorial.js';
+import {activateSceneFallback} from '../src/scene-fallback.js';
 
 const read=p=>readFileSync(p,'utf8');
 const context={window:{}};
@@ -46,6 +47,7 @@ test('the original logo keeps its natural proportions in navigation and footer',
     }
   }
   assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-brand img\{[^}]*height:auto/);
+  assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-bottom \.js-year\{display:inline\}/);
 });
 test('contact form validates and prepares an encoded WhatsApp draft without sending',()=>{
   let submit,opened;
@@ -78,6 +80,38 @@ test('production build contains legacy modules, SEO files, images and lighting',
 test('Vercel build does not depend on empty local-only directories',()=>{
   const config=read('vite.config.js');
   assert.doesNotMatch(config,/cpSync\(['"]about['"]/);
+});
+
+test('production SEO always uses the existing official domain',()=>{
+  const origin='https://win-designer.vercel.app';
+  assert.equal(data.site.url,`${origin}/`);
+  assert.match(read('vite.config.js'),/SITE_URL \|\| 'https:\/\/win-designer\.vercel\.app'/);
+  for(const page of ['index.html','about.html','project.html']){
+    const output=read(`dist/${page}`);
+    assert.ok(output.includes(`rel="canonical" href="${origin}/`),page);
+    assert.ok(output.includes(`property="og:image" content="${origin}/`),page);
+    assert.ok(!output.includes('__SITE_ORIGIN__'),page);
+  }
+  assert.ok(read('dist/robots.txt').includes(origin));
+  assert.ok(read('dist/sitemap.xml').includes(origin));
+});
+
+test('3D failure leaves a static interior and navigable site',()=>{
+  const classes=new Set();
+  const loading={classList:{add:value=>classes.add(value)}};
+  const error={hidden:true};
+  const detail={textContent:''};
+  const cue={href:'#showcase',innerHTML:''};
+  const nodes={'#loading':loading,'#error':error,'#error-detail':detail,'.scroll-cue':cue};
+  const document={body:{classList:{add:value=>classes.add(value)}},querySelector:selector=>nodes[selector]};
+  activateSceneFallback(document,new Error('WebGL unavailable'));
+  assert.ok(classes.has('scene-fallback'));
+  assert.ok(classes.has('is-complete'));
+  assert.equal(error.hidden,false);
+  assert.equal(detail.textContent,'WebGL unavailable');
+  assert.equal(cue.href,'#about-home');
+  assert.match(read('assets/css/ui-refresh.css'),/scene-fallback \.studio-layer\{[^}]*hero-condo\.webp/);
+  assert.match(read('assets/css/ui-refresh.css'),/scene-fallback #viewer,body\.home-page\.scene-fallback #showcase\{display:none\}/);
 });
 
 test('editorial changes preserve the approved renderer, baked lighting and Hero layout',()=>{

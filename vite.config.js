@@ -2,8 +2,9 @@ import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 import { cpSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 
-const deploymentHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
-const siteOrigin = (process.env.SITE_URL || (deploymentHost ? `https://${deploymentHost}` : 'https://titan-900.github.io/WIN-DESIGNER-NEW')).replace(/\/$/, '');
+// Canonical metadata must always point to the existing production domain,
+// including local builds and Vercel preview deployments.
+const siteOrigin = (process.env.SITE_URL || 'https://win-designer.vercel.app').replace(/\/$/, '');
 const injectSiteOrigin = value => value.replaceAll('__SITE_ORIGIN__', siteOrigin);
 
 // The site is deployed at a Vercel project root. All runtime assets stay URL based;

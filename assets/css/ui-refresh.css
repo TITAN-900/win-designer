@@ -175,3 +175,12 @@ body.home-page .stage-header,body.home-page .chapters{left:max(5vw,calc((100vw -
 @media(prefers-reduced-motion:reduce){
  body .site-nav,body .site-nav .brand-logo,body .site-nav .nav-links a::after,body .site-nav .nav-links .nav-cta span,body.home-page .intro-actions a::after,body.home-page .intro-actions a span{transition:none!important}
 }
+
+/* Keep the furnished interior visible if WebGL or an asset cannot initialize. */
+body.home-page.scene-fallback .studio-layer{background:#817c72 url('../win20/hero-condo.webp') center / cover no-repeat}
+body.home-page.scene-fallback #viewer,body.home-page.scene-fallback #showcase{display:none}
+
+@media(max-width:760px){
+ .site-footer .footer-bottom>span:first-child{white-space:nowrap}
+ .site-footer .footer-bottom .js-year{display:inline}
+}
