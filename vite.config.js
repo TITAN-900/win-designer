@@ -7,7 +7,7 @@ const siteOrigin = (process.env.SITE_URL || (deploymentHost ? `https://${deploym
 const injectSiteOrigin = value => value.replaceAll('__SITE_ORIGIN__', siteOrigin);
 
 // The site is deployed at a Vercel project root. All runtime assets stay URL based;
-// no build output contains workstation paths or a localhost dependency.
+// no build output contains machine-specific URL dependencies.
 export default defineConfig({
   base: '/',
   build: {
