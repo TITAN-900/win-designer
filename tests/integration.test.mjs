@@ -4,6 +4,7 @@ import {readFileSync, existsSync, readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
 import vm from 'node:vm';
+import {mediaOffset} from '../assets/js/editorial.js';
 
 const read=p=>readFileSync(p,'utf8');
 const context={window:{}};
@@ -66,9 +67,54 @@ test('Vercel build does not depend on empty local-only directories',()=>{
   assert.doesNotMatch(config,/cpSync\(['"]about['"]/);
 });
 
+test('editorial changes preserve the approved renderer, baked lighting and Hero layout',()=>{
+  const preserved={
+    'src/interior.js':'745b6351dbf2cd2e1c7a2a1776c93b5d70c4d6802e7e453e928aa5ad59000a73',
+    'src/baked-lighting.js':'13d00995ebb7c9e98447ed79a08a4f13e35deac59344193dddee6abc14880df2',
+    'src/style.css':'cca621de2eed9b96def342545a950a159c3be84f7dedaae82a96e056bb05f0c3'
+  };
+  for(const [file,hash] of Object.entries(preserved))assert.equal(createHash('sha256').update(read(file).replace(/\r\n/g,'\n')).digest('hex'),hash,file);
+});
+
+test('editorial image movement is bounded and exactly reversible without accumulated time',()=>{
+  assert.equal(mediaOffset(1000,500,1000),-8);
+  assert.equal(mediaOffset(-500,500,1000),8);
+  assert.equal(mediaOffset(250,500,1000),0);
+  const first=mediaOffset(100,500,1000);
+  mediaOffset(-200,500,1000);
+  assert.equal(mediaOffset(100,500,1000),first);
+  assert.equal(mediaOffset(-10000,500,1000),8);
+  assert.equal(mediaOffset(10000,500,1000),-8);
+});
+
+test('redesigned homepage keeps all six projects and their full galleries',()=>{
+  const list={innerHTML:''};
+  const document={readyState:'complete',body:{},querySelector:s=>s==='#projectSections'?list:null,querySelectorAll:()=>[]};
+  vm.runInNewContext(read('assets/js/main.js'),{window:{WIN_DESIGN_DATA:data},document,URL,URLSearchParams});
+  assert.equal([...list.innerHTML.matchAll(/<article /g)].length,6);
+  for(const project of data.projects){
+    assert.ok(list.innerHTML.includes(`project.html?project=${project.slug}`));
+    assert.equal(list.innerHTML.split(`data-lightbox-group="home-${project.slug}"`).length-1,project.gallery.length);
+    assert.ok(list.innerHTML.includes(`aria-label="View ${project.title} gallery"`));
+  }
+});
+
+test('homepage visual sections use local assets with accessible text and lazy loading',()=>{
+  for(const section of ['about-home','portfolio','services','materials','transformations','process','contact'])assert.ok(html.includes(`id="${section}"`));
+  for(const match of html.matchAll(/<img\s[^>]+>/g)){
+    const tag=match[0],src=tag.match(/src="([^"]+)"/)[1];
+    assert.ok(existsSync(src),src);
+    assert.doesNotMatch(src,/127\.0\.0\.1|[A-Z]:[\\/]/);
+    assert.match(tag,/alt="[^"]*"/);
+    if(!src.includes('logo')&&!tag.includes('id="lightboxImage"'))assert.match(tag,/loading="lazy"/);
+  }
+  assert.match(html,/not a verified client before-and-after/);
+});
+
 test('all content image URLs are served by dev and production preview',async()=>{
   const urls=new Set(['index.html','about.html','project.html?project=stone-kitchen','models/win_interior_demo.glb','assets/js/main.js','assets/js/vendor/three.module.min.js','assets/js/studio-sculpture-geometry.js','american-walnut.jpg.jpeg']);
   for(const project of data.projects)urls.add(`project.html?project=${project.slug}`);
   const walk=value=>{if(!value||typeof value!=='object')return;if(value.src)urls.add(value.src);for(const child of Object.values(value))walk(child);};walk(data);
+  for(const match of html.matchAll(/<img\s[^>]*src="([^"]+)"/g))urls.add(match[1]);
   for(const port of [5175,4175])for(const path of urls){const response=await fetch(`http://127.0.0.1:${port}/${path}`,{method:'HEAD'});assert.equal(response.status,200,`${port}/${path}`);}
 });

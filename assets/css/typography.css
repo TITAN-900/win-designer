@@ -133,6 +133,19 @@ h2 { font-size: var(--type-section); }
 .intro-copy { max-width: 30ch; }
 .phase-list p { max-width: 30ch; }
 
+/* Editorial scale: same two families, with hierarchy driven by composition. */
+.home-page .content-sheet h2 { font-size: clamp(2.5rem, 4.2vw, 4.25rem); line-height: 1.02; }
+.home-page .studio-statement h2 { font-size: clamp(3.25rem, 6vw, 6rem); }
+.home-page .content-sheet h3 { font-size: clamp(1.75rem, 2.55vw, 2.5rem); }
+.home-page .project-index { font-size: var(--type-small); line-height: 1.6; }
+.home-page :is(.quiet-label,.studio-collage figcaption,.craft-panorama figcaption,.compare-instruction) { font-size: var(--type-label); letter-spacing: .06em; line-height: 1.6; text-transform: uppercase; }
+.home-page :is(.project-gallery-link,.material-palette figcaption) { font-family: var(--font-body); font-size: var(--type-small); font-weight: 400; line-height: 1.6; }
+.home-page .project-open { font-size: 1.5rem; line-height: 1; }
+.home-page .service-index { font-family: var(--font-heading); font-size: 1.5rem; line-height: 1.1; }
+.home-page .material-palette figcaption span { font-size: var(--type-label); }
+.home-page .contact-banner h2 { font-size: clamp(3rem, 5vw, 5rem); }
+.home-page .compare-grip { font-size: 1.25rem; line-height: 1; }
+
 @media(max-width:1040px) {
   .nav-links a { font-size: var(--type-ui); }
   .nav-links { gap: 0; }

@@ -135,24 +135,26 @@
     if (list) {
       list.innerHTML = projects.map((project, index) => {
         const group = `home-${project.slug}`;
-        const gallery = project.gallery.slice(0, 3).map((image, imageIndex) =>
-          lightboxButton(image, group, imageIndex, index < 2 ? "eager" : "lazy")
+        // One discreet gallery control; retain every original image and lightbox navigation.
+        const gallery = project.gallery.map((image, imageIndex) => imageIndex === 0
+          ? `<button class="project-gallery-link" type="button" aria-label="View ${attr(project.title)} gallery" data-lightbox-group="${attr(group)}" data-lightbox-index="0" data-lightbox-src="${attr(image.src)}" data-lightbox-alt="${attr(image.alt)}">View images <span>(${project.gallery.length})</span> ↗</button>`
+          : `<span hidden data-lightbox-group="${attr(group)}" data-lightbox-index="${imageIndex}" data-lightbox-src="${attr(image.src)}" data-lightbox-alt="${attr(image.alt)}"></span>`
         ).join("");
         const meta = [project.type, project.location, project.year].filter(Boolean).join(" / ");
 
         return `
-          <article class="project-story${index % 2 ? " is-reverse" : ""}" id="${attr(project.slug)}" data-reveal>
-            <a class="project-cover" href="${projectUrl(project.slug)}" aria-label="View ${attr(project.title)} project">
-              ${imageMarkup(project.cover, index === 0 ? "eager" : "lazy", index === 0 ? ' fetchpriority="high"' : "")}
+          <article class="project-story" id="${attr(project.slug)}">
+            <a class="project-cover media-drift" href="${projectUrl(project.slug)}" aria-label="View ${attr(project.title)} project" data-reveal>
+              ${imageMarkup(project.cover)}
+              <span class="project-open" aria-hidden="true">↗</span>
             </a>
-            <div class="project-story-copy">
+            <div class="project-story-copy" data-reveal>
+              <span class="project-index">${String(index + 1).padStart(2, "0")}</span>
+              <div class="project-title-block">
               <p class="project-meta">${text(meta)}</p>
               <h3><a href="${projectUrl(project.slug)}">${text(project.title)}</a></h3>
-              <p>${text(project.intro)}</p>
-              <a class="inline-link" href="${projectUrl(project.slug)}">View project</a>
-              <div class="story-gallery" aria-label="${attr(project.title)} preview gallery">
-                ${gallery}
               </div>
+              <div class="project-gallery">${gallery}</div>
             </div>
           </article>
         `;
