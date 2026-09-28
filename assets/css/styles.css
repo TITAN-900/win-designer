@@ -42,8 +42,6 @@ body {
   margin: 0;
   color: var(--ink);
   background: var(--warm-white);
-  font-family: "Inter", Arial, sans-serif;
-  line-height: 1.5;
   overflow-x: hidden;
   text-rendering: geometricPrecision;
 }
@@ -57,13 +55,6 @@ img,
 video {
   display: block;
   max-width: 100%;
-}
-
-button,
-input,
-select,
-textarea {
-  font: inherit;
 }
 
 button {
@@ -129,9 +120,6 @@ body.menu-open .site-nav {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
 }
 
 .nav-links a {
@@ -166,8 +154,6 @@ body.menu-open .nav-links a.is-active {
   border: 1px solid transparent;
   border-radius: 999px;
   padding: 0 22px;
-  font-size: 0.88rem;
-  font-weight: 800;
   white-space: nowrap;
   transition: transform 180ms ease, background 180ms ease, color 180ms ease, border-color 180ms ease;
 }
@@ -308,10 +294,6 @@ body.menu-open .menu-toggle span:last-child {
 .brand-line {
   display: block;
   margin-bottom: 20px;
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
 }
 
 h1,
@@ -319,26 +301,19 @@ h2,
 h3 {
   margin: 0;
   color: inherit;
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-weight: 600;
-  letter-spacing: 0;
-  line-height: 0.98;
 }
 
 h1 {
   max-width: 920px;
-  font-size: clamp(3.1rem, 6.7vw, 5.45rem);
 }
 
 h2 {
   max-width: 760px;
   color: var(--black);
-  font-size: clamp(2.45rem, 5.4vw, 4.6rem);
 }
 
 h3 {
   color: var(--black);
-  font-size: clamp(1.85rem, 3vw, 2.8rem);
 }
 
 p {
@@ -349,8 +324,6 @@ p {
   max-width: 520px;
   margin-top: 20px;
   color: rgba(255, 253, 248, 0.84);
-  font-size: clamp(1rem, 1.4vw, 1.13rem);
-  line-height: 1.72;
 }
 
 .mobile-line {
@@ -386,8 +359,6 @@ p {
 .contact-copy p {
   max-width: 590px;
   color: var(--muted);
-  font-size: 1rem;
-  line-height: 1.78;
 }
 
 .portfolio {
@@ -456,9 +427,6 @@ p {
 
 .project-meta {
   color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
 }
 
 .inline-link {
@@ -468,8 +436,6 @@ p {
   border-bottom: 1px solid currentColor;
   padding-bottom: 4px;
   color: var(--walnut);
-  font-size: 0.86rem;
-  font-weight: 800;
 }
 
 .story-gallery {
@@ -544,15 +510,10 @@ p {
 
 .compare-label strong {
   color: var(--black);
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(1.75rem, 3vw, 2.65rem);
-  font-weight: 600;
-  line-height: 1;
 }
 
 .compare-label span {
   color: var(--muted);
-  font-size: 0.9rem;
 }
 
 .studio {
@@ -597,9 +558,6 @@ p {
   align-items: center;
   background: var(--warm-white);
   color: var(--black);
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(1.5rem, 2.2vw, 2.15rem);
-  font-weight: 600;
 }
 
 .contact {
@@ -632,8 +590,6 @@ p {
 
 .field label {
   color: var(--black);
-  font-size: 0.84rem;
-  font-weight: 800;
 }
 
 .field input,
@@ -669,14 +625,12 @@ p {
 .form-status {
   min-height: 22px;
   color: var(--muted);
-  font-size: 0.9rem;
 }
 
 .phone-link {
   display: inline-flex;
   width: fit-content;
   color: var(--walnut);
-  font-weight: 800;
 }
 
 .site-footer {
@@ -687,7 +641,6 @@ p {
   gap: 18px;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 0.82rem;
 }
 
 .project-page .site-nav {
@@ -739,14 +692,10 @@ p {
 
 .project-facts span {
   color: var(--muted);
-  font-size: 0.74rem;
-  font-weight: 800;
-  text-transform: uppercase;
 }
 
 .project-facts strong {
   color: var(--black);
-  font-size: 1rem;
 }
 
 .masonry-gallery {
@@ -804,7 +753,6 @@ p {
 
 .lightbox-caption {
   color: rgba(255, 253, 248, 0.78);
-  font-size: 0.92rem;
   text-align: center;
 }
 
@@ -816,8 +764,6 @@ p {
   border-radius: 999px;
   background: rgba(255, 253, 248, 0.1);
   color: var(--ivory);
-  font-size: 0.84rem;
-  font-weight: 800;
   transition: background 180ms ease, transform 180ms ease;
 }
 
@@ -983,12 +929,6 @@ p {
 
   .brand-line {
     margin-bottom: 16px;
-    font-size: 0.69rem;
-    letter-spacing: 0.13em;
-  }
-
-  h1 {
-    font-size: clamp(2.55rem, 11vw, 3.5rem);
   }
 
   .desktop-line {
@@ -997,10 +937,6 @@ p {
 
   .mobile-line {
     display: inline;
-  }
-
-  h2 {
-    font-size: clamp(2.35rem, 10vw, 3.25rem);
   }
 
   .lead {

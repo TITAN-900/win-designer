@@ -9,17 +9,16 @@
   <meta property="og:title" content="About WIN DESIGN">
   <meta property="og:description" content="We design spaces to be lived in. Interior design and custom cabinetry for Malaysian homes.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://titan-900.github.io/WIN-DESIGNER-NEW/about.html">
-  <meta property="og:image" content="assets/win20/hero-condo.webp">
-  <link rel="canonical" href="https://titan-900.github.io/WIN-DESIGNER-NEW/about.html">
+  <meta property="og:url" content="__SITE_ORIGIN__/about.html">
+  <meta property="og:image" content="__SITE_ORIGIN__/assets/win20/hero-condo.webp">
+  <link rel="canonical" href="__SITE_ORIGIN__/about.html">
   <link rel="icon" href="favicon.ico" sizes="any">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="assets/win20/hero-condo.webp">
   <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="assets/css/studio-sculpture.css">
   <link rel="stylesheet" href="assets/css/about.css">
+  <link rel="stylesheet" href="assets/css/site-integration.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
 </head>
 <body class="about-page">
   <!-- THESIS: One interior story becomes the studio's dedicated home, not a second visual system.
@@ -28,24 +27,11 @@
   FIRST VIEWPORT: Brand introduction beside a snapshot rendered from the existing 3D scene.
   FORM: User-specified introduction, preserved interactive story, team, projects and contact close. -->
   <header class="site-nav" aria-label="Primary navigation">
-    <a class="brand" href="index.html#home" aria-label="WIN DESIGN home">
-      <img class="brand-logo" src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="244" height="104">
-    </a>
-
-    <nav class="nav-links" id="navLinks" aria-label="Site sections">
-      <a href="index.html#portfolio">Portfolio</a>
-      <a href="index.html#transformations">Before + After</a>
-      <a href="about.html" class="is-active" aria-current="page">About</a>
-      <a href="index.html#contact">Contact</a>
-    </nav>
-
-    <a class="btn btn-dark nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp</a>
-    <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="navLinks" aria-expanded="false">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-  </header>
+<a class="brand" href="index.html#home" aria-label="WIN DESIGN home"><img class="brand-logo" src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="244" height="104"></a>
+<nav class="nav-links" id="navLinks" aria-label="Site sections"><a href="about.html" aria-current="page">About</a><a href="index.html#services">Services</a><a href="index.html#portfolio">Projects</a><a href="index.html#transformations">Before + After</a><a href="index.html#contact">Contact</a></nav>
+<a class="btn btn-dark nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp ↗</a>
+<button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
+</header>
   <main id="main">
     <section class="about-opening container" aria-labelledby="about-title">
       <div class="about-opening-copy">
@@ -114,9 +100,12 @@
       <div><p>Have a space in mind?</p><h2 id="enquiry-title">Let's design it.</h2></div>
       <a class="btn btn-dark" href="index.html#contact">Contact WIN Design</a>
     </section>
-    <footer class="site-footer container"><a href="index.html">WIN DESIGN</a><span>Interior Design, Renovation and Custom Cabinetry</span><span class="js-year"></span></footer>
+    <footer class="site-footer">
+<div class="footer-brand"><a href="index.html#home" aria-label="WIN DESIGN home"><img src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="244" height="104"></a><p>Interior design, renovation and custom cabinetry for Malaysian homes.</p></div>
+<nav class="footer-links" aria-label="Footer navigation"><span class="footer-label">Explore</span><a href="about.html">About Win Design</a><a href="index.html#services">Services</a><a href="index.html#portfolio">Projects</a><a href="index.html#transformations">Before + After</a></nav>
+<div class="footer-links"><span class="footer-label">Get in touch</span><a href="tel:+601172455699">+60 1172455699</a><a href="https://wa.me/601172455699" target="_blank" rel="noopener">WhatsApp ↗</a><a href="index.html#contact">Project enquiry</a><a href="index.html#home">Back to top ↑</a></div>
+<div class="footer-bottom"><span>© <span class="js-year"></span> WIN DESIGN</span><span>Considered spaces. Custom-built details.</span></div></footer>
   </main>
-  <script src="assets/js/main.js" defer></script>
-  <script src="assets/js/studio-sculpture.js" defer></script>
+  <script type="module" src="src/about.js"></script>
 </body>
 </html>

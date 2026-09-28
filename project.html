@@ -9,35 +9,21 @@
   <meta property="og:title" content="WIN DESIGN | Project Portfolio">
   <meta property="og:description" content="Large interior photography and project details from WIN DESIGN.">
   <meta property="og:type" content="article">
-  <meta property="og:url" content="https://titan-900.github.io/WIN-DESIGNER-NEW/project.html">
-  <meta property="og:image" content="assets/win20/hero-condo.webp">
-  <link rel="canonical" href="https://titan-900.github.io/WIN-DESIGNER-NEW/project.html">
+  <meta property="og:url" content="__SITE_ORIGIN__/project.html">
+  <meta property="og:image" content="__SITE_ORIGIN__/assets/win20/hero-condo.webp">
+  <link rel="canonical" href="__SITE_ORIGIN__/project.html">
   <link rel="icon" href="favicon.ico" sizes="any">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/site-integration.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
 </head>
 <body class="project-page">
-  <header class="site-nav is-solid" aria-label="Project navigation">
-    <a class="brand" href="index.html#home" aria-label="WIN DESIGN home">
-      <img class="brand-logo" src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="244" height="104">
-    </a>
-
-    <nav class="nav-links" id="navLinks" aria-label="Project links">
-      <a href="index.html#portfolio">Portfolio</a>
-      <a href="index.html#transformations">Before + After</a>
-      <a href="about.html">About</a>
-      <a href="#contact">Contact</a>
-    </nav>
-
-    <a class="btn btn-dark nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp</a>
-    <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="navLinks" aria-expanded="false">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-  </header>
+  <header class="site-nav" aria-label="Primary navigation">
+<a class="brand" href="index.html#home" aria-label="WIN DESIGN home"><img class="brand-logo" src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="244" height="104"></a>
+<nav class="nav-links" id="navLinks" aria-label="Site sections"><a href="about.html">About</a><a href="index.html#services">Services</a><a href="index.html#portfolio">Projects</a><a href="index.html#transformations">Before + After</a><a href="index.html#contact">Contact</a></nav>
+<a class="btn btn-dark nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp ↗</a>
+<button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
+</header>
 
   <main>
     <section class="project-hero" id="top">
@@ -72,7 +58,7 @@
       <div class="container">
         <div class="section-intro" data-reveal>
           <h2>Project Gallery</h2>
-          <p>Images can be replaced in the project data file without changing this page layout.</p>
+          <p>Explore materials, spatial details and interior design references.</p>
         </div>
         <div class="masonry-gallery" id="projectGallery" aria-label="Project image gallery"></div>
       </div>
@@ -109,21 +95,24 @@
             <label for="projectPhone">Phone</label>
             <input id="projectPhone" name="phone" type="tel" autocomplete="tel" required>
           </div>
+          <div class="field"><label for="projectEmail">Email (optional)</label><input id="projectEmail" name="email" type="email" autocomplete="email"></div>
+          <div class="field"><label for="projectProperty">Property type (optional)</label><input id="projectProperty" name="property" type="text" placeholder="Condominium, terrace, bungalow…"></div>
           <div class="field">
             <label for="projectMessage">Project notes</label>
             <textarea id="projectMessage" name="message" placeholder="Property type, room, location or timeline"></textarea>
           </div>
-          <button class="btn btn-dark" type="submit">Send to WhatsApp</button>
+          <button class="btn btn-dark" type="submit">Prepare WhatsApp enquiry ↗</button>
           <p class="form-status" aria-live="polite"></p>
+          <p class="form-privacy">Your details open as a WhatsApp draft. Nothing is sent until you choose to send it there.</p>
         </form>
       </div>
 
       <div class="container">
         <footer class="site-footer">
-          <span>WIN DESIGN</span>
-          <span><a href="index.html#portfolio">Back to portfolio</a></span>
-          <span class="js-year"></span>
-        </footer>
+<div class="footer-brand"><a href="index.html#home" aria-label="WIN DESIGN home"><img src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="244" height="104"></a><p>Interior design, renovation and custom cabinetry for Malaysian homes.</p></div>
+<nav class="footer-links" aria-label="Footer navigation"><span class="footer-label">Explore</span><a href="about.html">About Win Design</a><a href="index.html#services">Services</a><a href="index.html#portfolio">Projects</a><a href="index.html#transformations">Before + After</a></nav>
+<div class="footer-links"><span class="footer-label">Get in touch</span><a href="tel:+601172455699">+60 1172455699</a><a href="https://wa.me/601172455699" target="_blank" rel="noopener">WhatsApp ↗</a><a href="index.html#contact">Project enquiry</a><a href="index.html#home">Back to top ↑</a></div>
+<div class="footer-bottom"><span>© <span class="js-year"></span> WIN DESIGN</span><span>Considered spaces. Custom-built details.</span></div></footer>
       </div>
     </section>
   </main>
@@ -138,7 +127,6 @@
     <button class="lightbox-next" type="button" data-lightbox-next>Next</button>
   </div>
 
-  <script src="assets/data/projects.js" defer></script>
-  <script src="assets/js/main.js" defer></script>
+  <script type="module" src="src/project.js"></script>
 </body>
 </html>

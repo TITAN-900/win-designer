@@ -56,17 +56,11 @@
 
 #studio .sculpture-title {
   color: var(--walnut);
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 1.4rem;
-  font-weight: 600;
-  line-height: 1.2;
 }
 
 #studio .sculpture-instructions {
   max-width: 35ch;
   color: var(--muted);
-  font-size: 0.8rem;
-  line-height: 1.65;
 }
 
 #studio .sculpture-controls {
@@ -81,7 +75,6 @@
   min-height: 44px;
   padding: 4px 0;
   color: var(--walnut);
-  font-size: 0.75rem;
   text-decoration: underline;
   text-decoration-color: var(--line-strong);
   text-underline-offset: 5px;
@@ -167,11 +160,6 @@
 #about-title {
   max-width: 11ch;
   margin: 0;
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(3.8rem, 8vw, 7.8rem);
-  font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 0.88;
 }
 
 .about-hero {
@@ -192,8 +180,6 @@
 .about-principles-grid > p {
   max-width: 34ch;
   color: var(--muted);
-  font-size: 1.04rem;
-  line-height: 1.75;
 }
 
 .text-link {
@@ -201,10 +187,6 @@
   gap: 12px;
   margin-top: 28px;
   color: var(--ink);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .about-principles {
@@ -272,10 +254,6 @@ body.is-studio-scroll-locked {
 
 #studio .story-kicker {
   color: var(--walnut);
-  font-size: 0.73rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
 }
 
 #studio .studio-story-track {
@@ -322,18 +300,11 @@ body.is-studio-scroll-locked {
   display: block;
   margin-bottom: 14px;
   color: var(--gold);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
 }
 
 #studio .story-step h3 {
   margin: 0 0 12px;
   color: var(--ink);
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(2.3rem, 4vw, 4rem);
-  font-weight: 600;
-  line-height: 0.95;
 }
 
 #studio .story-step p {
@@ -447,10 +418,6 @@ body.is-studio-scroll-locked {
     transform: translate3d(0, 0, 0);
   }
 
-  #studio .story-step h3 {
-    font-size: clamp(2.45rem, 12vw, 3.6rem);
-  }
-
   #studio .studio-story-copy .service-list {
     margin-top: 22px;
   }
@@ -488,7 +455,7 @@ body.is-studio-scroll-locked {
   margin-bottom: 32px;
 }
 #studio .studio-story-intro .story-kicker { grid-column: 1 / -1; }
-#studio .studio-story-intro h2 { max-width: 22ch; font-size: clamp(2.4rem, 4.3vw, 4.6rem); }
+#studio .studio-story-intro h2 { max-width: 22ch; }
 #studio .studio-story-intro > p:last-child { justify-self: end; }
 #studio .studio-story-grid {
   display: block;
@@ -522,8 +489,8 @@ body.is-studio-scroll-locked {
   transform: translateY(10px);
 }
 #studio .story-step.is-active { transform: translateY(0); }
-#studio .story-step h3 { color: #fff8ec; font-size: clamp(2rem, 3.5vw, 3.8rem); margin-bottom: 8px; }
-#studio .story-step p { color: #eee2d1; max-width: 55ch; font-size: 0.9rem; }
+#studio .story-step h3 { color: #fff8ec; margin-bottom: 8px; }
+#studio .story-step p { color: #eee2d1; max-width: 55ch; }
 #studio .story-step-index { display: none; }
 #studio .studio-story-copy::after { display: none; }
 #studio .sculpture-caption { min-height: 75px; padding-top: 14px; margin: 0; }
@@ -535,6 +502,4 @@ body.is-studio-scroll-locked {
   #studio .studio-story-copy { bottom: 100px; min-height: 155px; }
   #studio .sculpture-caption { min-height: 100px; }
   #studio .story-step { bottom: 18px; right: auto; }
-  #studio .story-step h3 { font-size: 2.1rem; }
-  #studio .story-step p { font-size: 0.8rem; }
 }

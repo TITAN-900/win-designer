@@ -1,0 +1,145 @@
+/* WIN DESIGN: the single typography source for Home, About and Projects.
+   Two locally hosted families. Only regular (400) and medium (500) weights.
+   The sole italic treatment is the existing Hero's final line. */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('../fonts/cormorant-garamond-latin-500-normal.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('../fonts/cormorant-garamond-latin-500-italic.woff2') format('woff2');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter-latin-500-normal.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-heading: 'Cormorant Garamond', serif;
+  --font-body: 'Inter', sans-serif;
+  --type-display: clamp(2.5rem, 4.4vw, 4rem);
+  --type-hero: clamp(2.125rem, 3.2vw, 3rem);
+  --type-section: clamp(2rem, 3.4vw, 3rem);
+  --type-subheading: clamp(1.5rem, 2.15vw, 1.875rem);
+  --type-body: clamp(.875rem, .84rem + .14vw, .9375rem);
+  --type-ui: .8125rem;
+  --type-small: .75rem;
+  --type-label: .6875rem;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --leading-heading: 1.08;
+  --leading-body: 1.7;
+  --tracking-heading: -.02em;
+  --tracking-label: .09em;
+  font-family: var(--font-body);
+  font-synthesis: none;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--type-body);
+  font-weight: var(--weight-regular);
+  font-style: normal;
+  line-height: var(--leading-body);
+  letter-spacing: 0;
+}
+:where(button,input,select,textarea) { font: inherit; }
+:where(a,span,em,strong,b,i,small) { font-family: inherit; }
+:where(em,i,address) { font-style: normal; }
+:where(strong,b) { font-weight: var(--weight-medium); }
+
+:where(h1,h2,h3,h4,h5,h6,.sculpture-title) {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-medium);
+  font-style: normal;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+}
+h1 { font-size: var(--type-display); }
+h2 { font-size: var(--type-section); }
+:where(h3,h4,h5,h6,.sculpture-title) { font-size: var(--type-subheading); }
+:where(h1,h2,h3,h4,h5,h6) :where(a,em,span,strong) {
+  font: inherit;
+  letter-spacing: inherit;
+}
+#intro-title { font-size: var(--type-hero); }
+#intro-title em { font-style: italic; }
+.phase-list h2,#studio .story-step h3 { font-size: var(--type-section); }
+
+:where(p,li,dd,dt,address,input,select,textarea) {
+  font-size: var(--type-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-body);
+  letter-spacing: 0;
+}
+:where(.nav-links a,.btn,.inline-link,.intro-actions a,.chapters button,
+  .lightbox button,.sculpture-controls button,.sculpture-retry,.skip-link) {
+  font-family: var(--font-body);
+  font-size: var(--type-ui);
+  font-weight: var(--weight-medium);
+  font-style: normal;
+  line-height: 1.4;
+  letter-spacing: .015em;
+}
+.nav-links a { font-size: var(--type-small); letter-spacing: .045em; text-transform: uppercase; }
+.nav-links { gap: 24px; }
+
+:where(.eyebrow,.brand-line,.section-kicker,.project-meta,.story-kicker,
+  .shot-number,.story-step-index,.stage-header,.footer-label,.scroll-cue,
+  .compare-badge,.process-track>li>span,.service-listing small) {
+  font-family: var(--font-body);
+  font-size: var(--type-label);
+  font-weight: var(--weight-medium);
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+:where(.source-note,.form-privacy,.form-status,.lightbox-caption,
+  .about-opening-visual figcaption,.sculpture-instructions,.footer-bottom,
+  .project-gallery-note,.loading-panel,.error-panel,.compare-label,.compare-control) {
+  font-family: var(--font-body);
+  font-size: var(--type-small);
+  font-weight: var(--weight-regular);
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+.field label { font-size: var(--type-small); font-weight: var(--weight-medium); line-height: 1.5; }
+.phone-link { font-size: var(--type-body); font-weight: var(--weight-medium); line-height: 1.5; letter-spacing: 0; }
+.site-footer { font-family: var(--font-body); font-size: var(--type-body); line-height: var(--leading-body); }
+.site-footer p { font-size: var(--type-body); }
+.footer-links a { font-size: var(--type-body); line-height: 1.6; letter-spacing: 0; }
+.project-facts :where(span,strong) { font-family: var(--font-body); font-size: var(--type-body); line-height: 1.5; letter-spacing: 0; }
+.project-facts span { font-size: var(--type-small); }
+.zoom-controls button { font-family: var(--font-body); font-size: 1.25rem; font-weight: var(--weight-regular); line-height: 1; }
+.intro-content { max-width: 355px; }
+.intro-copy { max-width: 30ch; }
+.phase-list p { max-width: 30ch; }
+
+@media(max-width:1040px) {
+  .nav-links a { font-size: var(--type-ui); }
+  .nav-links { gap: 0; }
+}
+@media(max-width:760px) {
+  .home-page .intro-content { width: 100%; max-width: 355px; }
+  .home-page .intro-copy { max-width: none; }
+  .intro-actions { flex-wrap: wrap; }
+  .chapters button { font-size: var(--type-small); }
+}

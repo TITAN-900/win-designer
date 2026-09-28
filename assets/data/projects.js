@@ -1,7 +1,9 @@
 (function () {
   const whatsappNumber = "601172455699";
   const whatsappBase = `https://wa.me/${whatsappNumber}`;
-  const siteUrl = "https://titan-900.github.io/WIN-DESIGNER-NEW/";
+  const siteUrl = window.location?.origin
+    ? new URL('/', window.location.origin).href
+    : "https://titan-900.github.io/WIN-DESIGNER-NEW/";
 
   // Future project workflow:
   // 1. Create a folder such as assets/projects/new-project-name/.

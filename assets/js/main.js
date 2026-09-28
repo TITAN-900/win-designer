@@ -34,7 +34,7 @@
 
   function lightboxButton(image, group, index, loading = "lazy") {
     return `
-      <button class="gallery-button" type="button" data-reveal data-lightbox-group="${attr(group)}" data-lightbox-index="${index}" data-lightbox-src="${attr(image.src)}" data-lightbox-alt="${attr(image.alt)}">
+      <button class="gallery-button" type="button" aria-label="Enlarge: ${attr(image.alt)}" data-reveal data-lightbox-group="${attr(group)}" data-lightbox-index="${index}" data-lightbox-src="${attr(image.src)}" data-lightbox-alt="${attr(image.alt)}">
         ${imageMarkup(image, loading)}
       </button>
     `;
@@ -209,7 +209,10 @@
     updateMeta("description", `${project.title}. ${project.intro}`);
     updateMeta("og:title", title);
     updateMeta("og:description", project.intro);
-    updateMeta("og:image", project.cover.src);
+    updateMeta("og:image", new URL(project.cover.src, site.url).href);
+    const canonicalUrl = new URL(projectUrl(project.slug), site.url).href;
+    updateMeta("og:url", canonicalUrl);
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonicalUrl);
 
     $("#projectHeroImage").outerHTML = imageMarkup(project.cover, "eager", ' fetchpriority="high" class="project-hero-image" id="projectHeroImage"');
     $("#projectTitle").textContent = project.title;
@@ -250,6 +253,7 @@
               </figcaption>
             </figure>
           </div>
+          <p class="source-note">${text(pair.note || 'Reference imagery from the retained portfolio.')}</p>
         `).join("");
       }
     }
@@ -276,6 +280,8 @@
         const formData = new FormData(form);
         const name = String(formData.get("name") || "").trim();
         const phone = String(formData.get("phone") || "").trim();
+        const email = String(formData.get("email") || "").trim();
+        const property = String(formData.get("property") || "").trim();
         const projectType = String(formData.get("projectType") || "").trim();
         const message = String(formData.get("message") || "").trim();
 
@@ -288,6 +294,8 @@
           `Hi WIN DESIGN, I would like to discuss my interior project.`,
           `Name: ${name}`,
           `Phone: ${phone}`,
+          email ? `Email: ${email}` : "",
+          property ? `Property: ${property}` : "",
           projectType ? `Project: ${projectType}` : "",
           message ? `Message: ${message}` : ""
         ].filter(Boolean);

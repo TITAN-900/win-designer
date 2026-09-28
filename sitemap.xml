@@ -1,43 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://titan-900.github.io/WIN-DESIGNER-NEW/</loc>
+    <loc>__SITE_ORIGIN__/</loc>
     <lastmod>2026-08-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://titan-900.github.io/WIN-DESIGNER-NEW/project.html?project=walnut-residence</loc>
+    <loc>__SITE_ORIGIN__/about.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>__SITE_ORIGIN__/project.html?project=walnut-residence</loc>
     <lastmod>2026-08-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://titan-900.github.io/WIN-DESIGNER-NEW/project.html?project=stone-kitchen</loc>
+    <loc>__SITE_ORIGIN__/project.html?project=stone-kitchen</loc>
     <lastmod>2026-08-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://titan-900.github.io/WIN-DESIGNER-NEW/project.html?project=private-suite</loc>
+    <loc>__SITE_ORIGIN__/project.html?project=private-suite</loc>
     <lastmod>2026-08-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://titan-900.github.io/WIN-DESIGNER-NEW/project.html?project=open-living</loc>
+    <loc>__SITE_ORIGIN__/project.html?project=open-living</loc>
     <lastmod>2026-08-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://titan-900.github.io/WIN-DESIGNER-NEW/project.html?project=foyer-cabinetry</loc>
+    <loc>__SITE_ORIGIN__/project.html?project=foyer-cabinetry</loc>
     <lastmod>2026-08-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://titan-900.github.io/WIN-DESIGNER-NEW/project.html?project=built-in-study</loc>
+    <loc>__SITE_ORIGIN__/project.html?project=built-in-study</loc>
     <lastmod>2026-08-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
