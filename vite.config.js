@@ -27,7 +27,6 @@ export default defineConfig({
     transformIndexHtml: html => injectSiteOrigin(html),
     closeBundle() {
       cpSync('assets', 'dist/assets', { recursive: true });
-      cpSync('about', 'dist/about', { recursive: true });
       for (const file of readdirSync('.')) {
         if (/\.(?:jpe?g|png|ico|xml|txt)$/i.test(file) || /^google.*\.html/.test(file)) {
           cpSync(file, resolve('dist', file));

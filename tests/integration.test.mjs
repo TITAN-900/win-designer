@@ -61,6 +61,11 @@ test('production build contains legacy modules, SEO files, images and lighting',
   assert.match(read('src/about.js'),/studio-sculpture\.js/);
 });
 
+test('Vercel build does not depend on empty local-only directories',()=>{
+  const config=read('vite.config.js');
+  assert.doesNotMatch(config,/cpSync\(['"]about['"]/);
+});
+
 test('all content image URLs are served by dev and production preview',async()=>{
   const urls=new Set(['index.html','about.html','project.html?project=stone-kitchen','models/win_interior_demo.glb','assets/js/main.js','assets/js/vendor/three.module.min.js','assets/js/studio-sculpture-geometry.js','american-walnut.jpg.jpeg']);
   for(const project of data.projects)urls.add(`project.html?project=${project.slug}`);
