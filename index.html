@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="src/style.css">
 <link rel="stylesheet" href="assets/css/site-integration.css">
 <link rel="stylesheet" href="assets/css/editorial.css">
+<link rel="stylesheet" href="assets/css/ui-refresh.css">
 <link rel="stylesheet" href="assets/css/typography.css">
 <meta property="og:title" content="WIN DESIGN | Interiors crafted around your life"><meta property="og:description" content="Interior design, renovation, space planning and custom cabinetry for Malaysian homes."><meta property="og:type" content="website"><meta property="og:url" content="__SITE_ORIGIN__/"><meta property="og:image" content="__SITE_ORIGIN__/assets/win20/hero-condo.webp"><meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="__SITE_ORIGIN__/"><link rel="icon" href="favicon.ico" sizes="any">
@@ -17,24 +18,23 @@
 <a class="skip-link" href="#about-home">Skip to website content</a>
 <header class="site-nav" aria-label="Primary navigation">
 <a class="brand" href="#home" aria-label="WIN DESIGN home"><img class="brand-logo" src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="244" height="104"></a>
-<nav class="nav-links" id="navLinks" aria-label="Site sections"><a href="about.html">About</a><a href="#services">Services</a><a href="#portfolio">Projects</a><a href="#transformations">Before + After</a><a href="#contact">Contact</a></nav>
-<a class="btn btn-dark nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp ↗</a>
+<nav class="nav-links" id="navLinks" aria-label="Site sections"><a href="about.html">About</a><a href="#services">Services</a><a href="#portfolio">Projects</a><a href="#transformations">Before + After</a><a href="#contact">Contact</a><a class="nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp <span aria-hidden="true">↗</span></a></nav>
 <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
 </header>
 <main id="app">
 <div class="studio-layer"><canvas id="viewer" aria-label="Interactive living room and custom walnut cabinetry"></canvas></div>
 <section class="intro hero" id="home" aria-labelledby="intro-title">
-<div class="intro-content"><p class="eyebrow">WIN DESIGN / INTERIOR & CARPENTRY</p><h1 id="intro-title">CRAFTED <br>AROUND <br><em>YOUR LIFE.</em></h1><p class="intro-copy">Thoughtful interiors. Custom-built details.<br>Spaces made to feel like home.</p><div class="intro-actions"><a href="#portfolio">Explore our projects ↗</a><a href="#contact">Discuss your space ↗</a></div></div>
+<div class="intro-content"><p class="eyebrow">WIN DESIGN / INTERIOR & CARPENTRY</p><h1 id="intro-title">Crafted around<br><em>your life.</em></h1><p class="intro-copy">Thoughtful interiors. Custom-built details.<br>Spaces made to feel like home.</p><div class="intro-actions"><a class="intro-primary" href="#portfolio">Explore our projects <span aria-hidden="true">↗</span></a><a class="intro-secondary" href="#contact">Discuss your space <span aria-hidden="true">↗</span></a></div></div>
 <a class="scroll-cue" href="#showcase">SCROLL TO BUILD THE SPACE <span>↓</span></a>
 </section>
 <section id="showcase" class="showcase" aria-label="Four chapters of an interior, controlled by scrolling">
 <div class="sticky-stage">
 <div class="stage-header"><span>FROM CONCEPT TO COMPLETION</span></div>
 <div class="phase-list">
-<div data-phase="concept"><span class="shot-number">01 / SPACE</span><h2>SPACES, <br>CONSIDERED.</h2><p>Designed around the way you live.</p></div>
-<div data-phase="joinery"><span class="shot-number">02 / CRAFT</span><h2>MADE TO FIT</h2><p>Custom cabinetry shaped<br>around every detail.</p></div>
-<div data-phase="material"><span class="shot-number">03 / ATMOSPHERE</span><h2>MATERIAL <br>& LIGHT</h2><p>Warm textures. Quiet precision.</p></div>
-<div data-phase="living"><span class="shot-number">04 / HOME</span><h2>DESIGNED <br>FOR LIVING</h2><p>A complete interior, made personal.</p></div>
+<div data-phase="concept"><span class="shot-number">01 / SPACE</span><h2>Spaces,<br>considered.</h2><p>Designed around the way you live.</p></div>
+<div data-phase="joinery"><span class="shot-number">02 / CRAFT</span><h2>Made to fit.</h2><p>Custom cabinetry shaped<br>around every detail.</p></div>
+<div data-phase="material"><span class="shot-number">03 / ATMOSPHERE</span><h2>Material<br>&amp; light.</h2><p>Warm textures. Quiet precision.</p></div>
+<div data-phase="living"><span class="shot-number">04 / HOME</span><h2>Designed<br>for living.</h2><p>A complete interior, made personal.</p></div>
 </div>
 <nav class="chapters" aria-label="Explore the four chapters"><button data-chapter="0.10">01 <span>Space</span></button><button data-chapter="0.46">02 <span>Craft</span></button><button data-chapter="0.70">03 <span>Light</span></button><button data-chapter="0.98">04 <span>Living</span></button></nav>
 <div class="zoom-controls" aria-label="Scene zoom controls"><button id="zoom-out" aria-label="Zoom out">−</button><button id="zoom-in" aria-label="Zoom in">+</button></div>
@@ -56,12 +56,13 @@
 </section>
 <section id="services" class="content-section dark-section" aria-labelledby="services-title" data-nav-section>
 <div class="content-wrap"><div class="section-heading" data-reveal><div><span class="section-kicker">03 / What we do</span><h2 id="services-title">From the whole room<br>to the smallest detail.</h2></div><a class="inline-link" href="#contact">Tell us about your space</a></div>
-<div class="service-compositions">
-<article class="service-feature" data-reveal><div class="media-drift"><img src="assets/win20/hero-condo.webp" alt="Interior design palette of walnut, stone and warm neutrals" width="1536" height="1024" loading="lazy"></div><div class="service-caption"><span class="service-index">01</span><div><h3>Interior Design</h3><p>Concept, palette and spatial direction.</p></div></div></article>
-<article class="service-feature" data-reveal><div class="media-drift"><img src="assets/win20/project-study.webp" alt="Custom fitted study shelving and desk" width="1586" height="992" loading="lazy"></div><div class="service-caption"><span class="service-index">02</span><div><h3>Custom Carpentry</h3><p>Built-in storage. Carefully finished.</p></div></div></article>
-<article class="service-feature" data-reveal><div class="media-drift"><img src="assets/projects/optimized/before-empty-concrete-condo.webp" alt="Bare residential space used as a renovation reference" width="1536" height="1024" loading="lazy"></div><div class="service-caption"><span class="service-index">03</span><div><h3>Renovation</h3><p>From bare unit to finished interior.</p></div></div></article>
-<article class="service-feature" data-reveal><div class="media-drift"><img src="assets/projects/optimized/malaysia-luxury-kitchen-dining.webp" alt="Open-plan kitchen and dining layout" width="1536" height="1024" loading="lazy"></div><div class="service-caption"><span class="service-index">04</span><div><h3>Space Planning</h3><p>Better flow for daily routines.</p></div></div></article>
-</div></div>
+<figure class="service-panorama" data-reveal><div class="media-drift"><img src="assets/win20/hero-condo.webp" alt="Interior design palette of walnut, stone and warm neutrals" width="1536" height="1024" loading="lazy"></div><figcaption>Space, light and custom detailing.</figcaption></figure>
+<ol class="service-lines">
+<li data-reveal><span>01</span><h3>Interior Design</h3><p>Concept, palette and spatial direction.</p></li>
+<li data-reveal><span>02</span><h3>Custom Carpentry</h3><p>Built-in storage. Carefully finished.</p></li>
+<li data-reveal><span>03</span><h3>Renovation</h3><p>From bare unit to finished interior.</p></li>
+<li data-reveal><span>04</span><h3>Space Planning</h3><p>Better flow for daily routines.</p></li>
+</ol></div>
 </section>
 <section id="materials" class="content-section material-section" aria-labelledby="materials-title">
 <div class="content-wrap"><div class="material-intro"><div data-reveal><span class="section-kicker">04 / Carpentry & material</span><h2 id="materials-title">Character in<br>every grain.</h2></div><div data-reveal><p>Wood panels, shelving and fitted storage. Texture and finish give each detail its character.</p><a class="inline-link" href="project.html?project=foyer-cabinetry">Explore cabinetry</a></div></div>

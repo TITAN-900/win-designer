@@ -1,6 +1,5 @@
-/* WIN DESIGN: the single typography source for Home, About and Projects.
-   Two locally hosted families. Only regular (400) and medium (500) weights.
-   The sole italic treatment is the existing Hero's final line. */
+/* WIN DESIGN: one architectural sans for reading, one editorial serif for emphasis.
+   Both families are local; only regular and medium weights are loaded. */
 @font-face {
   font-family: 'Cormorant Garamond';
   src: url('../fonts/cormorant-garamond-latin-500-normal.woff2') format('woff2');
@@ -34,19 +33,19 @@
   --font-heading: 'Cormorant Garamond', serif;
   --font-body: 'Inter', sans-serif;
   --type-display: clamp(2.5rem, 4.4vw, 4rem);
-  --type-hero: clamp(2.125rem, 3.2vw, 3rem);
-  --type-section: clamp(2rem, 3.4vw, 3rem);
-  --type-subheading: clamp(1.5rem, 2.15vw, 1.875rem);
-  --type-body: clamp(.875rem, .84rem + .14vw, .9375rem);
-  --type-ui: .8125rem;
-  --type-small: .75rem;
-  --type-label: .6875rem;
+  --type-hero: clamp(3rem, 4.2vw, 3.75rem);
+  --type-section: clamp(2.5rem, 3.55vw, 3.5rem);
+  --type-subheading: clamp(1.55rem, 2.15vw, 2rem);
+  --type-body: clamp(1rem, .96rem + .12vw, 1.0625rem);
+  --type-ui: .875rem;
+  --type-small: .8125rem;
+  --type-label: .71875rem;
   --weight-regular: 400;
   --weight-medium: 500;
   --leading-heading: 1.08;
   --leading-body: 1.7;
-  --tracking-heading: -.02em;
-  --tracking-label: .09em;
+  --tracking-heading: -.045em;
+  --tracking-label: .12em;
   font-family: var(--font-body);
   font-synthesis: none;
 }
@@ -65,7 +64,7 @@ body {
 :where(strong,b) { font-weight: var(--weight-medium); }
 
 :where(h1,h2,h3,h4,h5,h6,.sculpture-title) {
-  font-family: var(--font-heading);
+  font-family: var(--font-body);
   font-weight: var(--weight-medium);
   font-style: normal;
   line-height: var(--leading-heading);
@@ -79,8 +78,9 @@ h2 { font-size: var(--type-section); }
   font: inherit;
   letter-spacing: inherit;
 }
-#intro-title { font-size: var(--type-hero); }
+#intro-title { font-size: var(--type-hero); line-height: 1.02; letter-spacing: -.055em; }
 #intro-title em { font-style: italic; }
+#intro-title em { display: block; font-family: var(--font-heading); font-size: var(--type-hero); letter-spacing: -.025em; }
 .phase-list h2,#studio .story-step h3 { font-size: var(--type-section); }
 
 :where(p,li,dd,dt,address,input,select,textarea) {
@@ -98,8 +98,11 @@ h2 { font-size: var(--type-section); }
   line-height: 1.4;
   letter-spacing: .015em;
 }
-.nav-links a { font-size: var(--type-small); letter-spacing: .045em; text-transform: uppercase; }
+.nav-links a { font-size: var(--type-ui); letter-spacing: .025em; text-transform: none; }
 .nav-links { gap: 24px; }
+.nav-links .nav-cta { font-size: var(--type-ui); font-weight: var(--weight-medium); letter-spacing: .015em; }
+.intro-actions .intro-primary { font-size: .9375rem; }
+.intro-actions .intro-secondary { font-size: .875rem; }
 
 :where(.eyebrow,.brand-line,.section-kicker,.project-meta,.story-kicker,
   .shot-number,.story-step-index,.stage-header,.footer-label,.scroll-cue,
@@ -134,16 +137,20 @@ h2 { font-size: var(--type-section); }
 .phase-list p { max-width: 30ch; }
 
 /* Editorial scale: same two families, with hierarchy driven by composition. */
-.home-page .content-sheet h2 { font-size: clamp(2.5rem, 4.2vw, 4.25rem); line-height: 1.02; }
-.home-page .studio-statement h2 { font-size: clamp(3.25rem, 6vw, 6rem); }
-.home-page .content-sheet h3 { font-size: clamp(1.75rem, 2.55vw, 2.5rem); }
+.home-page .content-sheet h2 { font-size: var(--type-section); line-height: 1.08; }
+.home-page .studio-statement h2 { font-family: var(--font-heading); font-size: clamp(2.8rem, 4.1vw, 3.5rem); line-height: 1.06; }
+.home-page .content-sheet h3 { font-size: clamp(1.55rem, 2.25vw, 2rem); }
+.home-page .project-story h3 { font-size: clamp(1.75rem, 2.65vw, 2.5rem); }
+.home-page .service-lines h3 { font-size: clamp(1.6rem, 2.3vw, 2.125rem); }
 .home-page .project-index { font-size: var(--type-small); line-height: 1.6; }
 .home-page :is(.quiet-label,.studio-collage figcaption,.craft-panorama figcaption,.compare-instruction) { font-size: var(--type-label); letter-spacing: .06em; line-height: 1.6; text-transform: uppercase; }
 .home-page :is(.project-gallery-link,.material-palette figcaption) { font-family: var(--font-body); font-size: var(--type-small); font-weight: 400; line-height: 1.6; }
+.home-page .project-story .project-meta { font-size: var(--type-small); letter-spacing: .09em; }
 .home-page .project-open { font-size: 1.5rem; line-height: 1; }
-.home-page .service-index { font-family: var(--font-heading); font-size: 1.5rem; line-height: 1.1; }
+.home-page .service-lines li>span:first-child { font-family: var(--font-body); font-size: var(--type-small); font-weight: var(--weight-medium); letter-spacing: .08em; }
+.home-page .service-panorama figcaption { font-size: var(--type-label); letter-spacing: .1em; text-transform: uppercase; }
 .home-page .material-palette figcaption span { font-size: var(--type-label); }
-.home-page .contact-banner h2 { font-size: clamp(3rem, 5vw, 5rem); }
+.home-page .contact-banner h2 { font-size: var(--type-section); }
 .home-page .compare-grip { font-size: 1.25rem; line-height: 1; }
 
 @media(max-width:1040px) {
@@ -151,6 +158,7 @@ h2 { font-size: var(--type-section); }
   .nav-links { gap: 0; }
 }
 @media(max-width:760px) {
+  #intro-title,#intro-title em { font-size: clamp(2.45rem, 10vw, 3.25rem); }
   .home-page .intro-content { width: 100%; max-width: 355px; }
   .home-page .intro-copy { max-width: none; }
   .intro-actions { flex-wrap: wrap; }

@@ -5,7 +5,7 @@ import {resolve} from 'node:path';
 
 const read=p=>readFileSync(p,'utf8');
 const typography=read('assets/css/typography.css');
-const layouts=['src/style.css','assets/css/styles.css','assets/css/about.css','assets/css/studio-sculpture.css','assets/css/site-integration.css','assets/css/editorial.css'];
+const layouts=['src/style.css','assets/css/styles.css','assets/css/about.css','assets/css/studio-sculpture.css','assets/css/site-integration.css','assets/css/editorial.css','assets/css/ui-refresh.css'];
 const pages=['index.html','about.html','project.html'];
 
 test('every page uses the same typography file with no third-party font stylesheets',()=>{
