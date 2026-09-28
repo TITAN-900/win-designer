@@ -34,6 +34,19 @@ test('real logo, contact details and all homepage anchors are retained',()=>{
   assert.ok(!/href="#"/.test(html));
   assert.ok(!/hello@windesigner\.com/.test(html));
 });
+test('the original logo keeps its natural proportions in navigation and footer',()=>{
+  const logo=readFileSync(data.site.logo);
+  const width=logo.readUInt32BE(16),height=logo.readUInt32BE(20);
+  for(const page of ['index.html','about.html','project.html']){
+    const tags=[...read(page).matchAll(/<img\b[^>]*>/g)].map(match=>match[0]).filter(tag=>tag.includes(data.site.logo));
+    assert.equal(tags.length,2,page);
+    for(const tag of tags){
+      assert.ok(tag.includes(`width="${width}"`),`${page}: logo width`);
+      assert.ok(tag.includes(`height="${height}"`),`${page}: logo height`);
+    }
+  }
+  assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-brand img\{[^}]*height:auto/);
+});
 test('contact form validates and prepares an encoded WhatsApp draft without sending',()=>{
   let submit,opened;
   const status={textContent:''};

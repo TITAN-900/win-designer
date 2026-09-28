@@ -31,6 +31,7 @@ body.home-page .site-nav:not(.is-solid)::before{
 }
 body .site-nav .brand{position:relative;z-index:1;align-self:center}
 body .site-nav .brand-logo{width:91px!important;height:45px!important;object-fit:contain;transition:filter .25s ease}
+.site-footer .footer-brand img{width:105px;height:auto;max-width:100%;object-fit:contain}
 body.home-page .site-nav:not(.is-solid) .brand-logo{filter:brightness(0) invert(.95)!important}
 body .site-nav .nav-links{margin-left:auto;display:flex;align-items:center;gap:clamp(18px,2.1vw,34px)}
 body .site-nav .nav-links a{
