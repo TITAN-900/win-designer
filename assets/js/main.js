@@ -88,8 +88,8 @@
         const destination = new URL(link.href, location.href);
         const samePage = destination.pathname === location.pathname ||
           (destination.pathname.endsWith("/index.html") && location.pathname.endsWith("/"));
-        link.classList.toggle("is-active", link.getAttribute("aria-current") === "page" ||
-          (samePage && visible && destination.hash === `#${visible.id}`));
+        link.classList.toggle("is-active", Boolean(link.getAttribute("aria-current") === "page" ||
+          (samePage && visible && destination.hash === `#${visible.id}`)));
       });
     }
     let pending = false;

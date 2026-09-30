@@ -135,7 +135,7 @@ test('navigation follows tall sections in both directions and clears above conte
   const listeners={};
   const sections=[{id:'portfolio',top:1000,bottom:6000},{id:'services',top:6000,bottom:7500},{id:'contact',top:7500,bottom:9500}]
     .map(section=>({...section,getBoundingClientRect:()=>({top:section.top-scrollY,bottom:section.bottom-scrollY})}));
-  const links=sections.map(section=>({href:`https://win-designer.vercel.app/#${section.id}`,active:false,addEventListener(){},getAttribute(){return null;},classList:{toggle(_name,value){links.find(link=>link.href.endsWith('#'+section.id)).active=Boolean(value);}}}));
+  const links=sections.map(section=>({href:`https://win-designer.vercel.app/#${section.id}`,active:false,addEventListener(){},getAttribute(){return null;},classList:{toggle(_name,value){const link=links.find(link=>link.href.endsWith('#'+section.id));link.active=value===undefined?!link.active:Boolean(value);}}}));
   const nav={getBoundingClientRect:()=>({bottom:78}),classList:{add(){}}};
   const document={readyState:'complete',body:{},querySelector:selector=>selector==='.site-nav'?nav:null,querySelectorAll:selector=>selector==='[data-nav-section]'?sections:selector==='.nav-links a'?links:[]};
   const window={WIN_DESIGN_DATA:data,addEventListener:(name,fn)=>{listeners[name]=fn;},requestAnimationFrame:fn=>fn()};
