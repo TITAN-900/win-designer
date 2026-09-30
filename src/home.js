@@ -14,14 +14,26 @@ const fallbackObserver = new MutationObserver(() => {
     activateSceneFallback(document);
     fallbackObserver.disconnect();
   } else if (viewer.dataset.loaded === 'true') {
+    document.body.classList.add('scene-ready');
     fallbackObserver.disconnect();
   }
 });
 fallbackObserver.observe(errorPanel, { attributes: true, attributeFilter: ['hidden'] });
 fallbackObserver.observe(viewer, { attributes: true, attributeFilter: ['data-loaded'] });
 
-void import('./interior.js').catch(error => {
-  console.error('Interior initialization failed:', error);
-  activateSceneFallback(document, error);
-  fallbackObserver.disconnect();
-});
+function loadInterior() {
+  void import('./interior.js').catch(error => {
+    console.error('Interior initialization failed:', error);
+    activateSceneFallback(document, error);
+    fallbackObserver.disconnect();
+  });
+}
+
+// Paint the navigation and existing interior poster before loading Three.js.
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(loadInterior, { timeout: 800 });
+  } else {
+    window.setTimeout(loadInterior, 0);
+  }
+}));

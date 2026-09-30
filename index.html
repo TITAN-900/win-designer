@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>WIN DESIGN | Malaysian Interior Design & Custom Cabinetry</title>
+<link rel="preload" href="assets/fonts/cormorant-garamond-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="description" content="Thoughtful Malaysian interiors, renovation, space planning and custom cabinetry. Explore WIN DESIGN's approach and portfolio, and discuss your space with our team.">
 <meta name="theme-color" content="#f3efe8">
 <link rel="stylesheet" href="src/style.css">
@@ -24,8 +26,11 @@
 <main id="app">
 <div class="studio-layer"><canvas id="viewer" aria-label="Interactive living room and custom walnut cabinetry"></canvas></div>
 <section class="intro hero" id="home" aria-labelledby="intro-title">
-<div class="intro-content"><p class="eyebrow">WIN DESIGN / INTERIOR & CARPENTRY</p><h1 id="intro-title">Crafted around<br><em>your life.</em></h1><p class="intro-copy">Thoughtful interiors. Custom-built details.<br>Spaces made to feel like home.</p><div class="intro-actions"><a class="intro-primary" href="#portfolio">Explore our projects <span aria-hidden="true">↗</span></a><a class="intro-secondary" href="#contact">Discuss your space <span aria-hidden="true">↗</span></a></div></div>
-<a class="scroll-cue" href="#showcase">SCROLL TO BUILD THE SPACE <span>↓</span></a>
+<div class="intro-content">
+  <p class="eyebrow">Interior · Carpentry · Built for living</p>
+  <h1 id="intro-title">Spaces,<br>made yours.</h1>
+  <div class="intro-actions"><a class="intro-primary" href="#portfolio">View Projects <span aria-hidden="true">↗</span></a></div>
+</div>
 </section>
 <section id="showcase" class="showcase" aria-label="Four chapters of an interior, controlled by scrolling">
 <div class="sticky-stage">
@@ -50,19 +55,22 @@
 </div>
 </section>
 <section id="portfolio" class="content-section" aria-labelledby="portfolio-title" data-nav-section>
-<div class="content-wrap section-heading" data-reveal><div><span class="section-kicker">02 / Selected spaces</span><h2 id="portfolio-title">Different spaces.<br>One considered approach.</h2></div><p>Living, gathering, retreating.<br>Explore our portfolio.</p></div>
+<div class="content-wrap section-heading" data-reveal><div><span class="section-kicker">02 / Selected spaces</span><h2 id="portfolio-title">Room for possibility.</h2></div><p>Living, gathering, retreating.</p></div>
 <div class="project-list" id="projectSections" aria-label="WIN DESIGN project portfolio"></div>
 <div class="content-wrap"><p class="source-note portfolio-note">Portfolio includes design references, not independently verified completed works.</p></div>
 </section>
 <section id="services" class="content-section dark-section" aria-labelledby="services-title" data-nav-section>
-<div class="content-wrap"><div class="section-heading" data-reveal><div><span class="section-kicker">03 / What we do</span><h2 id="services-title">From the whole room<br>to the smallest detail.</h2></div><a class="inline-link" href="#contact">Tell us about your space</a></div>
+<div class="content-wrap"><div class="section-heading" data-reveal><div><span class="section-kicker">03 / What we do</span><h2 id="services-title">Considered as a whole.</h2></div><a class="inline-link" href="#contact">Discuss your space</a></div>
+<div class="service-editorial">
 <figure class="service-panorama" data-reveal><div class="media-drift"><img src="assets/win20/hero-condo.webp" alt="Interior design palette of walnut, stone and warm neutrals" width="1536" height="1024" loading="lazy"></div><figcaption>Space, light and custom detailing.</figcaption></figure>
 <ol class="service-lines">
 <li data-reveal><span>01</span><h3>Interior Design</h3><p>Concept, palette and spatial direction.</p></li>
-<li data-reveal><span>02</span><h3>Custom Carpentry</h3><p>Built-in storage. Carefully finished.</p></li>
-<li data-reveal><span>03</span><h3>Renovation</h3><p>From bare unit to finished interior.</p></li>
-<li data-reveal><span>04</span><h3>Space Planning</h3><p>Better flow for daily routines.</p></li>
-</ol></div>
+<li data-reveal><span>02</span><h3>Custom Cabinet</h3><p>Storage shaped around your space.</p></li>
+<li data-reveal><span>03</span><h3>Woodwork</h3><p>Grain, joints and considered finishes.</p></li>
+<li data-reveal><span>04</span><h3>Renovation</h3><p>From bare unit to finished interior.</p></li>
+<li data-reveal><span>05</span><h3>Space Planning</h3><p>Better flow for daily routines.</p></li>
+<li data-reveal><span>06</span><h3>Commercial Design</h3><p>Spaces for work and welcome.</p></li>
+</ol></div></div>
 </section>
 <section id="materials" class="content-section material-section" aria-labelledby="materials-title">
 <div class="content-wrap"><div class="material-intro"><div data-reveal><span class="section-kicker">04 / Carpentry & material</span><h2 id="materials-title">Character in<br>every grain.</h2></div><div data-reveal><p>Wood panels, shelving and fitted storage. Texture and finish give each detail its character.</p><a class="inline-link" href="project.html?project=foyer-cabinetry">Explore cabinetry</a></div></div>
@@ -84,7 +92,7 @@
 <div class="field"><label for="phone">Phone</label><input id="phone" name="phone" type="tel" autocomplete="tel" required></div>
 <div class="field"><label for="email">Email (optional)</label><input id="email" name="email" type="email" autocomplete="email"></div>
 <div class="field"><label for="property">Property type (optional)</label><input id="property" name="property" type="text" placeholder="Condominium, terrace, bungalow…"></div>
-<div class="field"><label for="projectType">Project type</label><select id="projectType" name="projectType"><option>Interior Design</option><option>Renovation</option><option>Custom Cabinetry</option><option>Space Planning</option><option>Residential Spaces</option></select></div>
+<div class="field"><label for="projectType">Project type</label><select id="projectType" name="projectType"><option>Interior Design</option><option>Renovation</option><option>Custom Cabinetry</option><option>Woodwork</option><option>Space Planning</option><option>Commercial Design</option><option>Residential Spaces</option></select></div>
 <div class="field"><label for="message">Project notes</label><textarea id="message" name="message" placeholder="Room, location or timeline"></textarea></div>
 <button class="btn btn-dark" type="submit">Prepare WhatsApp enquiry ↗</button><p class="form-status" aria-live="polite"></p><p class="form-privacy">Your details open as a WhatsApp draft. Nothing is sent until you choose to send it there.</p></form></div>
 </section>

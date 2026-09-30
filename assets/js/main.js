@@ -50,7 +50,7 @@
     const nav = $(".site-nav");
     const menuToggle = $(".menu-toggle");
     const navLinks = $$(".nav-links a");
-    const hero = $(".hero, .project-hero");
+    const hero = $(".intro, .hero, .project-hero");
 
     menuToggle?.addEventListener("click", () => {
       const isOpen = body.classList.toggle("menu-open");
@@ -74,24 +74,36 @@
     }
 
     const sections = $$("[data-nav-section]");
-    if (!sections.length || !("IntersectionObserver" in window)) return;
+    if (!sections.length) return;
 
-    const sectionObserver = new IntersectionObserver((entries) => {
-      const visible = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (!visible) return;
-
+    // Tall editorial sections may never meet an intersection-ratio threshold.
+    // Track a reading line below the header instead, including reverse scroll.
+    function syncActiveSection() {
+      const readingLine = (nav?.getBoundingClientRect().bottom || 78) + 48;
+      const visible = sections.find(section => {
+        const bounds = section.getBoundingClientRect();
+        return bounds.top <= readingLine && bounds.bottom > readingLine;
+      });
       navLinks.forEach((link) => {
         const destination = new URL(link.href, location.href);
         const samePage = destination.pathname === location.pathname ||
           (destination.pathname.endsWith("/index.html") && location.pathname.endsWith("/"));
         link.classList.toggle("is-active", link.getAttribute("aria-current") === "page" ||
-          (samePage && destination.hash === `#${visible.target.id}`));
+          (samePage && visible && destination.hash === `#${visible.id}`));
       });
-    }, { rootMargin: "-35% 0px -50% 0px", threshold: [0.12, 0.45, 0.75] });
-
-    sections.forEach((section) => sectionObserver.observe(section));
+    }
+    let pending = false;
+    function scheduleSectionSync() {
+      if (pending) return;
+      pending = true;
+      window.requestAnimationFrame(() => {
+        pending = false;
+        syncActiveSection();
+      });
+    }
+    window.addEventListener('scroll', scheduleSectionSync, { passive: true });
+    window.addEventListener('resize', scheduleSectionSync, { passive: true });
+    syncActiveSection();
   }
 
   function initReveal() {

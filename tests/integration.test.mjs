@@ -46,8 +46,8 @@ test('the original logo keeps its natural proportions in navigation and footer',
       assert.ok(tag.includes(`height="${height}"`),`${page}: logo height`);
     }
   }
-  assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-brand img\{[^}]*height:auto/);
-  assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-bottom \.js-year\{display:inline\}/);
+  assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-brand img\s*\{[^}]*height:\s*auto/);
+  assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-bottom \.js-year\s*\{\s*display:\s*inline;?\s*\}/);
 });
 test('contact form validates and prepares an encoded WhatsApp draft without sending',()=>{
   let submit,opened;
@@ -110,8 +110,43 @@ test('3D failure leaves a static interior and navigable site',()=>{
   assert.equal(error.hidden,false);
   assert.equal(detail.textContent,'WebGL unavailable');
   assert.equal(cue.href,'#about-home');
-  assert.match(read('assets/css/ui-refresh.css'),/scene-fallback \.studio-layer\{[^}]*hero-condo\.webp/);
-  assert.match(read('assets/css/ui-refresh.css'),/scene-fallback #viewer,body\.home-page\.scene-fallback #showcase\{display:none\}/);
+  assert.match(read('assets/css/ui-refresh.css'),/scene-fallback \.studio-layer\s*\{[^}]*hero-condo\.webp/);
+  assert.match(read('assets/css/ui-refresh.css'),/scene-fallback #viewer,\s*body\.home-page\.scene-fallback #showcase\s*\{\s*display:\s*none;?\s*\}/);
+});
+
+test('comparison pointer drag clamps, reverses and stops on release',()=>{
+  const handlers={},rangeHandlers={};
+  let reveal='',captured;
+  const range={value:'52',addEventListener:(name,fn)=>{rangeHandlers[name]=fn;}};
+  const frame={getBoundingClientRect:()=>({left:100,width:400}),setPointerCapture:id=>{captured=id;},style:{setProperty:(_name,value)=>{reveal=value;}},addEventListener:(name,fn)=>{handlers[name]=fn;}};
+  const document={readyState:'complete',querySelector:selector=>selector==='#compare-range'?range:selector==='#renovation-compare'?frame:null,addEventListener(){}};
+  const window={matchMedia:()=>({addEventListener(){}})};
+  vm.runInNewContext(read('assets/js/site-integration.js'),{window,document});
+  handlers.pointerdown({isPrimary:true,button:0,pointerId:7,clientX:200});
+  assert.equal(captured,7);assert.equal(reveal,'25%');
+  handlers.pointermove({pointerId:7,clientX:600});assert.equal(reveal,'100%');
+  handlers.pointermove({pointerId:7,clientX:100});assert.equal(reveal,'0%');
+  handlers.pointerup();handlers.pointermove({pointerId:7,clientX:300});assert.equal(reveal,'0%');
+  range.value='52';rangeHandlers.input();assert.equal(reveal,'52%');
+});
+
+test('navigation follows tall sections in both directions and clears above content',()=>{
+  let scrollY=0;
+  const listeners={};
+  const sections=[{id:'portfolio',top:1000,bottom:6000},{id:'services',top:6000,bottom:7500},{id:'contact',top:7500,bottom:9500}]
+    .map(section=>({...section,getBoundingClientRect:()=>({top:section.top-scrollY,bottom:section.bottom-scrollY})}));
+  const links=sections.map(section=>({href:`https://win-designer.vercel.app/#${section.id}`,active:false,addEventListener(){},getAttribute(){return null;},classList:{toggle(_name,value){links.find(link=>link.href.endsWith('#'+section.id)).active=Boolean(value);}}}));
+  const nav={getBoundingClientRect:()=>({bottom:78}),classList:{add(){}}};
+  const document={readyState:'complete',body:{},querySelector:selector=>selector==='.site-nav'?nav:null,querySelectorAll:selector=>selector==='[data-nav-section]'?sections:selector==='.nav-links a'?links:[]};
+  const window={WIN_DESIGN_DATA:data,addEventListener:(name,fn)=>{listeners[name]=fn;},requestAnimationFrame:fn=>fn()};
+  vm.runInNewContext(read('assets/js/main.js'),{window,document,URL,URLSearchParams,location:{href:'https://win-designer.vercel.app/',pathname:'/'}});
+  const active=()=>links.filter(link=>link.active).map(link=>new URL(link.href).hash);
+  assert.deepEqual(active(),[]);
+  scrollY=1000;listeners.scroll();assert.deepEqual(active(),['#portfolio']);
+  scrollY=5000;listeners.scroll();assert.deepEqual(active(),['#portfolio']);
+  scrollY=7500;listeners.scroll();assert.deepEqual(active(),['#contact']);
+  scrollY=6000;listeners.scroll();assert.deepEqual(active(),['#services']);
+  scrollY=0;listeners.resize();assert.deepEqual(active(),[]);
 });
 
 test('editorial changes preserve the approved renderer, baked lighting and Hero layout',()=>{

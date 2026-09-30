@@ -22,6 +22,29 @@ function ready(){
   });
   const range=document.querySelector('#compare-range'),frame=document.querySelector('#renovation-compare');
   range?.addEventListener('input',()=>frame.style.setProperty('--reveal',range.value+'%'));
+  if (range && frame) {
+    let dragPointer = null;
+    frame.addEventListener('dragstart', event => event.preventDefault());
+    function revealAt(event) {
+      const bounds = frame.getBoundingClientRect();
+      const value = Math.round(Math.max(0, Math.min(100, (event.clientX - bounds.left) / bounds.width * 100)));
+      range.value = String(value);
+      frame.style.setProperty('--reveal', value + '%');
+    }
+    frame.addEventListener('pointerdown', event => {
+      if (!event.isPrimary || event.button !== 0) return;
+      dragPointer = event.pointerId;
+      frame.setPointerCapture(dragPointer);
+      revealAt(event);
+    });
+    frame.addEventListener('pointermove', event => {
+      if (event.pointerId === dragPointer) revealAt(event);
+    });
+    const finishDrag = () => { dragPointer = null; };
+    frame.addEventListener('pointerup', finishDrag);
+    frame.addEventListener('pointercancel', finishDrag);
+    frame.addEventListener('lostpointercapture', finishDrag);
+  }
   const lightbox=document.querySelector('#lightbox');
   lightbox?.addEventListener('keydown',event=>{
     if(event.key!=='Tab'||!lightbox.classList.contains('is-open'))return;
