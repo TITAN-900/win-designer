@@ -149,7 +149,7 @@
         const group = `home-${project.slug}`;
         // One discreet gallery control; retain every original image and lightbox navigation.
         const gallery = project.gallery.map((image, imageIndex) => imageIndex === 0
-          ? `<button class="project-gallery-link" type="button" aria-label="View ${attr(project.title)} gallery" data-lightbox-group="${attr(group)}" data-lightbox-index="0" data-lightbox-src="${attr(image.src)}" data-lightbox-alt="${attr(image.alt)}">View images <span>(${project.gallery.length})</span> ↗</button>`
+          ? `<button class="project-gallery-link" type="button" aria-label="View ${attr(project.title)} gallery" data-lightbox-group="${attr(group)}" data-lightbox-index="0" data-lightbox-src="${attr(image.src)}" data-lightbox-alt="${attr(image.alt)}">View images <span>(${project.gallery.length})</span> <span class="line-arrow" aria-hidden="true"></span></button>`
           : `<span hidden data-lightbox-group="${attr(group)}" data-lightbox-index="${imageIndex}" data-lightbox-src="${attr(image.src)}" data-lightbox-alt="${attr(image.alt)}"></span>`
         ).join("");
         const meta = [project.type, project.location, project.year].filter(Boolean).join(" / ");
@@ -158,7 +158,7 @@
           <article class="project-story" id="${attr(project.slug)}">
             <a class="project-cover media-drift" href="${projectUrl(project.slug)}" aria-label="View ${attr(project.title)} project" data-reveal>
               ${imageMarkup(project.cover)}
-              <span class="project-open" aria-hidden="true">↗</span>
+              <span class="project-open" aria-hidden="true"><span class="line-arrow"></span></span>
             </a>
             <div class="project-story-copy" data-reveal>
               <span class="project-index">${String(index + 1).padStart(2, "0")}</span>

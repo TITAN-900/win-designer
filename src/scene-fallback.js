@@ -6,9 +6,7 @@ export function activateSceneFallback(document, error) {
     document.querySelector('#error-detail').textContent = error.message || String(error);
     panel.hidden = false;
   }
-  const cue = document.querySelector('.scroll-cue');
-  if (cue) {
-    cue.href = '#about-home';
-    cue.innerHTML = 'EXPLORE THE SITE <span aria-hidden="true">↓</span>';
-  }
+  // Keep the same cutaway composition and project CTA; only the WebGL layer
+  // disappears. Never fall back to an unrelated full-screen photograph.
+  document.querySelector('#viewer')?.setAttribute('aria-hidden', 'true');
 }

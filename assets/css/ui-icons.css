@@ -1,0 +1,14 @@
+/* All functional directional icons are drawn in CSS, never system emoji. */
+.line-arrow { display: inline-block; position: relative; width: 13px; height: 13px; flex: 0 0 13px; }
+.line-arrow::before { content: ''; position: absolute; left: 1px; bottom: 2px; width: 11px; height: 1px; background: currentColor; transform: rotate(-45deg); transform-origin: right center; }
+.line-arrow::after { content: ''; position: absolute; right: 1px; top: 1px; width: 6px; height: 6px; border-top: 1px solid currentColor; border-right: 1px solid currentColor; }
+.line-arrow.up { transform: rotate(-45deg); }
+.inline-link::after { content: '' !important; position: relative; top: 2px; width: 10px; height: 10px; flex: 0 0 10px; border-top: 1px solid currentColor; border-right: 1px solid currentColor; transform: rotate(45deg); }
+.compare-grip { font-size: 0 !important; }
+.compare-grip::before, .compare-grip::after { content: ''; position: absolute; top: 50%; width: 7px; height: 7px; border-top: 1px solid currentColor; }
+.compare-grip::before { left: 7px; border-left: 1px solid currentColor; transform: translateY(-50%) rotate(-45deg); }
+.compare-grip::after { right: 7px; border-right: 1px solid currentColor; transform: translateY(-50%) rotate(45deg); }
+.project-open .line-arrow { width: 19px; height: 19px; }
+.project-open .line-arrow::before { width: 16px; }
+.project-open .line-arrow::after { width: 8px; height: 8px; }
+.project-gallery-link .line-arrow, .btn .line-arrow, .footer-links .line-arrow { vertical-align: middle; margin-left: 5px; }

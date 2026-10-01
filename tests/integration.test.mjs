@@ -6,6 +6,7 @@ import {resolve} from 'node:path';
 import vm from 'node:vm';
 import {mediaOffset} from '../assets/js/editorial.js';
 import {activateSceneFallback} from '../src/scene-fallback.js';
+import {storyState,headline} from '../src/diorama-timeline.js';
 
 const read=p=>readFileSync(p,'utf8');
 const context={window:{}};
@@ -101,17 +102,50 @@ test('3D failure leaves a static interior and navigable site',()=>{
   const loading={classList:{add:value=>classes.add(value)}};
   const error={hidden:true};
   const detail={textContent:''};
-  const cue={href:'#showcase',innerHTML:''};
-  const nodes={'#loading':loading,'#error':error,'#error-detail':detail,'.scroll-cue':cue};
+  const viewer={attributes:{},setAttribute(name,value){this.attributes[name]=value;}};
+  const nodes={'#loading':loading,'#error':error,'#error-detail':detail,'#viewer':viewer};
   const document={body:{classList:{add:value=>classes.add(value)}},querySelector:selector=>nodes[selector]};
   activateSceneFallback(document,new Error('WebGL unavailable'));
   assert.ok(classes.has('scene-fallback'));
   assert.ok(classes.has('is-complete'));
   assert.equal(error.hidden,false);
   assert.equal(detail.textContent,'WebGL unavailable');
-  assert.equal(cue.href,'#about-home');
-  assert.match(read('assets/css/ui-refresh.css'),/scene-fallback \.studio-layer\s*\{[^}]*hero-condo\.webp/);
-  assert.match(read('assets/css/ui-refresh.css'),/scene-fallback #viewer,\s*body\.home-page\.scene-fallback #showcase\s*\{\s*display:\s*none;?\s*\}/);
+  assert.equal(viewer.attributes['aria-hidden'],'true');
+  assert.match(read('assets/css/diorama-hero.css'),/scene-fallback \.diorama-poster\s*\{\s*opacity:\s*1/);
+  assert.match(read('assets/css/diorama-hero.css'),/scene-fallback #viewer\s*\{\s*visibility:\s*hidden/);
+  assert.match(read('assets/css/diorama-hero.css'),/scene-fallback \.diorama-story/);
+  assert.ok(html.includes('win_space_01_poster.png'));
+});
+
+test('the people-free two-space transformation is reversible and stops with scroll',()=>{
+  for(const progress of [0,.12,.32,.475,.50,.525,.74,.91,1]){
+    const first=storyState(progress);
+    storyState(progress+.1);
+    assert.deepEqual(storyState(progress),first);
+    assert.equal(first.progress,progress);
+    assert.ok(!Object.hasOwn(first,'workers'));
+    assert.ok(headline(first.space,first.local)[1].length<25);
+  }
+  assert.equal(storyState(.27).space,0);
+  assert.equal(storyState(.73).space,1);
+  assert.equal(storyState(.20,true).local,1);
+  assert.equal(storyState(.80,true).space,0);
+});
+
+test('only the two independent web rooms are shipped and loaded',()=>{
+  for(const path of ['public/3d/space-01/win_space_01.glb','public/3d/space-02/win_space_02.glb']){
+    const data=readFileSync(path);
+    assert.equal(data.subarray(0,4).toString(),'glTF');
+    assert.ok(data.byteLength<4_000_000,path);
+    assert.ok(existsSync(resolve('dist',path.replace(/^public\//,''))),path);
+  }
+  assert.ok(!existsSync('public/3d/workers'));
+  assert.ok(!existsSync('dist/3d/workers'));
+  assert.doesNotMatch(read('src/diorama.js'),/win_workers|workerRoots|placeWorkers/i);
+  assert.doesNotMatch(read('src/diorama-timeline.js'),/workers/i);
+  assert.ok(html.includes('diorama-story'));
+  assert.ok(!html.includes('class="studio-layer"'));
+  assert.ok(read('src/home.js').includes("import('./diorama.js')"));
 });
 
 test('comparison pointer drag clamps, reverses and stops on release',()=>{
@@ -188,13 +222,14 @@ test('homepage visual sections use local assets with accessible text and lazy lo
     assert.ok(existsSync(src),src);
     assert.doesNotMatch(src,/127\.0\.0\.1|[A-Z]:[\\/]/);
     assert.match(tag,/alt="[^"]*"/);
-    if(!src.includes('logo')&&!tag.includes('id="lightboxImage"'))assert.match(tag,/loading="lazy"/);
+    if(!src.includes('logo')&&!tag.includes('id="lightboxImage"')&&!tag.includes('class="diorama-poster"'))assert.match(tag,/loading="lazy"/);
+    if(tag.includes('class="diorama-poster"'))assert.match(tag,/fetchpriority="high"/);
   }
   assert.match(html,/not a verified client before-and-after/);
 });
 
 test('all content image URLs are served by dev and production preview',async()=>{
-  const urls=new Set(['index.html','about.html','project.html?project=stone-kitchen','models/win_interior_demo.glb','assets/js/main.js','assets/js/vendor/three.module.min.js','assets/js/studio-sculpture-geometry.js','american-walnut.jpg.jpeg']);
+  const urls=new Set(['index.html','about.html','project.html?project=stone-kitchen','models/win_interior_demo.glb','3d/space-01/win_space_01.glb','3d/space-02/win_space_02.glb','assets/js/main.js','assets/js/vendor/three.module.min.js','assets/js/studio-sculpture-geometry.js','american-walnut.jpg.jpeg']);
   for(const project of data.projects)urls.add(`project.html?project=${project.slug}`);
   const walk=value=>{if(!value||typeof value!=='object')return;if(value.src)urls.add(value.src);for(const child of Object.values(value))walk(child);};walk(data);
   for(const match of html.matchAll(/<img\s[^>]*src="([^"]+)"/g))urls.add(match[1]);

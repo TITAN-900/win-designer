@@ -22,14 +22,14 @@ fallbackObserver.observe(errorPanel, { attributes: true, attributeFilter: ['hidd
 fallbackObserver.observe(viewer, { attributes: true, attributeFilter: ['data-loaded'] });
 
 function loadInterior() {
-  void import('./interior.js').catch(error => {
+  void import('./diorama.js').catch(error => {
     console.error('Interior initialization failed:', error);
     activateSceneFallback(document, error);
     fallbackObserver.disconnect();
   });
 }
 
-// Paint the navigation and existing interior poster before loading Three.js.
+// Paint the navigation and matching diorama poster before loading Three.js.
 requestAnimationFrame(() => requestAnimationFrame(() => {
   if ('requestIdleCallback' in window) {
     window.requestIdleCallback(loadInterior, { timeout: 800 });
