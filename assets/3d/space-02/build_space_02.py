@@ -1,10 +1,13 @@
 """WIN DESIGN Space 02: editable bedroom diorama in Space 01's camera family."""
 import bpy
 import math
+import sys
 from pathlib import Path
 from mathutils import Vector
 
 ROOT=Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT.parent))
+from premium_finish import refine_room
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
 def coll(name):
@@ -106,8 +109,9 @@ for i,(y,h) in enumerate(((-1.67,.8),(-.61,.56),(.15,1.04))):
 # Built-in wardrobe has real door gaps, exposed oak niche, pulls, plinth and crown.
 box('JOINERY_Wardrobe left carcass',WARDROBE,(-2.67,2.80,1.37),(2.25,.56,2.60),oak_edge,.012)
 for i,x in enumerate((-3.38,-2.67,-1.96)):
-    box(f'JOINERY_Wardrobe full-height door {i+1}',WARDROBE,(x,2.506,1.39),(.668,.024,2.46),cream,.013)
+    box(f'JOINERY_Wardrobe full-height door {i+1}',WARDROBE,(x,2.506,1.39),(.686,.024,2.46),cream,.005)
     box(f'JOINERY_Wardrobe vertical bronze pull {i+1}',WARDROBE,(x+.245,2.485,1.43),(.012,.013,.22),bronze,.003)
+    box(f'JOINERY_Wardrobe recessed door head reveal {i+1}',WARDROBE,(x,2.486,2.637),(.65,.006,.008),oak_edge,.001)
 box('JOINERY_Wardrobe toe recess',WARDROBE,(-2.67,2.61,.10),(2.02,.34,.16),oak,.006)
 box('JOINERY_Wardrobe tall oak end cheek',WARDROBE,(-1.53,2.79,1.40),(.045,.58,2.60),oak,.007)
 box('JOINERY_Wardrobe open oak display niche',WARDROBE,(-1.15,2.87,1.41),(.66,.45,2.38),oak,.012)
@@ -123,6 +127,7 @@ for i,x in enumerate((-.18,.62,1.42,2.22,3.02)):
     cushion(f'JOINERY_Headboard upholstered vertical bay {i+1}',HEAD,(x,2.940,1.35),(.75,.070,1.45),fabric,.060)
 box('JOINERY_Headboard light oak upper rail',HEAD,(1.50,2.940,2.18),(3.92,.067,.10),oak,.012)
 box('JOINERY_Headboard lower oak shelf',HEAD,(1.50,2.915,.55),(3.94,.12,.10),oak,.011)
+box('JOINERY_Headboard inset base shadow line',HEAD,(1.50,2.897,.488),(3.78,.012,.012),oak_edge,.002)
 box('LIGHT_Headboard continuous warm cove',LIGHT,(1.50,2.943,2.255),(3.75,.019,.014),glow,.003)
 for i,x in enumerate((-.25,3.13)):
     box(f'JOINERY_Bedside floating oak table {i+1}',HEAD,(x,2.47,.54),(.57,.49,.20),oak,.025)
@@ -131,7 +136,7 @@ for i,x in enumerate((-.25,3.13)):
 
 # Dominant king bed: undercut frame, rounded upholstered head support,
 # independently sculpted duvet, top sheet, pillows and small lumbar accents.
-box('FURN_Bed low solid oak plinth',BED,(1.46,.43,.24),(2.72,3.12,.28),oak,.058,5)
+box('FURN_Bed low solid oak plinth',BED,(1.46,.43,.24),(2.72,3.12,.28),oak,.014,3)
 box('FURN_Bed inset black shadow reveal',BED,(1.46,.43,.13),(2.48,2.82,.09),bronze,.025)
 cushion('FURN_Bed upholstered mattress',BED,(1.46,.40,.43),(2.65,3.06,.26),fabric,.115)
 cushion('SOFT_Bed voluminous woven duvet',SOFT,(1.46,.05,.62),(2.62,2.28,.30),linen,.135)
@@ -141,7 +146,7 @@ for i,x in enumerate((.78,2.14)):
     pillow.rotation_euler.x=.13
     cushion(f'SOFT_Small textured throw cushion {i+1}',SOFT,(x,1.26,.85),(.50,.35,.16),rust,.073)
 cushion('SOFT_Foot of bed folded wool throw',SOFT,(1.46,-.77,.78),(2.50,.51,.07),fabric,.045)
-box('SOFT_Full bedroom wool rug',SOFT,(1.46,.02,.040),(3.72,4.46,.043),rug,.13,6)
+box('SOFT_Full bedroom wool rug',SOFT,(1.46,.02,.034),(3.72,4.46,.031),rug,.009,3)
 
 # Compact writing / vanity station makes this a residential bedroom rather
 # than a hotel room; all parts are separate for installation animation.
@@ -202,15 +207,17 @@ wn=world.node_tree.nodes;wl=world.node_tree.links
 wn['Background'].inputs['Color'].default_value=(.79,.78,.73,1)
 wn['Background'].inputs['Strength'].default_value=.32
 ray=wn.new('ShaderNodeLightPath');paper=wn.new('ShaderNodeEmission')
-paper.inputs['Color'].default_value=(1,.89,.74,1);paper.inputs['Strength'].default_value=2.2
+paper.inputs['Color'].default_value=(1,.89,.74,1);paper.inputs['Strength'].default_value=1.55
 mix=wn.new('ShaderNodeMixShader')
 wl.new(ray.outputs['Is Camera Ray'],mix.inputs[0])
 wl.new(wn['Background'].outputs[0],mix.inputs[1]);wl.new(paper.outputs[0],mix.inputs[2])
 wl.new(mix.outputs[0],wn['World Output'].inputs[0])
-area('LIGHT_Window soft daylight',(-4,-1,5.7),550,5,(.90,.95,1),(0,0,.7),4)
-area('LIGHT_Studio soft key',(3.5,-4.5,7),390,5,(1,.92,.82),(0,0,.6),4)
-area('LIGHT_Headboard warm bounce',(1.5,1.2,2.68),72,3.1,(1,.78,.57),(1.5,2.7,1.5),.6)
-area('LIGHT_Bedroom soft fill',(2.9,-.8,4.1),170,3.2,(1,.93,.86),(1.4,-1,.7),2.1)
+area('LIGHT_Window soft daylight',(-4,-1,5.7),510,4.5,(.92,.96,1),(0,0,.7),3.4)
+area('LIGHT_Studio soft key',(3.5,-4.5,7),300,4.6,(1,.96,.89),(0,0,.6),3.5)
+area('LIGHT_Headboard warm bounce',(1.5,1.2,2.68),48,3.1,(1,.84,.70),(1.5,2.7,1.5),.6)
+area('LIGHT_Bedroom soft fill',(2.9,-.8,4.1),115,3.2,(1,.96,.90),(1.4,-1,.7),2.1)
+
+refine_room('bedroom')
 
 camera_data=bpy.data.cameras.new('CAM_Orthographic editorial isometric')
 camera=bpy.data.objects.new(camera_data.name,camera_data);bpy.context.scene.collection.objects.link(camera)
@@ -218,7 +225,7 @@ camera.location=(9.7,-11.5,9.2)
 camera.rotation_euler=(Vector((0,0,1.08))-camera.location).to_track_quat('-Z','Y').to_euler()
 camera_data.type='ORTHO';camera_data.ortho_scale=19.8;camera_data.shift_x=-.18
 scene=bpy.context.scene;scene.camera=camera
-scene.render.engine='CYCLES';scene.cycles.samples=48;scene.cycles.use_denoising=True
+scene.render.engine='CYCLES';scene.cycles.samples=64;scene.cycles.use_denoising=True
 scene.render.resolution_x=1920;scene.render.resolution_y=1080;scene.render.resolution_percentage=100
 scene.render.film_transparent=False;scene.render.image_settings.file_format='PNG'
 scene.render.image_settings.color_mode='RGB';scene.render.filepath=str(ROOT/'win_space_02_preview.png')

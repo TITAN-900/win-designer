@@ -15,24 +15,24 @@ colors:
   line-strong: "rgba(69, 52, 38, 0.22)"
 typography:
   display:
-    fontFamily: "Cormorant Garamond, Georgia, serif"
-    fontSize: "clamp(3.1rem, 6.7vw, 5.45rem)"
-    fontWeight: 600
-    lineHeight: 0.98
-    letterSpacing: "0"
+    fontFamily: "Newsreader, Georgia, serif"
+    fontSize: "clamp(3.1rem, 5.2vw, 5rem)"
+    fontWeight: 400
+    lineHeight: 0.95
+    letterSpacing: "-0.05em"
   headline:
-    fontFamily: "Cormorant Garamond, Georgia, serif"
-    fontSize: "clamp(2.45rem, 5.4vw, 4.6rem)"
-    fontWeight: 600
+    fontFamily: "Newsreader, Georgia, serif"
+    fontSize: "clamp(3.15rem, 4.65vw, 5rem)"
+    fontWeight: 400
     lineHeight: 0.98
   body:
-    fontFamily: "Inter, Arial, sans-serif"
+    fontFamily: "Manrope, Arial, sans-serif"
     fontSize: "1rem"
-    lineHeight: 1.78
+    lineHeight: 1.63
   navigation:
-    fontFamily: "Inter, Arial, sans-serif"
-    fontSize: "0.72rem"
-    fontWeight: 800
+    fontFamily: "Manrope, Arial, sans-serif"
+    fontSize: "0.84rem"
+    fontWeight: 500
 rounded:
   surface: "12px"
   pill: "999px"
@@ -59,14 +59,14 @@ components:
 
 **Creative North Star: "Warm architectural interiors"**
 
-This records the existing WIN DESIGN identity, not a new direction. Cream surfaces, walnut accents, serif headlines and compact sans-serif controls frame residential imagery. Photographs and the existing interior scene carry the visual detail; interface decoration stays restrained.
+This records the existing WIN DESIGN identity. Cream surfaces, walnut accents, optical-size editorial headlines and compact sans-serif controls frame residential imagery and the two-room diorama.
 
 **Key Characteristics:**
 
 - Warm neutral surfaces and dark readable text.
 - Architectural imagery at generous scale.
 - Serif editorial hierarchy with practical sans-serif navigation.
-- Shared pill navigation and concise calls to action.
+- Lightweight navigation and concise calls to action.
 
 Source of truth: `assets/css/styles.css`, `assets/css/studio-sculpture.css`, `assets/css/about.css` and the existing scene controller. This is a source extraction, not a claim that every state has passed visual QA.
 
@@ -90,7 +90,7 @@ Warm off-whites and brown-black text echo the interior material palette.
 
 ## Typography
 
-Display and headings use Cormorant Garamond with Georgia fallback. Body, navigation and controls use Inter with Arial fallback. Large serif headlines are closely led; supporting copy has relaxed reading space. Labels and navigation use compact, bold uppercase text.
+Display and headings use locally hosted Newsreader with optical size 64–72 and Georgia fallback. Body, navigation and controls use locally hosted Manrope 400/500 with Arial fallback. Headline rhythm comes from close leading and deliberate line breaks; short labels use quiet tracked capitals.
 
 The frontmatter records global heading defaults. Page-specific responsive clamps remain in their owning stylesheet; do not normalize them into a new site-wide ramp. About uses short headlines and short supporting sentences rather than long narrative blocks.
 

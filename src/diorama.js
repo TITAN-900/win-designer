@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { clamp01, smooth, storyState, headline } from './diorama-timeline.js';
+import { clamp01, smooth, storyState, headline, isShellCore } from './diorama-timeline.js';
 
 const canvas = document.querySelector('#viewer');
 const visual = document.querySelector('.diorama-visual');
@@ -28,19 +28,20 @@ let disposed = false;
 
 const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(-8, 8, 5, -5, .1, 100);
-scene.add(new THREE.HemisphereLight(0xf6f2e8, 0x74695b, 2.0));
-const key = new THREE.DirectionalLight(0xfff8ea, 3.1);
+scene.add(new THREE.HemisphereLight(0xf5f2eb, 0x786f64, 1.35));
+const key = new THREE.DirectionalLight(0xfff9ef, 2.75);
 key.position.set(-4, 8, 6);
 key.castShadow = true;
 key.shadow.mapSize.set(1024, 1024);
-key.shadow.camera.left = -11;
-key.shadow.camera.right = 11;
-key.shadow.camera.top = 11;
-key.shadow.camera.bottom = -11;
-key.shadow.bias = -.0002;
-key.shadow.radius = 3;
+key.shadow.camera.left = -8;
+key.shadow.camera.right = 8;
+key.shadow.camera.top = 8;
+key.shadow.camera.bottom = -8;
+key.shadow.bias = -.00015;
+key.shadow.normalBias = .025;
+key.shadow.radius = 2.5;
 scene.add(key);
-const fill = new THREE.DirectionalLight(0xe1eaf0, 1.05);
+const fill = new THREE.DirectionalLight(0xe8edf1, .58);
 fill.position.set(5, 5, -4);
 scene.add(fill);
 
@@ -55,21 +56,19 @@ function roomSetup(gltf, roomIndex) {
   root.name = `SPACE_0${roomIndex + 1}`;
   const roomGroups = root.children.filter(child => /^0[1-8]_/.test(child.name));
   if (roomGroups.length !== 8) throw new Error(`Space 0${roomIndex + 1}: missing construction groups`);
-  const mobile = smallQuery.matches;
   roomGroups.forEach((group, groupIndex) => {
     const meshes = [];
     group.traverse(object => {
       if (!object.isMesh) return;
-      object.castShadow = !mobile && groupIndex !== 0;
-      object.receiveShadow = !mobile;
+      object.castShadow = groupIndex > 0 && groupIndex < 7;
+      object.receiveShadow = groupIndex < 7;
       meshes.push(object);
     });
     if (groupIndex === 7) return;
     // Shell stays from the opening frame. Finishes and glazing complete it,
     // then independent joinery elements install in architectural order.
     if (groupIndex === 0) {
-      const core = /structural|back wall|left .*pier|window .*wall|window head/i;
-      const surfaces = meshes.filter(mesh => !core.test(mesh.name));
+      const surfaces = meshes.filter(mesh => !isShellCore(mesh.name));
       surfaces.sort((a, b) => a.name.localeCompare(b.name));
       surfaces.forEach((mesh, item) => stageParts[roomIndex].push({
         mesh, install: .035 + (item / Math.max(1, surfaces.length - 1)) * .12,
@@ -132,15 +131,16 @@ function fitCamera() {
   camera.near = .1;
   camera.far = 100;
   camera.updateProjectionMatrix();
-  const ratio = Math.min(window.devicePixelRatio || 1, smallQuery.matches ? 1.5 : 2);
+  const ratio = Math.min(window.devicePixelRatio || 1, smallQuery.matches ? 1.35 : 2);
   renderer.setPixelRatio(ratio);
   renderer.setSize(rect.width, rect.height, false);
-  renderer.shadowMap.enabled = !smallQuery.matches;
-  key.castShadow = !smallQuery.matches;
+  renderer.shadowMap.enabled = true;
+  key.castShadow = true;
   for (const root of loaded) root?.traverse(object => {
     if (!object.isMesh) return;
-    object.castShadow = !smallQuery.matches;
-    object.receiveShadow = !smallQuery.matches;
+    const group = object.parent?.name || '';
+    object.castShadow = !/^0[18]_/.test(group);
+    object.receiveShadow = !/^08_/.test(group);
   });
   key.shadow.mapSize.set(smallQuery.matches ? 512 : 1024, smallQuery.matches ? 512 : 1024);
   key.shadow.map?.dispose();
@@ -215,8 +215,8 @@ async function init() {
     renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.23;
-    renderer.shadowMap.enabled = !smallQuery.matches;
+    renderer.toneMappingExposure = 1.08;
+    renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setClearColor(0xf5f1e9, 0);
     const loader = new GLTFLoader();

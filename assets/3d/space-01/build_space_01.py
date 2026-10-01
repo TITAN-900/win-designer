@@ -6,11 +6,14 @@ All installation-stage pieces stay as individual meshes in named collections.
 
 import bpy
 import math
+import sys
 from mathutils import Vector
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT.parent))
+from premium_finish import refine_room
 BLEND = ROOT / "win_space_01.blend"
 PREVIEW = ROOT / "win_space_01_preview.png"
 
@@ -198,6 +201,7 @@ for i, x in enumerate((-1.89, -1.18, -.47, .24)):
     box(f"JOINERY_Lower cabinet finger groove {i+1}", KITCHEN, (x, 2.411, .802), (.55, .004, .007), oak_edge, .001)
 box("JOINERY_Lower cabinet recessed plinth", KITCHEN, (-.82, 2.78, .075), (3.34, .48, .14), oak_edge, .006)
 box("JOINERY_Back run stone countertop", KITCHEN, (-.83, 2.70, .86), (3.38, .70, .06), stone, .023, 5)
+box("JOINERY_Back run undercut shadow joint", KITCHEN, (-.83, 2.389, .822), (3.22, .009, .011), oak_edge, .001)
 for i, x in enumerate((-1.89, -1.18, -.47, .24)):
     box(f"JOINERY_Wall cabinet case {i+1}", KITCHEN, (x, 2.82, 2.25), (.69, .40, .68), cream_cab, .008)
     box(f"JOINERY_Wall cabinet oak door {i+1}", KITCHEN, (x, 2.606, 2.25), (.65, .023, .64), oak, .010)
@@ -209,8 +213,9 @@ box("JOINERY_Island core", KITCHEN, (-1.40, .35, .48), (2.68, 1.0, .71), cream_c
 for i in range(15):
     x = -2.68 + i * .183
     box(f"JOINERY_Island slim oak flute {i+1:02d}", KITCHEN, (x, -.169, .50), (.055, .023, .61), oak, .015, 4)
-box("JOINERY_Island stone waterfall top", KITCHEN, (-1.40, .34, .88), (2.93, 1.18, .075), stone, .037, 6)
+box("JOINERY_Island stone waterfall top", KITCHEN, (-1.40, .34, .88), (2.93, 1.18, .075), stone, .014, 4)
 box("JOINERY_Island stone end cheek", KITCHEN, (-2.87, .35, .44), (.07, 1.17, .82), stone_edge, .017)
+box("JOINERY_Island oak end panel reveal", KITCHEN, (-2.826, .35, .47), (.009, .91, .61), oak_edge, .002)
 box("JOINERY_Island inset sink dark well", KITCHEN, (-1.91, .60, .927), (.53, .35, .005), bronze, .013)
 path("JOINERY_Island faucet arch", KITCHEN,
      [(-1.95,.86,.93),(-1.95,.86,1.16),(-1.95,.83,1.27),(-1.95,.70,1.30),(-1.95,.63,1.19)], .016, bronze)
@@ -224,6 +229,7 @@ box("JOINERY_TV oak backing panel", LIVING, (2.17, 3.030, 1.55), (2.83, .075, 2.
 for i, x in enumerate((.93, 1.55, 2.17, 2.79, 3.41)):
     box(f"JOINERY_TV fine oak batten {i+1}", LIVING, (x, 2.971, 1.55), (.018, .014, 1.93), oak_edge, .003)
 box("JOINERY_TV floating console body", LIVING, (2.17, 2.71, .52), (2.72, .46, .35), cream_cab, .025)
+box("JOINERY_TV floating console wall shadow gap", LIVING, (2.17, 2.956, .53), (2.60, .018, .30), oak_edge, .002)
 for i, x in enumerate((1.28, 2.17, 3.06)):
     box(f"JOINERY_TV console door {i+1}", LIVING, (x, 2.469, .52), (.85, .022, .30), oak, .008)
     box(f"JOINERY_TV console shadow line {i+1}", LIVING, (x, 2.456, .675), (.78, .004, .006), oak_edge, .001)
@@ -238,6 +244,8 @@ box("FURN_Sofa low timber subframe", FURN, (1.58, -1.55, .28), (2.72, 1.12, .20)
 for x in (.73, 1.58, 2.43):
     cushion(f"FURN_Sofa plush seat {x:.2f}", FURN, (x,-1.60,.47), (.82,.91,.29), fabric, .12)
     cushion(f"FURN_Sofa upright back cushion {x:.2f}", FURN, (x,-2.05,.77), (.79,.22,.72), fabric, .09)
+    path(f"FURN_Sofa tailored seat seam {x:.2f}", FURN,
+         [(x-.35,-2.01,.50),(x-.35,-1.61,.51),(x-.35,-1.18,.50)], .0035, fabric_light)
 for x in (.17, 2.99):
     cushion(f"FURN_Sofa rounded arm {x:.2f}", FURN, (x,-1.56,.59), (.22,1.15,.50), fabric, .075)
 for i, (x,y) in enumerate(((.93,-1.99),(2.41,-1.96))):
@@ -317,16 +325,20 @@ world_links=world.node_tree.links
 camera_ray=world_nodes.new("ShaderNodeLightPath")
 paper_light=world_nodes.new("ShaderNodeEmission")
 paper_light.inputs["Color"].default_value=(1.0,.89,.74,1)
-paper_light.inputs["Strength"].default_value=2.2
+paper_light.inputs["Strength"].default_value=1.55
 world_mix=world_nodes.new("ShaderNodeMixShader")
 world_links.new(camera_ray.outputs["Is Camera Ray"],world_mix.inputs[0])
 world_links.new(world_nodes["Background"].outputs[0],world_mix.inputs[1])
 world_links.new(paper_light.outputs[0],world_mix.inputs[2])
 world_links.new(world_mix.outputs[0],world_nodes["World Output"].inputs[0])
-add_area("LIGHT_Studio daylight from window", (-4.0,-1.0,5.7), 550, 5.0, (0.90,0.95,1.0), (0,0,.7), 4.0)
-add_area("LIGHT_Studio soft key", (3.5,-4.5,7.0), 390, 5.0, (1.0,.92,.82), (0,0,0.6), 4.0)
-add_area("LIGHT_Warm kitchen bounce", (-1.0,1.3,2.68), 60, 3.1, (1.0,.78,.57), (-1,2.6,1.4), .60)
-add_area("LIGHT_Sofa soft fill", (2.9,-.8,4.1), 170, 3.2, (1.0,.93,.86), (1.4,-1.0,.7), 2.1)
+add_area("LIGHT_Studio daylight from window", (-4.0,-1.0,5.7), 510, 4.5, (0.92,0.96,1.0), (0,0,.7), 3.4)
+add_area("LIGHT_Studio soft key", (3.5,-4.5,7.0), 300, 4.6, (1.0,.96,.89), (0,0,0.6), 3.5)
+add_area("LIGHT_Warm kitchen bounce", (-1.0,1.3,2.68), 42, 3.1, (1.0,.84,.70), (-1,2.6,1.4), .60)
+add_area("LIGHT_Sofa soft fill", (2.9,-.8,4.1), 115, 3.2, (1.0,.96,.90), (1.4,-1.0,.7), 2.1)
+
+# Texture maps and tailored upholstery are authored into the Blender source,
+# not approximated later with CSS or web-only material overrides.
+refine_room("living")
 
 # Full cutaway silhouette, editorial room position leaves clean copy space left.
 camera_data=bpy.data.cameras.new("CAM_Orthographic editorial isometric")
@@ -342,7 +354,7 @@ bpy.context.scene.camera=camera
 
 scene=bpy.context.scene
 scene.render.engine='CYCLES'
-scene.cycles.samples=48
+scene.cycles.samples=64
 scene.cycles.use_denoising=True
 scene.render.resolution_x=1920
 scene.render.resolution_y=1080

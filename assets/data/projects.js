@@ -13,9 +13,8 @@
       slug: "walnut-residence",
       title: "Walnut Residence",
       type: "Living Room",
-      intro: "Warm walnut cabinetry, soft light and calm daily living.",
-      description:
-        "A composed residential interior shaped around storage, proportion and warm evening light.",
+      intro: "Walnut joinery. Softer light.",
+      description: "Fitted storage, warm light, measured proportions.",
       cover: {
         src: "livingroom.jpg.jpg",
         alt: "Warm walnut living room with custom cabinetry and concealed lighting",
@@ -70,9 +69,8 @@
       slug: "stone-kitchen",
       title: "Stone Kitchen",
       type: "Kitchen",
-      intro: "Stone surfaces, walnut storage and a quieter cooking space.",
-      description:
-        "A kitchen direction built around practical circulation, durable surfaces and fitted cabinetry.",
+      intro: "Stone and walnut, in balance.",
+      description: "Durable surfaces. Fitted cabinetry.",
       cover: {
         src: "livingroom2.jpg.jpg",
         alt: "Luxury kitchen with stone island, walnut cabinetry and warm lighting",
@@ -105,9 +103,8 @@
       slug: "private-suite",
       title: "Private Suite",
       type: "Bedroom",
-      intro: "Soft fabrics, walnut accents and layered warm lighting.",
-      description:
-        "A restful suite with quiet storage, gentle contrast and a softer material palette.",
+      intro: "Soft texture. Quiet light.",
+      description: "Storage and softness, in balance.",
       cover: {
         src: "livingroom4.jpg.jpg",
         alt: "Calm luxury bedroom with walnut feature wall and soft beige fabrics",
@@ -140,9 +137,8 @@
       slug: "open-living",
       title: "Open Living",
       type: "Living and Dining",
-      intro: "A connected room for hosting, dining and everyday rest.",
-      description:
-        "An open-plan interior arranged with clear circulation, calm finishes and generous image-led composition.",
+      intro: "Room to gather.",
+      description: "Open planning. Calm finishes.",
       cover: {
         src: "livingroom3.jpg.jpg",
         alt: "Open Malaysian condominium living and dining space with warm walnut accents",
@@ -175,9 +171,8 @@
       slug: "foyer-cabinetry",
       title: "Foyer Cabinetry",
       type: "Custom Cabinetry",
-      intro: "A warm entry sequence with concealed storage and stone detail.",
-      description:
-        "A cabinetry-led entry area designed for storage, proportion and a refined first impression.",
+      intro: "An entrance with intention.",
+      description: "Concealed storage. Stone detail.",
       cover: {
         src: "assets/win20/project-foyer.webp",
         alt: "Luxury Malaysian foyer cabinetry with walnut finishes",
@@ -210,9 +205,8 @@
       slug: "built-in-study",
       title: "Built-In Study",
       type: "Study",
-      intro: "A quiet work area with warm built-ins and hidden light.",
-      description:
-        "A compact study shaped by fitted cabinetry, useful storage and calm material control.",
+      intro: "A quieter place to work.",
+      description: "Fitted storage. Warm light.",
       cover: {
         src: "assets/win20/project-study.webp",
         alt: "Elegant Malaysian study with warm built-in cabinetry and hidden LED lighting",

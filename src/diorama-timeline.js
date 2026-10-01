@@ -5,6 +5,9 @@ export const smooth = value => {
   return p * p * (3 - 2 * p);
 };
 
+// GLTFLoader normalizes Blender object names by replacing spaces with underscores.
+export const isShellCore = name => /structural|back wall|left .*pier|window .*wall|window head/i.test(name.replaceAll('_', ' '));
+
 export function storyState(progress, reducedMotion = false) {
   const p = clamp01(progress);
   if (reducedMotion) return { space: 0, local: 1, blend: 0, progress: p };
@@ -17,11 +20,11 @@ export function storyState(progress, reducedMotion = false) {
 
 export function headline(space, local) {
   if (space === 0) {
-    if (local < .28) return ['01 / Living + Kitchen', 'From structure.', 'A new way to live.'];
-    if (local < .88) return ['01 / Living + Kitchen', 'Into living.', 'Crafted in every detail.'];
-    return ['01 / Living + Kitchen', 'Made yours.', 'Interior · Carpentry · Built for living'];
+    if (local < .28) return ['01 / Living + Kitchen', 'From structure.', 'Structure · Space'];
+    if (local < .88) return ['01 / Living + Kitchen', 'Into living.', 'Joinery · Material'];
+    return ['01 / Living + Kitchen', 'Made yours.', 'Ready for living'];
   }
-  if (local < .28) return ['02 / Bedroom', 'Room to begin.', 'A quieter kind of space.'];
-  if (local < .88) return ['02 / Bedroom', 'Made to belong.', 'Material. Craft. Calm.'];
-  return ['02 / Bedroom', 'Rest, considered.', 'A space to call your own.'];
+  if (local < .28) return ['02 / Bedroom', 'Room to begin.', 'Space · Light'];
+  if (local < .88) return ['02 / Bedroom', 'Made to belong.', 'Timber · Linen'];
+  return ['02 / Bedroom', 'Rest, considered.', 'A quiet retreat'];
 }

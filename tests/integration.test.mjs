@@ -6,7 +6,7 @@ import {resolve} from 'node:path';
 import vm from 'node:vm';
 import {mediaOffset} from '../assets/js/editorial.js';
 import {activateSceneFallback} from '../src/scene-fallback.js';
-import {storyState,headline} from '../src/diorama-timeline.js';
+import {storyState,headline,isShellCore} from '../src/diorama-timeline.js';
 
 const read=p=>readFileSync(p,'utf8');
 const context={window:{}};
@@ -132,13 +132,28 @@ test('the people-free two-space transformation is reversible and stops with scro
   assert.equal(storyState(.80,true).space,0);
 });
 
+test('the empty-room stage retains its walls after GLTFLoader normalizes names',()=>{
+  for(const name of ['ARCH_Back wall','ARCH_Back_wall','ARCH_Bedroom_back_wall','ARCH_Window_head','ARCH_Left_wall_front_pier'])assert.ok(isShellCore(name),name);
+  for(const name of ['ARCH_Window_glazing','JOINERY_Wall_cabinet_case','ARCH_Back_skirting'])assert.ok(!isShellCore(name),name);
+});
+
 test('only the two independent web rooms are shipped and loaded',()=>{
+  let combinedBytes=0;
   for(const path of ['public/3d/space-01/win_space_01.glb','public/3d/space-02/win_space_02.glb']){
-    const data=readFileSync(path);
-    assert.equal(data.subarray(0,4).toString(),'glTF');
-    assert.ok(data.byteLength<4_000_000,path);
+    const bytes=readFileSync(path);
+    assert.equal(bytes.subarray(0,4).toString(),'glTF');
+    assert.ok(bytes.byteLength<8_000_000,path);
+    combinedBytes+=bytes.byteLength;
+    const jsonLength=bytes.readUInt32LE(12);
+    const gltf=JSON.parse(bytes.subarray(20,20+jsonLength).toString());
+    assert.ok(gltf.images.length>=8,`${path}: embedded finish textures`);
+    assert.ok(gltf.materials.some(material=>material.normalTexture),`${path}: tactile normal detail`);
+    assert.ok(gltf.materials.some(material=>material.pbrMetallicRoughness?.metallicRoughnessTexture),`${path}: roughness variation`);
+    for(let stage=1;stage<=8;stage++)assert.ok(gltf.nodes.some(node=>node.name?.startsWith(`0${stage}_`)),`${path}: stage ${stage}`);
+    assert.ok(!gltf.nodes.some(node=>/worker|person|human/i.test(node.name||'')),`${path}: no people`);
     assert.ok(existsSync(resolve('dist',path.replace(/^public\//,''))),path);
   }
+  assert.ok(combinedBytes<12_000_000,'both rooms fit the web asset budget');
   assert.ok(!existsSync('public/3d/workers'));
   assert.ok(!existsSync('dist/3d/workers'));
   assert.doesNotMatch(read('src/diorama.js'),/win_workers|workerRoots|placeWorkers/i);

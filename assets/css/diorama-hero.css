@@ -17,8 +17,9 @@ body.home-page .diorama-index {
 }
 body.home-page #intro-title {
   margin: 0; max-width: 470px; color: #3c3933;
-  font: 500 clamp(58px, 5.2vw, 88px)/.94 var(--font-heading);
-  letter-spacing: -.035em; text-wrap: balance;
+  font: 400 clamp(58px, 5.2vw, 88px)/.94 var(--font-heading);
+  font-variation-settings: 'opsz' 72;
+  letter-spacing: -.052em; text-wrap: balance;
 }
 body.home-page #diorama-support {
   margin: 28px 0 0; max-width: 330px;

@@ -1,6 +1,6 @@
 # WIN-DESIGNER
 
-Integrated Win Design website with the approved photographic 3D interior on the home page, the original independent About story, and the existing project galleries.
+Integrated WIN DESIGN website with two scroll-controlled architectural dioramas on the home page, the independent About story, and the existing project galleries.
 
 ## Local preview
 
@@ -14,11 +14,9 @@ With both local servers running and a fresh build, `pnpm test` checks preserved 
 
 `assets/css/typography.css` is the only source of font families, sizes, weights, leading and tracking for all three pages. Do not introduce typography declarations in the layout stylesheets.
 
-- Headings and display copy: locally hosted **Cormorant Garamond 500**.
-- Body, navigation, controls, forms, contact details and footer: locally hosted **Inter 400/500**.
-- Italic is limited to the final line of the home Hero. Other headings are upright.
-- Shared responsive scales: page title 40–64 px, Hero 34–48 px, section title 32–48 px, subheading 24–30 px, body 14–15 px, controls 13 px, small copy 12 px, labels 11 px. Leading: headings 1.08, body 1.7, UI 1.4. No third-party font requests.
-- Four Latin WOFF2 files (95,172 bytes total) and their SIL licenses live in `assets/fonts/`; the matching Fontsource packages are pinned by the lockfile.
+- Headings and display copy: locally hosted **Newsreader variable**, with the optical-size axis set for editorial display.
+- Body, navigation, controls, forms, contact details and footer: locally hosted **Manrope 400/500**.
+- Three Latin WOFF2 files and their SIL licenses live in `assets/fonts/`; the matching Fontsource packages are pinned by the lockfile. No third-party font requests occur at runtime.
 - `pnpm test` includes checks that prevent legacy stylesheets or page templates from adding competing fonts and type scales.
 
 ## Preserved content and assets
