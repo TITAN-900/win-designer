@@ -105,6 +105,22 @@ def _surface_maps():
     maps = {}
     maps["oak"] = _resized_oak("light-oak-512.png", .40, (.72, .63, .51))
     maps["oak_deep"] = _resized_oak("warm-oak-512.png", .65, (.56, .43, .31))
+    # A single atlas gives the bedroom's visible planks distinct grain phases.
+    # It is still derived from the local licensed oak photograph and travels in
+    # the GLB, rather than relying on a Blender-only procedural node.
+    oak_pixels = array("f", [0.0]) * (512 * 512 * 4)
+    maps["oak"].pixels.foreach_get(oak_pixels)
+    def plank_pixel(x, y, size):
+        plank = min(17, int(x * 18 / size))
+        strip = min(3, int(y * 4 / size))
+        local_x = (x * 18 / size - plank) * .76 + (plank * .217) % 1
+        local_y = (y * 4 / size - strip) * .83 + (plank * .379 + strip * .133) % 1
+        sx = int(local_x * 511) % 512
+        sy = int(local_y * 511) % 512
+        offset = 4 * (sy * 512 + sx)
+        tone = 1 + .045 * math.sin(plank * 7.13 + strip * 2.41)
+        return tuple(min(1.0, oak_pixels[offset + c] * tone) for c in range(3))
+    maps["floor_atlas"] = _image("bedroom-oak-plank-atlas-v1-768.png", 768, plank_pixel)
     maps["wood_rough"] = _resized_map("oak-rough-512.png", "wood_floor_Rough.jpg")
     maps["wood_normal"] = _resized_map("oak-normal-512.png", "wood_floor_nor_gl.jpg")
 
@@ -178,6 +194,84 @@ def _uv_by_surface(mesh, period):
             uv.data[loop_index].uv = (u / period, v / period)
 
 
+def _uv_floor_atlas(obj):
+    mesh = obj.data
+    uv = mesh.uv_layers.active or mesh.uv_layers.new(name="Individual oak planks")
+    for polygon in mesh.polygons:
+        for loop_index in polygon.loop_indices:
+            vertex = mesh.vertices[mesh.loops[loop_index].vertex_index].co
+            uv.data[loop_index].uv = (vertex.x / 7.72 + .5, vertex.y / 6.22 + .5)
+
+
+def make_curtain(name, collection, x, center_y, width, material, bottom=.021, top=2.82):
+    """Floor-touching woven panels with deep, non-repeating hanging pleats."""
+    columns, rows = 36, 12
+    vertices, faces = [], []
+    for row in range(rows + 1):
+        t = row / rows
+        z = bottom + (top - bottom) * t
+        for column in range(columns + 1):
+            u = column / columns
+            phase = u * math.tau * 4.2
+            wave = math.cos(phase + .14 * math.sin(t * math.pi))
+            # Folds are more gathered at the curtain track and spread at hem.
+            gather = .68 + .32 * (1 - t)
+            y = center_y + width * (u - .5) * gather
+            y += .009 * math.sin(phase * .5 + t * 2.5) * (1 - t)
+            xx = x + (.050 + .018 * (1 - t)) * wave
+            zz = z + (1 - t) * .004 * math.sin(phase * .83)
+            vertices.append((xx, y, zz))
+    stride = columns + 1
+    for row in range(rows):
+        for column in range(columns):
+            first = row * stride + column
+            faces.append((first, first + 1, first + stride + 1, first + stride))
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(vertices, [], faces)
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    collection.objects.link(obj)
+    mesh.materials.append(material)
+    thickness = obj.modifiers.new("Tailored curtain thickness", "SOLIDIFY")
+    thickness.thickness = .012
+    smoothing = obj.modifiers.new("Weighted hanging pleats", "SUBSURF")
+    smoothing.levels = 1
+    smoothing.render_levels = 1
+    for face in mesh.polygons:
+        face.use_smooth = True
+    return obj
+
+
+def make_leaf(name, collection, center, length, width, material, heading=0):
+    """A few curved, tapered polygons read as foliage even at phone size."""
+    vertices, faces = [], []
+    segments = 8
+    for index in range(segments + 1):
+        u = index / segments
+        half_width = width * .5 * math.sin(math.pi * u) ** .78
+        for side in (-1, 0, 1):
+            vertices.append((length * (u - .5), side * half_width,
+                             .018 * (1 - side * side) * math.sin(math.pi * u)
+                             - .025 * u * u))
+    for index in range(segments):
+        first = index * 3
+        faces.extend(((first, first + 1, first + 4, first + 3),
+                      (first + 1, first + 2, first + 5, first + 4)))
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(vertices, [], faces)
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    collection.objects.link(obj)
+    obj.location = center
+    obj.rotation_euler.z = heading
+    mesh.materials.append(material)
+    thickness = obj.modifiers.new("Natural leaf thickness", "SOLIDIFY")
+    thickness.thickness = .006
+    for face in mesh.polygons:
+        face.use_smooth = True
+    return obj
+
+
 def _sculpt_soft(obj, kind):
     # A small hand-shaped top grid gives bedding and upholstery restrained folds
     # and compressed corners rather than primitive bevelled-box silhouettes.
@@ -186,8 +280,9 @@ def _sculpt_soft(obj, kind):
     width = max(v.x for v in coordinates) - min(v.x for v in coordinates)
     depth = max(v.y for v in coordinates) - min(v.y for v in coordinates)
     height = max(v.z for v in coordinates) - min(v.z for v in coordinates)
-    nx, ny = (18, 22) if kind == "duvet" else (12, 10)
-    amplitude = .050 if kind == "duvet" else .011 if kind == "mattress" else .020
+    nx, ny = (24, 28) if kind == "duvet" else (16, 14)
+    amplitude = (.009 if kind == "duvet" else .008 if kind == "mattress"
+                 else .035 if kind == "upright" else .018)
     vertices = []
     for top in (True, False):
         for j in range(ny + 1):
@@ -197,17 +292,51 @@ def _sculpt_soft(obj, kind):
                 corner = max(0, (abs(2*u-1)-.76)/.24) * max(0, (abs(2*v-1)-.76)/.24)
                 x = (u-.5) * width * (1-.055*corner)
                 y = (v-.5) * depth * (1-.055*corner)
-                fold = math.sin(v*math.tau*2.1 + u*1.2)*.7 + math.sin(u*math.tau*1.3-v*1.1)*.3
+                fold = (math.sin(v*math.tau*2.1 + u*1.2)*.62
+                        + math.sin(u*math.tau*1.3-v*1.1)*.25
+                        + math.sin((u+v)*math.tau*2.5)*.13)
                 center = max(0, 1-((u-.5)*2)**2-((v-.5)*2)**2)
                 edge = min(u, 1-u, v, 1-v)
+                if kind == "upright":
+                    side = abs(2*u-1)
+                    end = abs(2*v-1)
+                    x *= 1-.105*end**4
+                    z = (v-.5) * height * (1-.075*side**4)
+                    if v < .5:
+                        z += .018*side**4
+                    else:
+                        z -= .018*side**4
+                    y = (-depth/2 - amplitude*center + .022*side**4
+                         if top else depth/2 + .006*center - .012*side**4)
+                    vertices.append((x, y, z))
+                    continue
+                if kind == "duvet":
+                    # The cover rests on the mattress, then falls over the
+                    # two sides and the foot. Its thin hem follows the top
+                    # surface so draping cannot invert the mesh at the edge.
+                    side = .10 * max(0, 1 - min(u, 1-u) / .12) ** 2
+                    foot = .095 * max(0, 1 - v / .13) ** 2
+                    head = .012 * max(0, 1 - (1-v) / .09) ** 2
+                    fall = max(side, foot, head)
+                    diagonal_fold = .004 * math.exp(-((v-(.31+.09*u))/.075)**2) * math.sin(u*math.pi*1.6)
+                    surface = height/2 + amplitude*fold*center + diagonal_fold*center - fall
+                    if top:
+                        z = surface
+                    else:
+                        thickness = .024 + (height-.024)*min(1, edge/.11)
+                        z = surface - thickness
+                        if edge > .12:
+                            z = max(z, -.065)  # filled cover rests on mattress
+                    vertices.append((x, y, z))
+                    continue
                 if top:
                     z = height/2 + amplitude*fold*center - .015 * max(0, 1-edge*13)
                     if kind == "duvet":
-                        z -= .022 * math.exp(-((v-.29)/.06)**2) * center
+                        z -= .025 * math.exp(-((v-.79)/.055)**2) * center
                     if kind == "pillow":
-                        z -= .022 * center
+                        z -= .015 * center + .058 * max(0,1-edge*7)
                 else:
-                    z = -height/2 + .008*max(0,1-edge*12)
+                    z = -height/2 + (.045 if kind == "pillow" else .005)*max(0,1-edge*12)
                 vertices.append((x, y, z))
     stride = nx+1
     count = stride*(ny+1)
@@ -256,7 +385,7 @@ def refine_room(room):
         elif "cabinet" in name or "matte ivory" in name:
             _connect(material, maps["plaster"], maps["plaster_rough"])
         elif "floor" in name and room == "bedroom" and "joint" not in name:
-            _connect(material, maps["oak"], maps["wood_rough"], maps["wood_normal"], .12)
+            _connect(material, maps["floor_atlas"], maps["wood_rough"], maps["wood_normal"], .12)
         elif "oak" in name:
             tone = "oak_deep" if "edge" in name else "oak"
             _connect(material, maps[tone], maps["wood_rough"], maps["wood_normal"], .15)
@@ -274,9 +403,13 @@ def refine_room(room):
             continue
         name = obj.name.lower()
         kind = None
-        if any(part in name for part in ("voluminous woven duvet", "foot of bed folded")):
+        if "flat woven duvet" in name:
             kind = "duvet"
-        elif any(part in name for part in ("pillow", "cushion", "headboard upholstered")):
+        elif "foot of bed folded" in name:
+            kind = "mattress"
+        elif "standing pillow" in name:
+            kind = "upright"
+        elif any(part in name for part in ("pillow", "cushion")):
             kind = "pillow"
         elif any(part in name for part in ("sofa plush seat", "sofa upright back", "sofa rounded arm", "mattress")):
             kind = "mattress"
@@ -294,7 +427,9 @@ def refine_room(room):
         if not obj.data.materials:
             continue
         surface = obj.data.materials[0].name.lower()
-        if any(part in surface for part in ("oak", "floor", "stone", "limestone", "plaster", "limewash", "cabinet", "ivory")):
+        if room == "bedroom" and "oak floating floor" in name:
+            _uv_floor_atlas(obj)
+        elif any(part in surface for part in ("oak", "floor", "stone", "limestone", "plaster", "limewash", "cabinet", "ivory")):
             _uv_by_surface(obj.data, 1.45 if "oak" in surface else 1.8)
         elif any(part in surface for part in ("woven", "linen", "boucle", "rug", "wool", "upholstery")):
             _uv_by_surface(obj.data, .36)

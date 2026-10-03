@@ -28,8 +28,8 @@ let disposed = false;
 
 const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(-8, 8, 5, -5, .1, 100);
-scene.add(new THREE.HemisphereLight(0xf5f2eb, 0x786f64, 1.35));
-const key = new THREE.DirectionalLight(0xfff9ef, 2.75);
+scene.add(new THREE.HemisphereLight(0xf5f2eb, 0x786f64, 1.25));
+const key = new THREE.DirectionalLight(0xfff9ef, 2.35);
 key.position.set(-4, 8, 6);
 key.castShadow = true;
 key.shadow.mapSize.set(1024, 1024);
@@ -39,9 +39,10 @@ key.shadow.camera.top = 8;
 key.shadow.camera.bottom = -8;
 key.shadow.bias = -.00015;
 key.shadow.normalBias = .025;
-key.shadow.radius = 2.5;
+key.shadow.radius = 4;
+key.shadow.intensity = .68;
 scene.add(key);
-const fill = new THREE.DirectionalLight(0xe8edf1, .58);
+const fill = new THREE.DirectionalLight(0xe8edf1, .65);
 fill.position.set(5, 5, -4);
 scene.add(fill);
 
@@ -89,7 +90,16 @@ function roomSetup(gltf, roomIndex) {
       ? { structure: meshes.filter(mesh => !finishName.test(mesh.name)), finish: meshes.filter(mesh => finishName.test(mesh.name)) }
       : { all: meshes };
     for (const [kind, batch] of Object.entries(batches)) {
-      batch.sort((a, b) => a.name.localeCompare(b.name));
+      const bedOrder = name => {
+        if (/Bed recessed support/i.test(name)) return 0;
+        if (/Bed low solid oak plinth/i.test(name)) return 1;
+        if (/Bed inset black shadow reveal/i.test(name)) return 2;
+        if (/Bed upholstered mattress/i.test(name)) return 3;
+        return 4;
+      };
+      batch.sort((a, b) => roomIndex === 1 && groupIndex === 3
+        ? bedOrder(a.name) - bedOrder(b.name) || a.name.localeCompare(b.name)
+        : a.name.localeCompare(b.name));
       const [start, end] = phases[groupIndex][kind];
       batch.forEach((mesh, item) => stageParts[roomIndex].push({
         mesh, install: start + (item / Math.max(1, batch.length - 1)) * (end - start),
@@ -112,7 +122,9 @@ function fitCamera() {
   camera.position.copy(target).add(new THREE.Vector3(9.7, 8.12, 11.5));
   camera.lookAt(target);
   camera.updateMatrixWorld();
-  const bounds = [new THREE.Box3().setFromObject(groups[0][0]), new THREE.Box3().setFromObject(groups[1][0])];
+  // Furniture, curtains and joinery can project beyond the architectural
+  // shell. Fit the completed rooms so no installation stage gets clipped.
+  const bounds = loaded.map(root => new THREE.Box3().setFromObject(root));
   let halfW = 0, halfH = 0;
   for (const box of bounds) {
     for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) {
@@ -122,7 +134,7 @@ function fitCamera() {
     }
   }
   const aspect = rect.width / rect.height;
-  const padding = smallQuery.matches ? 1.04 : 1.19;
+  const padding = smallQuery.matches ? 1.04 : 1.42;
   const vertical = Math.max(halfH, halfW / aspect) * padding;
   camera.left = -vertical * aspect;
   camera.right = vertical * aspect;
@@ -215,7 +227,7 @@ async function init() {
     renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
+    renderer.toneMappingExposure = 1.06;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setClearColor(0xf5f1e9, 0);

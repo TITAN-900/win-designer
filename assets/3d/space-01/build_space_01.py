@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT.parent))
-from premium_finish import refine_room
+from premium_finish import make_curtain, make_leaf, refine_room
 BLEND = ROOT / "win_space_01.blend"
 PREVIEW = ROOT / "win_space_01_preview.png"
 
@@ -194,6 +194,8 @@ for i, x in enumerate((-3.38, -2.70)):
     box(f"JOINERY_High cabinet carcass {i+1}", KITCHEN, (x, 2.83, 1.34), (.66, .47, 2.55), oak_edge, .012)
     box(f"JOINERY_High cabinet door {i+1}", KITCHEN, (x, 2.58, 1.35), (.625, .024, 2.50), cream_cab, .012)
     box(f"JOINERY_High cabinet pull {i+1}", KITCHEN, (x+.24, 2.559, 1.28), (.012, .012, .16), bronze, .003)
+    box(f"JOINERY_High cabinet recessed toe support {i+1}", KITCHEN,
+        (x, 2.83, .043), (.57, .37, .065), oak_edge, .004)
 box("JOINERY_High cabinet vertical oak reveal", KITCHEN, (-3.03, 2.565, 1.34), (.025, .026, 2.5), oak, .002)
 for i, x in enumerate((-1.89, -1.18, -.47, .24)):
     box(f"JOINERY_Lower cabinet carcass {i+1}", KITCHEN, (x, 2.73, .43), (.69, .58, .78), cream_cab, .008)
@@ -202,6 +204,13 @@ for i, x in enumerate((-1.89, -1.18, -.47, .24)):
 box("JOINERY_Lower cabinet recessed plinth", KITCHEN, (-.82, 2.78, .075), (3.34, .48, .14), oak_edge, .006)
 box("JOINERY_Back run stone countertop", KITCHEN, (-.83, 2.70, .86), (3.38, .70, .06), stone, .023, 5)
 box("JOINERY_Back run undercut shadow joint", KITCHEN, (-.83, 2.389, .822), (3.22, .009, .011), oak_edge, .001)
+box("JOINERY_Cooktop 00 inset dark glass", KITCHEN, (-.81, 2.70, .893),
+    (.66, .43, .009), black_glass, .008, 3)
+for index,(x,y,radius) in enumerate(((-.98,2.57,.083),(-.63,2.57,.070),
+                                     (-.98,2.83,.070),(-.63,2.83,.082))):
+    path(f"JOINERY_Cooktop 01 inset etched ring {index+1}",KITCHEN,
+         [(x+radius*math.cos(i*math.tau/32),y+radius*math.sin(i*math.tau/32),.900)
+          for i in range(33)],.0015,stone_edge)
 for i, x in enumerate((-1.89, -1.18, -.47, .24)):
     box(f"JOINERY_Wall cabinet case {i+1}", KITCHEN, (x, 2.82, 2.25), (.69, .40, .68), cream_cab, .008)
     box(f"JOINERY_Wall cabinet oak door {i+1}", KITCHEN, (x, 2.606, 2.25), (.65, .023, .64), oak, .010)
@@ -220,7 +229,7 @@ box("JOINERY_Island inset sink dark well", KITCHEN, (-1.91, .60, .927), (.53, .3
 path("JOINERY_Island faucet arch", KITCHEN,
      [(-1.95,.86,.93),(-1.95,.86,1.16),(-1.95,.83,1.27),(-1.95,.70,1.30),(-1.95,.63,1.19)], .016, bronze)
 for i, x in enumerate((-.86, -.26)):
-    cylinder(f"FURN_Island stool pedestal {i+1}", FURN, (x,-.68,.36), .025, .66, bronze, 32, .006)
+    cylinder(f"FURN_Island stool pedestal {i+1}", FURN, (x,-.68,.355), .025, .67, bronze, 32, .006)
     seat = cylinder(f"FURN_Island upholstered stool seat {i+1}", FURN, (x,-.68,.72), .23, .10, fabric, 64, .045)
     seat.scale.y = .84
 
@@ -259,31 +268,12 @@ table = cylinder("FURN_Oval stone coffee table top", FURN, (1.70,.08,.45), .66, 
 table.scale.x = 1.30
 table.scale.y = .75
 for x in (1.20, 2.20):
-    cylinder(f"FURN_Coffee table tapered pedestal {x:.2f}", FURN, (x,.08,.25), .17, .36, oak, 64, .025)
+    cylinder(f"FURN_Coffee table tapered pedestal {x:.2f}", FURN, (x,.08,.247), .17, .365, oak, 64, .025)
 box("FURN_Side table slim top", FURN, (3.36,-1.44,.47), (.42,.40,.045), oak, .07, 5)
 cylinder("FURN_Side table leg", FURN, (3.36,-1.44,.25), .026, .43, bronze, 32, .004)
 
-# The curtain follows a shallow wave rather than appearing as a flat sheet.
-def curtain(name, x, center_y, width, height, mat):
-    verts=[];faces=[];folds=28
-    for j in range(2):
-        z=.12+j*height
-        for i in range(folds+1):
-            yy=center_y-width/2+width*i/folds
-            verts.append((x+.065*math.cos(i*math.pi*.75),yy,z))
-    for i in range(folds):
-        faces.append((i,i+1,i+folds+2,i+folds+1))
-    mesh=bpy.data.meshes.new(name)
-    mesh.from_pydata(verts,[],faces);mesh.update()
-    obj=bpy.data.objects.new(name,mesh);SOFT.objects.link(obj)
-    obj.data.materials.append(mat)
-    solid=obj.modifiers.new("Woven curtain thickness", "SOLIDIFY");solid.thickness=.009
-    sub=obj.modifiers.new("Soft folds", "SUBSURF");sub.levels=1
-    smooth(obj)
-    return obj
-
-curtain("SOFT_Left floor-length curtain", -3.67,-1.72,.44,2.70,fabric_light)
-curtain("SOFT_Right floor-length curtain", -3.67,.20,.43,2.70,fabric_light)
+make_curtain("SOFT_Left floor-length curtain", SOFT, -3.67,-1.72,.44,fabric_light)
+make_curtain("SOFT_Right floor-length curtain", SOFT, -3.67,.20,.43,fabric_light)
 box("ARCH_Recessed curtain track", ARCH, (-3.67,-.77,2.84), (.06,2.44,.04), stone, .006)
 
 # Warm pendants above the island and ceiling details, split from the joinery.
@@ -298,27 +288,26 @@ for i,(x,y) in enumerate(((-2.35,1.64),(-.16,1.65),(1.66,1.45),(3.13,.03))):
 
 vase = cylinder("DECOR_Coffee table ceramic vessel", DECOR, (1.98,.10,.57), .079, .16, clay, 64, .025)
 vase.scale.x=.78
-box("DECOR_Coffee table book one", DECOR, (1.41,.15,.515), (.30,.22,.028), fabric_light, .006)
-box("DECOR_Coffee table book two", DECOR, (1.42,.15,.545), (.26,.19,.026), oak_edge, .004)
+box("DECOR_Coffee table book one", DECOR, (1.41,.15,.507), (.30,.22,.028), fabric_light, .006)
+box("DECOR_Coffee table book two", DECOR, (1.42,.15,.534), (.26,.19,.026), oak_edge, .004)
 for i, x in enumerate((1.36,1.56,1.75)):
-    box(f"DECOR_TV console book {i+1}", DECOR, (x,2.76,.74+i*.032), (.31,.19,.027), fabric_light if i%2 else clay, .004)
+    box(f"DECOR_TV console book {i+1}", DECOR, (x,2.76,.708), (.31,.19,.027), fabric_light if i%2 else clay, .004)
 cylinder("DECOR_Floor pot", DECOR, (3.41,.97,.25), .23, .47, clay, 64, .05)
 path("DECOR_Plant branching stem", DECOR,
      [(3.41,.97,.49),(3.38,.97,.88),(3.28,1.04,1.24),(3.11,1.06,1.44)], .016, oak_edge)
 for i in range(8):
     theta=i*math.tau/8
     z=.83+(i%3)*.18
-    leaf=cushion(f"DECOR_Plant soft leaf {i+1}", DECOR,
-                 (3.36+.20*math.cos(theta),.98+.18*math.sin(theta),z), (.28,.13,.045), sage, .025)
-    leaf.rotation_euler.z=theta
-    leaf.rotation_euler.y=.27
+    make_leaf(f"DECOR_Plant tapered leaf {i+1}", DECOR,
+              (3.36+.20*math.cos(theta),.98+.18*math.sin(theta),z),
+              .27 + .025*(i%3), .11 + .015*(i%2), sage, theta)
 
 # Broad natural studio illumination, restrained interior warmth, soft shadows.
 world=bpy.data.worlds.new("Soft ivory photographic environment")
 bpy.context.scene.world=world
 world.use_nodes=True
 world.node_tree.nodes["Background"].inputs["Color"].default_value=(0.79,.78,.73,1)
-world.node_tree.nodes["Background"].inputs["Strength"].default_value=.32
+world.node_tree.nodes["Background"].inputs["Strength"].default_value=.28
 # Camera sees warm ivory; indirect illumination remains softer and neutral.
 world_nodes=world.node_tree.nodes
 world_links=world.node_tree.links
@@ -331,10 +320,10 @@ world_links.new(camera_ray.outputs["Is Camera Ray"],world_mix.inputs[0])
 world_links.new(world_nodes["Background"].outputs[0],world_mix.inputs[1])
 world_links.new(paper_light.outputs[0],world_mix.inputs[2])
 world_links.new(world_mix.outputs[0],world_nodes["World Output"].inputs[0])
-add_area("LIGHT_Studio daylight from window", (-4.0,-1.0,5.7), 510, 4.5, (0.92,0.96,1.0), (0,0,.7), 3.4)
-add_area("LIGHT_Studio soft key", (3.5,-4.5,7.0), 300, 4.6, (1.0,.96,.89), (0,0,0.6), 3.5)
+add_area("LIGHT_Studio daylight from window", (-4.0,-1.0,5.7), 470, 5.2, (0.92,0.96,1.0), (0,0,.7), 3.7)
+add_area("LIGHT_Studio soft key", (3.5,-4.5,7.0), 260, 5.1, (1.0,.96,.89), (0,0,0.6), 3.8)
 add_area("LIGHT_Warm kitchen bounce", (-1.0,1.3,2.68), 42, 3.1, (1.0,.84,.70), (-1,2.6,1.4), .60)
-add_area("LIGHT_Sofa soft fill", (2.9,-.8,4.1), 115, 3.2, (1.0,.96,.90), (1.4,-1.0,.7), 2.1)
+add_area("LIGHT_Sofa soft fill", (2.9,-.8,4.1), 100, 3.4, (1.0,.96,.90), (1.4,-1.0,.7), 2.2)
 
 # Texture maps and tailored upholstery are authored into the Blender source,
 # not approximated later with CSS or web-only material overrides.

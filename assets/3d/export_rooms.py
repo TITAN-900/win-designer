@@ -1,11 +1,16 @@
 """Export the editable Space 01/02 .blend scenes as stage-grouped web GLBs."""
 import bpy
+import sys
 from pathlib import Path
 
 PROJECT=Path(__file__).resolve().parents[2]
 SOURCE=Path(__file__).resolve().parent
 
-for slug in ('space-01','space-02'):
+slugs=tuple(sys.argv[sys.argv.index('--')+1:]) if '--' in sys.argv else ('space-01','space-02')
+if not slugs or any(slug not in {'space-01','space-02'} for slug in slugs):
+    raise ValueError('Choose space-01 and/or space-02 after --')
+
+for slug in slugs:
     source=SOURCE/slug/f'win_{slug.replace("-", "_")}.blend'
     dest=PROJECT/'public'/'3d'/slug/f'win_{slug.replace("-", "_")}.glb'
     dest.parent.mkdir(parents=True,exist_ok=True)

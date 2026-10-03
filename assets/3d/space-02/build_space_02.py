@@ -7,7 +7,7 @@ from mathutils import Vector
 
 ROOT=Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT.parent))
-from premium_finish import refine_room
+from premium_finish import make_curtain, make_leaf, refine_room
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
 def coll(name):
@@ -114,20 +114,27 @@ for i,x in enumerate((-3.38,-2.67,-1.96)):
     box(f'JOINERY_Wardrobe recessed door head reveal {i+1}',WARDROBE,(x,2.486,2.637),(.65,.006,.008),oak_edge,.001)
 box('JOINERY_Wardrobe toe recess',WARDROBE,(-2.67,2.61,.10),(2.02,.34,.16),oak,.006)
 box('JOINERY_Wardrobe tall oak end cheek',WARDROBE,(-1.53,2.79,1.40),(.045,.58,2.60),oak,.007)
-box('JOINERY_Wardrobe open oak display niche',WARDROBE,(-1.15,2.87,1.41),(.66,.45,2.38),oak,.012)
+box('JOINERY_Niche recessed back',WARDROBE,(-1.15,3.048,1.41),(.64,.032,2.38),oak_edge,.006)
+for x in (-1.47,-.83):
+    box(f'JOINERY_Niche solid oak side {x:+.2f}',WARDROBE,(x,2.82,1.41),(.038,.49,2.42),oak,.006)
+for z in (.21,2.60):
+    box(f'JOINERY_Niche structural cap {z:.2f}',WARDROBE,(-1.15,2.82,z),(.68,.49,.038),oak,.006)
 for z in (.67,1.30,1.94):
-    box(f'JOINERY_Niche shelf {z:.2f}',WARDROBE,(-1.15,2.60,z),(.60,.42,.040),oak_edge,.006)
-for z in (.36,.95,1.58,2.22):
-    box(f'LIGHT_Niche LED {z:.2f}',LIGHT,(-1.15,2.37,z),(.49,.016,.010),glow,.002)
+    box(f'JOINERY_Niche shelf {z:.2f}',WARDROBE,(-1.15,2.81,z),(.60,.45,.040),oak,.006)
+for z in (.235,.695,1.325,1.965):
+    box(f'LIGHT_Niche concealed diffuser {z:.2f}',LIGHT,(-1.15,2.578,z),(.51,.012,.008),glow,.002)
 box('JOINERY_Wardrobe crown',WARDROBE,(-2.33,2.80,2.73),(3.55,.62,.06),oak,.009)
 
 # Upholstered headboard composition: stone side rails and softly upholstered bays.
 box('JOINERY_Headboard recessed oak backing',HEAD,(1.51,3.028,1.28),(3.98,.08,2.38),oak,.013)
-for i,x in enumerate((-.18,.62,1.42,2.22,3.02)):
-    cushion(f'JOINERY_Headboard upholstered vertical bay {i+1}',HEAD,(x,2.940,1.35),(.75,.070,1.45),fabric,.060)
+for i,(x,width,height) in enumerate(((-.18,.74,1.41),(.61,.78,1.47),(1.42,.77,1.44),(2.23,.78,1.48),(3.03,.73,1.42))):
+    cushion(f'JOINERY_Headboard upholstered vertical bay {i+1}',HEAD,
+            (x,2.952,1.35),(width,.087,height),fabric,.014)
+    box(f'JOINERY_Headboard bay reveal {i+1}',HEAD,(x+width/2+.018,2.965,1.35),
+        (.008,.027,1.49),oak_edge,.001)
 box('JOINERY_Headboard light oak upper rail',HEAD,(1.50,2.940,2.18),(3.92,.067,.10),oak,.012)
-box('JOINERY_Headboard lower oak shelf',HEAD,(1.50,2.915,.55),(3.94,.12,.10),oak,.011)
-box('JOINERY_Headboard inset base shadow line',HEAD,(1.50,2.897,.488),(3.78,.012,.012),oak_edge,.002)
+box('JOINERY_Headboard lower oak shelf',HEAD,(1.50,2.975,.55),(3.94,.12,.10),oak,.011)
+box('JOINERY_Headboard inset base shadow line',HEAD,(1.50,2.922,.488),(3.78,.012,.012),oak_edge,.002)
 box('LIGHT_Headboard continuous warm cove',LIGHT,(1.50,2.943,2.255),(3.75,.019,.014),glow,.003)
 for i,x in enumerate((-.25,3.13)):
     box(f'JOINERY_Bedside floating oak table {i+1}',HEAD,(x,2.47,.54),(.57,.49,.20),oak,.025)
@@ -136,43 +143,39 @@ for i,x in enumerate((-.25,3.13)):
 
 # Dominant king bed: undercut frame, rounded upholstered head support,
 # independently sculpted duvet, top sheet, pillows and small lumbar accents.
-box('FURN_Bed low solid oak plinth',BED,(1.46,.43,.24),(2.72,3.12,.28),oak,.014,3)
-box('FURN_Bed inset black shadow reveal',BED,(1.46,.43,.13),(2.48,2.82,.09),bronze,.025)
-cushion('FURN_Bed upholstered mattress',BED,(1.46,.40,.43),(2.65,3.06,.26),fabric,.115)
-cushion('SOFT_Bed voluminous woven duvet',SOFT,(1.46,.05,.62),(2.62,2.28,.30),linen,.135)
-box('SOFT_Bed folded top-sheet edge',SOFT,(1.46,1.29,.666),(2.50,.22,.06),linen,.032)
-for i,x in enumerate((.78,2.14)):
-    pillow=cushion(f'SOFT_Standing pillow {i+1}',SOFT,(x,1.67,.77),(.97,.54,.23),linen,.10)
-    pillow.rotation_euler.x=.13
-    cushion(f'SOFT_Small textured throw cushion {i+1}',SOFT,(x,1.26,.85),(.50,.35,.16),rust,.073)
-cushion('SOFT_Foot of bed folded wool throw',SOFT,(1.46,-.77,.78),(2.50,.51,.07),fabric,.045)
-box('SOFT_Full bedroom wool rug',SOFT,(1.46,.02,.034),(3.72,4.46,.031),rug,.009,3)
+bed_to_headboard=.07
+box('FURN_Bed low solid oak plinth',BED,(1.46,1.33+bed_to_headboard,.24),(2.72,3.12,.28),oak,.014,3)
+box('FURN_Bed inset black shadow reveal',BED,(1.46,1.33+bed_to_headboard,.13),(2.48,2.82,.09),bronze,.015)
+for x in (.38,2.54):
+    for y in (.06,2.50):
+        moved_y=y+bed_to_headboard
+        box(f'FURN_Bed recessed support {x:.2f} {moved_y:.2f}',BED,(x,moved_y,.075),(.20,.28,.060),oak_edge,.007)
+cushion('FURN_Bed upholstered mattress',BED,(1.46,1.30+bed_to_headboard,.475),(2.65,3.06,.19),fabric,.038)
+# A lightly draped cover lies almost flush with the mattress; only its side
+# hems and foot fold fall over the edge. Keep it clear of the bedside joinery.
+cushion('SOFT_Bed flat woven duvet',SOFT,(1.46,1.025+bed_to_headboard,.57),(2.75,2.57,.038),linen,.012)
+box('SOFT_Bed folded top-sheet edge',SOFT,(1.46,2.345+bed_to_headboard,.593),(2.50,.13,.012),linen,.004)
+for i,(x,width,depth,height) in enumerate(((.78,.98,.24,.55),(2.14,.94,.20,.51))):
+    # These are already against the upholstered face. Leave them in place so
+    # the shifted mattress moves beneath them instead of pushing through it.
+    pillow=cushion(f'SOFT_Standing pillow {i+1}',SOFT,(x,2.745,.80),(width,depth,height),linen,.05)
+    pillow.rotation_euler.x=-.09 if i else -.12
+cushion('SOFT_Tailored lumbar cushion',SOFT,(1.46,2.50+bed_to_headboard,.635),(1.63,.27,.16),rust,.04)
+cushion('SOFT_Foot of bed folded wool throw',SOFT,(1.46,.24+bed_to_headboard,.606),(2.40,.44,.035),fabric,.012)
+box('SOFT_Full bedroom wool rug',SOFT,(1.46,.46,.034),(3.72,4.80,.031),rug,.009,3)
 
 # Compact writing / vanity station makes this a residential bedroom rather
 # than a hotel room; all parts are separate for installation animation.
 box('JOINERY_Vanity oak top',HEAD,(3.28,-1.31,.75),(.66,1.36,.055),oak,.035)
 box('JOINERY_Vanity slim lower drawer',HEAD,(3.28,-1.31,.64),(.59,1.24,.15),cream,.016)
 for y in (-1.79,-.84):
-    cyl(f'FURN_Vanity dark leg {y:.2f}',BED,(3.42,y,.36),.023,.66,bronze,32,.004)
+    cyl(f'FURN_Vanity dark leg {y:.2f}',BED,(3.42,y,.355),.023,.67,bronze,32,.004)
 cyl('FURN_Vanity padded stool seat',BED,(2.87,-1.35,.45),.28,.14,fabric,64,.045)
-cyl('FURN_Vanity stool support',BED,(2.87,-1.35,.23),.025,.40,bronze,32,.004)
-box('DECOR_Vanity small bronzed tray',DECOR,(3.26,-1.42,.790),(.18,.28,.012),bronze,.008)
+cyl('FURN_Vanity stool support',BED,(2.87,-1.35,.225),.025,.41,bronze,32,.004)
+box('DECOR_Vanity small bronzed tray',DECOR,(3.26,-1.42,.784),(.18,.28,.012),bronze,.008)
 
-def curtain(name,center_y,width):
-    verts=[];faces=[];folds=28
-    for j in range(2):
-        z=.12+j*2.7
-        for i in range(folds+1):
-            y=center_y-width/2+width*i/folds
-            verts.append((-3.67+.065*math.cos(i*math.pi*.75),y,z))
-    for i in range(folds):faces.append((i,i+1,i+folds+2,i+folds+1))
-    mesh=bpy.data.meshes.new(name);mesh.from_pydata(verts,[],faces);mesh.update()
-    o=bpy.data.objects.new(name,mesh);SOFT.objects.link(o);o.data.materials.append(linen)
-    t=o.modifiers.new('Natural curtain weight','SOLIDIFY');t.thickness=.009
-    s=o.modifiers.new('Soft folds','SUBSURF');s.levels=1
-    for f in mesh.polygons:f.use_smooth=True
-curtain('SOFT_Left linen bedroom curtain',-1.72,.44)
-curtain('SOFT_Right linen bedroom curtain',.20,.43)
+make_curtain('SOFT_Left linen bedroom curtain',SOFT,-3.67,-1.72,.44,linen)
+make_curtain('SOFT_Right linen bedroom curtain',SOFT,-3.67,.20,.43,linen)
 
 for i,x in enumerate((-.25,3.13)):
     path(f'LIGHT_Bedside hanging cord {i+1}',LIGHT,[(x,2.42,2.90),(x,2.42,1.49)],.006,bronze)
@@ -184,16 +187,16 @@ for i,(x,y) in enumerate(((-2.2,.60),(.4,-1.15),(2.45,-1.10))):
     cyl(f'LIGHT_Bedroom recessed spot diffuser {i+1}',LIGHT,(x,y,2.865),.038,.009,glow,48,.003)
 
 cyl('DECOR_Bedside ceramic cup',DECOR,(-.28,2.43,.69),.055,.12,stone,64,.018)
-box('DECOR_Vanity folded letter',DECOR,(3.26,-1.31,.786),(.20,.32,.008),linen,.003)
+box('DECOR_Vanity folded letter',DECOR,(3.26,-1.31,.782),(.20,.32,.008),linen,.003)
 cyl('DECOR_Wardrobe niche vessel',DECOR,(-1.15,2.75,.78),.07,.19,stone,64,.028)
-box('DECOR_Wardrobe niche linen books',DECOR,(-1.15,2.76,1.37),(.30,.14,.044),linen,.004)
-cyl('DECOR_Quiet floor planter',DECOR,(-2.92,-1.96,.23),.19,.43,stone,64,.044)
-path('DECOR_Planter stems',DECOR,[(-2.92,-1.96,.43),(-2.91,-1.91,.82),(-2.85,-1.84,1.14)],.013,oak_edge)
+box('DECOR_Wardrobe niche linen books',DECOR,(-1.15,2.76,1.343),(.30,.14,.044),linen,.004)
+cyl('DECOR_Planter 00 floor vessel',DECOR,(-2.92,-1.96,.23),.19,.43,stone,64,.044)
+path('DECOR_Planter 01 stems',DECOR,[(-2.92,-1.96,.43),(-2.91,-1.91,.82),(-2.85,-1.84,1.14)],.013,oak_edge)
 for i in range(7):
     theta=i*math.tau/7
-    leaf=cushion(f'DECOR_Planter leaf {i+1}',DECOR,
-                 (-2.90+.18*math.cos(theta),-1.94+.17*math.sin(theta),.83+(i%3)*.13),(.25,.11,.045),sage,.02)
-    leaf.rotation_euler.z=theta
+    make_leaf(f'DECOR_Planter 02 tapered leaf {i+1}',DECOR,
+              (-2.90+.18*math.cos(theta),-1.94+.17*math.sin(theta),.83+(i%3)*.13),
+              .25 + .02*(i%3),.10 + .015*(i%2),sage,theta)
 
 def area(name,pos,power,size,color,target,second=None):
     ld=bpy.data.lights.new(name,'AREA');ld.energy=power;ld.color=color
@@ -205,17 +208,17 @@ def area(name,pos,power,size,color,target,second=None):
 world=bpy.data.worlds.new('Soft ivory photographic environment');bpy.context.scene.world=world;world.use_nodes=True
 wn=world.node_tree.nodes;wl=world.node_tree.links
 wn['Background'].inputs['Color'].default_value=(.79,.78,.73,1)
-wn['Background'].inputs['Strength'].default_value=.32
+wn['Background'].inputs['Strength'].default_value=.28
 ray=wn.new('ShaderNodeLightPath');paper=wn.new('ShaderNodeEmission')
 paper.inputs['Color'].default_value=(1,.89,.74,1);paper.inputs['Strength'].default_value=1.55
 mix=wn.new('ShaderNodeMixShader')
 wl.new(ray.outputs['Is Camera Ray'],mix.inputs[0])
 wl.new(wn['Background'].outputs[0],mix.inputs[1]);wl.new(paper.outputs[0],mix.inputs[2])
 wl.new(mix.outputs[0],wn['World Output'].inputs[0])
-area('LIGHT_Window soft daylight',(-4,-1,5.7),510,4.5,(.92,.96,1),(0,0,.7),3.4)
-area('LIGHT_Studio soft key',(3.5,-4.5,7),300,4.6,(1,.96,.89),(0,0,.6),3.5)
+area('LIGHT_Window soft daylight',(-4,-1,5.7),470,5.2,(.92,.96,1),(0,0,.7),3.7)
+area('LIGHT_Studio soft key',(3.5,-4.5,7),260,5.1,(1,.96,.89),(0,0,.6),3.8)
 area('LIGHT_Headboard warm bounce',(1.5,1.2,2.68),48,3.1,(1,.84,.70),(1.5,2.7,1.5),.6)
-area('LIGHT_Bedroom soft fill',(2.9,-.8,4.1),115,3.2,(1,.96,.90),(1.4,-1,.7),2.1)
+area('LIGHT_Bedroom soft fill',(2.9,-.8,4.1),100,3.4,(1,.96,.90),(1.4,-1,.7),2.2)
 
 refine_room('bedroom')
 

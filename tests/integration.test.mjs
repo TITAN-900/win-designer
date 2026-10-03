@@ -163,6 +163,32 @@ test('only the two independent web rooms are shipped and loaded',()=>{
   assert.ok(read('src/home.js').includes("import('./diorama.js')"));
 });
 
+test('plant vessels install before their stems and leaves in both rooms',()=>{
+  for(const [room,pot,stem,leaf] of [
+    ['space-01','DECOR_Floor pot','DECOR_Plant branching stem','DECOR_Plant tapered leaf 1'],
+    ['space-02','DECOR_Planter 00 floor vessel','DECOR_Planter 01 stems','DECOR_Planter 02 tapered leaf 1']
+  ]){
+    const bytes=readFileSync(`public/3d/${room}/win_${room.replace('-','_')}.glb`);
+    const jsonLength=bytes.readUInt32LE(12);
+    const names=JSON.parse(bytes.subarray(20,20+jsonLength).toString()).nodes
+      .map(node=>node.name).filter(Boolean).sort((a,b)=>a.localeCompare(b));
+    assert.ok(names.indexOf(pot)>=0,`${room}: vessel exists`);
+    assert.ok(names.indexOf(pot)<names.indexOf(stem),`${room}: stems need a vessel`);
+    assert.ok(names.indexOf(stem)<names.indexOf(leaf),`${room}: leaves need stems`);
+  }
+});
+
+test('completed rooms and kitchen details remain inside the isometric framing',()=>{
+  const viewer=read('src/diorama.js');
+  assert.match(viewer,/loaded\.map\(root => new THREE\.Box3\(\)\.setFromObject\(root\)\)/);
+  assert.doesNotMatch(viewer,/setFromObject\(groups\[[01]\]\[0\]\)/);
+  const bytes=readFileSync('public/3d/space-01/win_space_01.glb');
+  const jsonLength=bytes.readUInt32LE(12);
+  const names=JSON.parse(bytes.subarray(20,20+jsonLength).toString()).nodes.map(node=>node.name||'');
+  assert.ok(names.some(name=>name.startsWith('JOINERY_Cooktop 00 inset dark glass')));
+  assert.ok(names.filter(name=>name.startsWith('JOINERY_Cooktop 01 inset etched ring')).length>=4);
+});
+
 test('comparison pointer drag clamps, reverses and stops on release',()=>{
   const handlers={},rangeHandlers={};
   let reveal='',captured;
