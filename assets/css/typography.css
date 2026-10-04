@@ -148,9 +148,21 @@ h2 { font-size: var(--type-section); }
 .home-page .contact-banner h2 { font-size: var(--type-section); }
 .home-page .compare-grip { font-size: 1.25rem; line-height: 1; }
 
+/* One architectural navigation rhythm across home, studio and project pages. */
+body .site-nav .nav-links { gap: clamp(18px, 2.05vw, 34px); }
+body .site-nav .nav-links a {
+  font: 500 12px/1.4 var(--font-body); letter-spacing: .075em;
+  text-transform: uppercase; transition: opacity .2s ease, color .2s ease;
+}
+body .site-nav .nav-links a:hover { color: #74654e; }
+body .site-nav .nav-links a::after { height: 1px; bottom: 6px; }
+body .site-nav .nav-links .nav-cta { margin-left: clamp(3px,.6vw,12px); letter-spacing: .09em; }
+body .site-nav .nav-links .nav-cta .line-arrow { transform: translateY(-1px); }
+
 @media(max-width:1040px) {
   .nav-links a { font-size: var(--type-ui); }
-  .nav-links { gap: 0; }
+  body .site-nav .nav-links { gap: 0; }
+  body .site-nav .nav-links a { font-size: 13px; letter-spacing: .07em; }
 }
 @media(max-width:760px) {
   :root { --type-section: clamp(2.65rem, 10vw, 3.45rem); --type-display: clamp(3rem, 10.5vw, 3.7rem); }

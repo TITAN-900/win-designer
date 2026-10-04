@@ -9,26 +9,33 @@
 <meta name="theme-color" content="#f3efe8">
 <link rel="stylesheet" href="src/style.css">
 <link rel="stylesheet" href="assets/css/site-integration.css">
-<link rel="stylesheet" href="assets/css/editorial.css">
 <link rel="stylesheet" href="assets/css/ui-refresh.css">
 <link rel="stylesheet" href="assets/css/typography.css">
 <link rel="stylesheet" href="assets/css/diorama-hero.css">
 <link rel="stylesheet" href="assets/css/ui-icons.css">
+<link rel="stylesheet" href="assets/css/portfolio-book.css">
 <meta property="og:title" content="WIN DESIGN | Interiors crafted around your life"><meta property="og:description" content="Interior design, renovation, space planning and custom cabinetry for Malaysian homes."><meta property="og:type" content="website"><meta property="og:url" content="__SITE_ORIGIN__/"><meta property="og:image" content="__SITE_ORIGIN__/assets/win20/hero-condo.webp"><meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="__SITE_ORIGIN__/"><link rel="icon" href="favicon.ico" sizes="any">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"HomeAndConstructionBusiness","name":"WIN DESIGN","url":"__SITE_ORIGIN__/","logo":"__SITE_ORIGIN__/assets/win20/win-design-logo-nav-compact.png","image":"__SITE_ORIGIN__/assets/win20/hero-condo.webp","telephone":"+601172455699","description":"Malaysian interior design, renovation, space planning and custom cabinetry.","areaServed":{"@type":"Country","name":"Malaysia"},"contactPoint":{"@type":"ContactPoint","telephone":"+601172455699","contactType":"customer service","availableLanguage":["en","ms","zh"]}}</script>
 </head>
 <body class="home-page integrated-site">
-<a class="skip-link" href="#about-home">Skip to website content</a>
+<a class="skip-link" href="#portfolio">Skip to portfolio</a>
 <header class="site-nav" aria-label="Primary navigation">
 <a class="brand" href="#home" aria-label="WIN DESIGN home"><img class="brand-logo" src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="946" height="512"></a>
-<nav class="nav-links" id="navLinks" aria-label="Site sections"><a href="about.html">About</a><a href="#services">Services</a><a href="#portfolio">Projects</a><a href="#transformations">Before + After</a><a href="#contact">Contact</a><a class="nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp <span class="line-arrow" aria-hidden="true"></span></a></nav>
+<nav class="nav-links" id="navLinks" aria-label="Site sections">
+  <a href="about.html">About</a>
+  <a href="about.html#services">Services</a>
+  <a href="#portfolio">Projects</a>
+  <a href="project.html?project=walnut-residence#projectBeforeAfter">Before + After</a>
+  <a href="#contact">Contact</a>
+  <a class="nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp <span class="line-arrow" aria-hidden="true"></span></a>
+</nav>
 <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
 </header>
 <main id="app">
 <section class="diorama-story" id="home" aria-labelledby="intro-title">
-  <div id="showcase" class="showcase" aria-label="Two interior spaces take shape as you scroll">
-    <div class="sticky-stage">
+  <div id="showcase" class="showcase" aria-label="Two interior spaces build automatically">
+    <div class="diorama-stage">
       <div class="diorama-copy" aria-live="off">
         <span class="diorama-index" id="diorama-index">01 / Living + Kitchen</span>
         <h1 id="intro-title">From structure.</h1>
@@ -36,72 +43,41 @@
         <a class="diorama-cta" href="#portfolio">View Projects <span class="line-arrow" aria-hidden="true"></span></a>
       </div>
       <div class="diorama-visual" aria-label="Isometric architectural interior model">
-        <img class="diorama-poster" src="assets/3d/space-01/win_space_01_poster.png" alt="Completed miniature living room and kitchen cutaway" width="1200" height="1200" fetchpriority="high">
-        <canvas id="viewer" aria-label="Scroll-controlled isometric living room and bedroom transformation"></canvas>
+        <img class="diorama-poster" src="assets/3d/space-01/win_space_01_poster.png" alt="Miniature living room and kitchen cutaway" width="1200" height="1200" fetchpriority="high">
+        <canvas id="viewer" aria-label="Automatically building isometric living room and bedroom"></canvas>
       </div>
-      <div class="diorama-footer" aria-hidden="true"><span>SCROLL TO BUILD THE SPACE</span><span id="diorama-counter">01 / 02</span></div>
-      <div class="scroll-progress" aria-hidden="true"><i></i></div>
+      <div class="diorama-footer" aria-hidden="true"><span>SCROLL TO EXPLORE THE PORTFOLIO</span><span id="diorama-counter">01 / 02</span></div>
     </div>
   </div>
 </section>
-<div class="content-sheet">
-<section id="about-home" class="content-section" aria-labelledby="about-title" data-nav-section>
-<div class="content-wrap">
-<div class="chapter-label"><span class="section-kicker">01 / The studio</span><span class="quiet-label">Interiors · Carpentry · Malaysia</span></div>
-<div class="studio-statement" data-reveal><h2 id="about-title">A home is in<br>the details.</h2><div><p>Interiors, cabinetry, renovation. One vision.</p><a class="inline-link" href="about.html">Meet Win Design</a></div></div>
-<div class="studio-collage"><figure class="studio-space" data-reveal><div class="media-drift"><img src="livingroom6.jpg.jpg" alt="Residential interior from the retained Win Design portfolio" width="1280" height="960" loading="lazy"></div><figcaption><span>Space to live.</span><span>Proportion / Light / Material</span></figcaption></figure><figure class="studio-detail" data-reveal><div class="media-drift"><img src="assets/win20/project-foyer.webp" alt="Detail of timber fluting, stone cabinetry and integrated warm lighting" width="1536" height="1024" loading="lazy"></div><figcaption>Details to feel.</figcaption></figure></div>
-</div>
+<section class="portfolio-book-section" id="portfolio" aria-labelledby="portfolio-title" data-nav-section>
+  <div class="book-intro">
+    <span class="book-eyebrow">WIN DESIGN / SELECTED INTERIORS</span>
+    <h2 id="portfolio-title">Spaces, collected.</h2>
+    <p>A quiet look at interiors, material and detail.</p>
+  </div>
+  <div class="book-stage" id="portfolioBook" role="group" aria-label="Interactive WIN DESIGN portfolio book" tabindex="0">
+    <div class="book-object is-cover">
+      <div class="book-page book-page--left" data-book-left></div>
+      <div class="book-page book-page--right" data-book-right></div>
+      <div class="book-turn-sheet" data-book-turn hidden></div>
+    </div>
+  </div>
+  <div class="book-controls" aria-label="Portfolio page controls">
+    <button id="bookPrevious" type="button" aria-label="Previous portfolio pages"><span class="line-arrow previous" aria-hidden="true"></span> Previous</button>
+    <span id="bookStatus" role="status" aria-live="polite">COVER / 04</span>
+    <button id="bookNext" type="button" aria-label="Next portfolio pages">Next <span class="line-arrow" aria-hidden="true"></span></button>
+  </div>
 </section>
-<section id="portfolio" class="content-section" aria-labelledby="portfolio-title" data-nav-section>
-<div class="content-wrap section-heading" data-reveal><div><span class="section-kicker">02 / Selected spaces</span><h2 id="portfolio-title">Room for possibility.</h2></div></div>
-<div class="project-list" id="projectSections" aria-label="WIN DESIGN project portfolio"></div>
-<div class="content-wrap"><p class="source-note portfolio-note">Portfolio includes design references, not independently verified completed works.</p></div>
-</section>
-<section id="services" class="content-section dark-section" aria-labelledby="services-title" data-nav-section>
-<div class="content-wrap"><div class="section-heading" data-reveal><div><span class="section-kicker">03 / What we do</span><h2 id="services-title">Considered as a whole.</h2></div><a class="inline-link" href="#contact">Discuss your space</a></div>
-<div class="service-editorial">
-<figure class="service-panorama" data-reveal><div class="media-drift"><img src="assets/win20/hero-condo.webp" alt="Interior design palette of walnut, stone and warm neutrals" width="1536" height="1024" loading="lazy"></div><figcaption>Space. Light. Detail.</figcaption></figure>
-<ol class="service-lines">
-<li data-reveal><span>01</span><h3>Interior Design</h3><p>Space, light, material.</p></li>
-<li data-reveal><span>02</span><h3>Custom Cabinet</h3><p>Storage made to fit.</p></li>
-<li data-reveal><span>03</span><h3>Woodwork</h3><p>Joinery with purpose.</p></li>
-<li data-reveal><span>04</span><h3>Renovation</h3><p>From shell to home.</p></li>
-<li data-reveal><span>05</span><h3>Space Planning</h3><p>Flow for everyday life.</p></li>
-<li data-reveal><span>06</span><h3>Commercial Design</h3><p>Places to work and welcome.</p></li>
-</ol></div></div>
-</section>
-<section id="materials" class="content-section material-section" aria-labelledby="materials-title">
-<div class="content-wrap"><div class="material-intro"><div data-reveal><span class="section-kicker">04 / Carpentry & material</span><h2 id="materials-title">Character in<br>every grain.</h2></div><div data-reveal><p>Timber, finish, exacting detail.</p><a class="inline-link" href="project.html?project=foyer-cabinetry">Explore cabinetry</a></div></div>
-<figure class="craft-panorama" data-reveal><div class="media-drift"><img src="assets/win20/craft-workshop.webp" alt="Wood sanding and finishing reference from the original website" width="1690" height="931" loading="lazy"></div><figcaption><span>Craft / Surface / Finish</span><span>Woodworking reference</span></figcaption></figure>
-<div class="material-palette" aria-label="Wood grain references"><figure data-reveal><img src="american-walnut.jpg.jpeg" alt="American walnut grain" width="600" height="600" loading="lazy"><figcaption><span>01</span>American Walnut</figcaption></figure><figure data-reveal><img src="white-oak.jpg.jpg" alt="White oak grain" width="600" height="600" loading="lazy"><figcaption><span>02</span>White Oak</figcaption></figure><figure data-reveal><img src="ash-wood.jpg.jpg" alt="Ash wood grain" width="600" height="600" loading="lazy"><figcaption><span>03</span>Ash Wood</figcaption></figure><figure data-reveal><img src="teak-wood.jpg.jpg" alt="Teak wood grain" width="600" height="600" loading="lazy"><figcaption><span>04</span>Teak Wood</figcaption></figure></div>
-</div>
-</section>
-<section id="transformations" class="content-section alt" aria-labelledby="transformations-title" data-nav-section>
-<div class="content-wrap transformation-layout"><div class="transformation-copy" data-reveal><span class="section-kicker">05 / Before + After</span><h2 id="transformations-title">A new sense<br>of home.</h2><span class="compare-instruction">Slide to compare</span></div><div class="transformation-visual" data-reveal>
-<div class="compare-frame" id="renovation-compare"><img src="assets/win20/after-same-room.webp" alt="Furnished interior reference" width="1280" height="853" loading="lazy"><img class="compare-before-image" src="assets/win20/before-same-room.webp" alt="Unfinished room reference" width="1537" height="1023" loading="lazy"><span class="compare-badge">BEFORE</span><span class="compare-badge after">AFTER</span><span class="compare-grip" aria-hidden="true"></span></div>
-<label class="compare-control">Before<input id="compare-range" type="range" min="0" max="100" value="52" aria-label="Reveal before and after reference images">After</label><p class="source-note">Illustrative comparison from the original site; not a verified client before-and-after.</p></div></div>
-</section>
-<section id="process" class="content-section" aria-labelledby="process-title"><div class="content-wrap process-layout"><div class="process-intro" data-reveal><span class="section-kicker">06 / Our process</span><h2 id="process-title">Considered.<br>At every step.</h2><div class="process-photo media-drift"><img src="assets/win20/project-bedroom.webp" alt="A finished bedroom interior with integrated cabinetry" width="1536" height="1024" loading="lazy"></div></div><ol class="process-track"><li data-reveal><span>01</span><div><h3>Consult</h3><p>Listen. Define.</p></div></li><li data-reveal><span>02</span><div><h3>Design</h3><p>Space and material.</p></div></li><li data-reveal><span>03</span><div><h3>Plan</h3><p>Refine every junction.</p></div></li><li data-reveal><span>04</span><div><h3>Build</h3><p>Craft and finish.</p></div></li><li data-reveal><span>05</span><div><h3>Handover</h3><p>Ready for living.</p></div></li></ol></div></section>
-<section id="contact" class="content-section alt" aria-labelledby="contact-title" data-nav-section>
-<div class="contact-banner"><img src="livingroom3.jpg.jpg" alt="Warm living and dining interior with custom timber detailing" width="1280" height="960" loading="lazy"><div class="content-wrap" data-reveal><span class="section-kicker">07 / Your next chapter</span><h2 id="contact-title">Let's make room<br>for your life.</h2><a class="inline-link" href="https://wa.me/601172455699" target="_blank" rel="noopener">WhatsApp</a></div></div>
-<div class="content-wrap contact-layout"><div class="contact-copy"><span class="section-kicker">Tell us about your space</span><h3>Let's begin.</h3><div class="contact-actions"><a class="phone-link" href="tel:+601172455699">+60 1172455699</a><a class="inline-link" href="https://wa.me/601172455699" target="_blank" rel="noopener">WhatsApp</a></div></div>
-<form class="contact-form">
-<div class="field"><label for="name">Name</label><input id="name" name="name" type="text" autocomplete="name" required></div>
-<div class="field"><label for="phone">Phone</label><input id="phone" name="phone" type="tel" autocomplete="tel" required></div>
-<div class="field"><label for="email">Email (optional)</label><input id="email" name="email" type="email" autocomplete="email"></div>
-<div class="field"><label for="property">Property type (optional)</label><input id="property" name="property" type="text" placeholder="Condominium, terrace, bungalow…"></div>
-<div class="field"><label for="projectType">Project type</label><select id="projectType" name="projectType"><option>Interior Design</option><option>Renovation</option><option>Custom Cabinetry</option><option>Woodwork</option><option>Space Planning</option><option>Commercial Design</option><option>Residential Spaces</option></select></div>
-<div class="field"><label for="message">Project notes</label><textarea id="message" name="message" placeholder="Room, location or timeline"></textarea></div>
-<button class="btn btn-dark" type="submit">Prepare WhatsApp enquiry <span class="line-arrow" aria-hidden="true"></span></button><p class="form-status" aria-live="polite"></p><p class="form-privacy">Your details open as a WhatsApp draft. Nothing is sent until you choose to send it there.</p></form></div>
-</section>
-<footer class="site-footer">
-<div class="footer-brand"><a href="#home" aria-label="WIN DESIGN home"><img src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="946" height="512"></a><p>Interiors and custom cabinetry, Malaysia.</p></div>
-<nav class="footer-links" aria-label="Footer navigation"><span class="footer-label">Explore</span><a href="about.html">About Win Design</a><a href="#services">Services</a><a href="#portfolio">Projects</a><a href="#transformations">Before + After</a><a href="#materials">Carpentry & materials</a><a href="#process">Our process</a></nav>
-<div class="footer-links"><span class="footer-label">Get in touch</span><a href="tel:+601172455699">+60 1172455699</a><a href="https://wa.me/601172455699" target="_blank" rel="noopener">WhatsApp <span class="line-arrow" aria-hidden="true"></span></a><a href="#contact">Project enquiry</a><a href="#home">Back to top <span class="line-arrow up" aria-hidden="true"></span></a></div>
-<div class="footer-bottom"><span>© <span class="js-year"></span> WIN DESIGN</span><span>Considered spaces. Custom-built details.</span></div></footer>
-</div>
-<div id="loading" class="loading-panel" role="status" aria-live="polite"><div class="loading-label"><span>Preparing your space</span><span id="loading-value">0%</span></div><div class="progress-track"><div id="progress-bar"></div></div></div><div id="error" class="error-panel" role="alert" hidden><strong>Unable to load the interior</strong><span id="error-detail"></span></div>
+<footer class="site-footer book-footer" id="contact" data-nav-section>
+  <div class="footer-brand"><a href="#home" aria-label="WIN DESIGN home"><img src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="946" height="512"></a><p>Interiors and custom cabinetry, Malaysia.</p></div>
+  <div class="book-footer-contact"><span>HAVE A SPACE IN MIND?</span><a href="https://wa.me/601172455699" target="_blank" rel="noopener">Let's begin <span class="line-arrow" aria-hidden="true"></span></a><a href="tel:+601172455699">+60 1172455699</a></div>
+  <nav class="book-footer-nav" aria-label="Footer navigation"><a href="about.html">About</a><a href="about.html#services">Services</a><a href="#portfolio">Projects</a><a href="project.html?project=walnut-residence#projectBeforeAfter">Before + After</a><a href="project.html?project=walnut-residence#contact">Project enquiry</a><a href="#home">Back to top</a></nav>
+  <div class="footer-bottom"><span>© <span class="js-year"></span> WIN DESIGN</span><span>Considered spaces. Custom-built details.</span></div>
+</footer>
+<div id="loading" class="loading-panel" role="status" aria-live="polite"><div class="loading-label"><span>Preparing your space</span><span id="loading-value">0%</span></div><div class="progress-track"><div id="progress-bar"></div></div></div>
+<div id="error" class="error-panel" role="alert" hidden><strong>Unable to load the interior</strong><span id="error-detail"></span></div>
 </main>
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Image viewer"><button class="lightbox-close" type="button" data-lightbox-close>Close</button><button class="lightbox-prev" type="button" data-lightbox-prev>Prev</button><figure class="lightbox-figure"><img class="lightbox-image" id="lightboxImage" src="assets/win20/hero-condo.webp" alt=""><figcaption class="lightbox-caption" id="lightboxCaption"></figcaption></figure><button class="lightbox-next" type="button" data-lightbox-next>Next</button></div>
 <script type="module" src="src/home.js"></script>
-</body></html>
+</body>
+</html>

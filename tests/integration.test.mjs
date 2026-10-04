@@ -6,7 +6,8 @@ import {resolve} from 'node:path';
 import vm from 'node:vm';
 import {mediaOffset} from '../assets/js/editorial.js';
 import {activateSceneFallback} from '../src/scene-fallback.js';
-import {storyState,headline,isShellCore} from '../src/diorama-timeline.js';
+import {loopState,headline,isShellCore,SEQUENCE,CYCLE_MS} from '../src/diorama-timeline.js';
+import {createBookPages,nextBookPosition,previousBookPosition} from '../src/portfolio-book.js';
 
 const read=p=>readFileSync(p,'utf8');
 const context={window:{}};
@@ -32,7 +33,9 @@ test('real logo, contact details and all homepage anchors are retained',()=>{
   assert.equal(data.site.whatsappBase,'https://wa.me/601172455699');
   assert.ok(html.includes(data.site.logo));
   for(const match of html.matchAll(/href="#([^"]+)"/g))assert.ok(html.includes(`id="${match[1]}"`),match[1]);
-  for(const section of ['services','portfolio','transformations','contact','showcase'])assert.ok(html.includes(`id="${section}"`));
+  for(const section of ['home','portfolio','contact','showcase'])assert.ok(html.includes(`id="${section}"`));
+  assert.match(html,/href="about\.html#services"/);
+  assert.match(html,/href="project\.html\?project=walnut-residence#projectBeforeAfter"/);
   assert.ok(!/href="#"/.test(html));
   assert.ok(!/hello@windesigner\.com/.test(html));
 });
@@ -117,19 +120,21 @@ test('3D failure leaves a static interior and navigable site',()=>{
   assert.ok(html.includes('win_space_01_poster.png'));
 });
 
-test('the people-free two-space transformation is reversible and stops with scroll',()=>{
-  for(const progress of [0,.12,.32,.475,.50,.525,.74,.91,1]){
-    const first=storyState(progress);
-    storyState(progress+.1);
-    assert.deepEqual(storyState(progress),first);
-    assert.equal(first.progress,progress);
-    assert.ok(!Object.hasOwn(first,'workers'));
-    assert.ok(headline(first.space,first.local)[1].length<25);
+test('people-free two-space build loops by time, with completed holds and overlap',()=>{
+  assert.equal(CYCLE_MS,2*(SEQUENCE.build+SEQUENCE.hold+SEQUENCE.transition));
+  for(const ms of [0,500,3000,7600,9900,11000,14000,21000,23100]){
+    const state=loopState(ms);
+    assert.deepEqual(loopState(ms+CYCLE_MS),{...state,cycle:state.cycle+1});
+    assert.ok(!Object.hasOwn(state,'workers'));
+    assert.ok(headline(state.space,state.space?state.secondLocal:state.firstLocal)[1].length<25);
   }
-  assert.equal(storyState(.27).space,0);
-  assert.equal(storyState(.73).space,1);
-  assert.equal(storyState(.20,true).local,1);
-  assert.equal(storyState(.80,true).space,0);
+  assert.equal(loopState(0).firstLocal,0);
+  assert.equal(loopState(SEQUENCE.build+100).firstLocal,1);
+  assert.equal(loopState(SEQUENCE.build+SEQUENCE.hold+800).phase,'transition');
+  assert.equal(loopState(SEQUENCE.build+SEQUENCE.hold+800).blend,.5);
+  assert.equal(loopState(SEQUENCE.build+SEQUENCE.hold+SEQUENCE.transition+100).space,1);
+  assert.equal(loopState(100,true).firstLocal,1);
+  assert.equal(loopState(100,true).phase,'reduced');
 });
 
 test('the empty-room stage retains its walls after GLTFLoader normalizes names',()=>{
@@ -180,7 +185,7 @@ test('plant vessels install before their stems and leaves in both rooms',()=>{
 
 test('completed rooms and kitchen details remain inside the isometric framing',()=>{
   const viewer=read('src/diorama.js');
-  assert.match(viewer,/loaded\.map\(root => new THREE\.Box3\(\)\.setFromObject\(root\)\)/);
+  assert.match(viewer,/rooms\.map\(root => new THREE\.Box3\(\)\.setFromObject\(root\)\)/);
   assert.doesNotMatch(viewer,/setFromObject\(groups\[[01]\]\[0\]\)/);
   const bytes=readFileSync('public/3d/space-01/win_space_01.glb');
   const jsonLength=bytes.readUInt32LE(12);
@@ -205,10 +210,10 @@ test('comparison pointer drag clamps, reverses and stops on release',()=>{
   range.value='52';rangeHandlers.input();assert.equal(reveal,'52%');
 });
 
-test('navigation follows tall sections in both directions and clears above content',()=>{
+test('navigation follows the portfolio and contact sections in both directions',()=>{
   let scrollY=0;
   const listeners={};
-  const sections=[{id:'portfolio',top:1000,bottom:6000},{id:'services',top:6000,bottom:7500},{id:'contact',top:7500,bottom:9500}]
+  const sections=[{id:'portfolio',top:1000,bottom:6000},{id:'contact',top:6000,bottom:8500}]
     .map(section=>({...section,getBoundingClientRect:()=>({top:section.top-scrollY,bottom:section.bottom-scrollY})}));
   const links=sections.map(section=>({href:`https://win-designer.vercel.app/#${section.id}`,active:false,addEventListener(){},getAttribute(){return null;},classList:{toggle(_name,value){const link=links.find(link=>link.href.endsWith('#'+section.id));link.active=value===undefined?!link.active:Boolean(value);}}}));
   const nav={getBoundingClientRect:()=>({bottom:78}),classList:{add(){}}};
@@ -220,7 +225,7 @@ test('navigation follows tall sections in both directions and clears above conte
   scrollY=1000;listeners.scroll();assert.deepEqual(active(),['#portfolio']);
   scrollY=5000;listeners.scroll();assert.deepEqual(active(),['#portfolio']);
   scrollY=7500;listeners.scroll();assert.deepEqual(active(),['#contact']);
-  scrollY=6000;listeners.scroll();assert.deepEqual(active(),['#services']);
+  scrollY=6000;listeners.scroll();assert.deepEqual(active(),['#contact']);
   scrollY=0;listeners.resize();assert.deepEqual(active(),[]);
 });
 
@@ -244,20 +249,29 @@ test('editorial image movement is bounded and exactly reversible without accumul
   assert.equal(mediaOffset(10000,500,1000),-8);
 });
 
-test('redesigned homepage keeps all six projects and their full galleries',()=>{
-  const list={innerHTML:''};
-  const document={readyState:'complete',body:{},querySelector:s=>s==='#projectSections'?list:null,querySelectorAll:()=>[]};
-  vm.runInNewContext(read('assets/js/main.js'),{window:{WIN_DESIGN_DATA:data},document,URL,URLSearchParams});
-  assert.equal([...list.innerHTML.matchAll(/<article /g)].length,6);
-  for(const project of data.projects){
-    assert.ok(list.innerHTML.includes(`project.html?project=${project.slug}`));
-    assert.equal(list.innerHTML.split(`data-lightbox-group="home-${project.slug}"`).length-1,project.gallery.length);
-    assert.ok(list.innerHTML.includes(`aria-label="View ${project.title} gallery"`));
+test('the portfolio book has four images per page and spreads advance by two',()=>{
+  const pages=createBookPages(data);
+  assert.equal(pages.length,4);
+  for(const page of pages){
+    assert.equal(page.cells.length,4);
+    for(const cell of page.cells){
+      assert.ok(existsSync(cell.image.src));
+      assert.ok(data.projects.some(project=>project.slug===cell.slug));
+    }
   }
+  assert.equal(nextBookPosition(-1,false,pages.length),0);
+  assert.equal(nextBookPosition(0,false,pages.length),2);
+  assert.equal(nextBookPosition(2,false,pages.length),2);
+  assert.equal(previousBookPosition(2,false),0);
+  assert.equal(previousBookPosition(0,false),-1);
+  assert.equal(nextBookPosition(2,true,pages.length),3);
+  assert.equal(previousBookPosition(3,true),2);
+  assert.match(read('assets/css/portfolio-book.css'),/rotateY\(-180deg\)/);
 });
 
-test('homepage visual sections use local assets with accessible text and lazy loading',()=>{
-  for(const section of ['about-home','portfolio','services','materials','transformations','process','contact'])assert.ok(html.includes(`id="${section}"`));
+test('the short homepage keeps local accessible images and normal page scrolling',()=>{
+  for(const section of ['home','portfolio','contact'])assert.ok(html.includes(`id="${section}"`));
+  for(const removed of ['about-home','materials','transformations','process','projectSections'])assert.ok(!html.includes(`id="${removed}"`));
   for(const match of html.matchAll(/<img\s[^>]+>/g)){
     const tag=match[0],src=tag.match(/src="([^"]+)"/)[1];
     assert.ok(existsSync(src),src);
@@ -266,7 +280,10 @@ test('homepage visual sections use local assets with accessible text and lazy lo
     if(!src.includes('logo')&&!tag.includes('id="lightboxImage"')&&!tag.includes('class="diorama-poster"'))assert.match(tag,/loading="lazy"/);
     if(tag.includes('class="diorama-poster"'))assert.match(tag,/fetchpriority="high"/);
   }
-  assert.match(html,/not a verified client before-and-after/);
+  assert.doesNotMatch(read('assets/css/diorama-hero.css'),/position:\s*sticky/);
+  assert.doesNotMatch(read('src/diorama.js'),/addEventListener\(['"]scroll|scrollY|scrollProgress/);
+  assert.match(read('src/diorama.js'),/IntersectionObserver/);
+  assert.match(read('src/diorama.js'),/Promise\.all/);
 });
 
 test('all content image URLs are served by dev and production preview',async()=>{
