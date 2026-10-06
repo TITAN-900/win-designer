@@ -34,15 +34,22 @@ test('real logo, contact details and all homepage anchors are retained',()=>{
   assert.ok(html.includes(data.site.logo));
   for(const match of html.matchAll(/href="#([^"]+)"/g))assert.ok(html.includes(`id="${match[1]}"`),match[1]);
   for(const section of ['home','portfolio','contact','showcase'])assert.ok(html.includes(`id="${section}"`));
-  assert.match(html,/href="about\.html#services"/);
-  assert.match(html,/href="project\.html\?project=walnut-residence#projectBeforeAfter"/);
+  assert.doesNotMatch(html,/href="about\.html|href="[^"]*#(?:services|projectBeforeAfter|process|materials)"/);
+  for(const page of ['index.html','project.html']){
+    const nav=read(page).match(/<nav class="nav-links"[\s\S]*?<\/nav>/)[0];
+    const links=[...nav.matchAll(/<a\b[^>]*href="([^"]+)"/g)].map(match=>match[1]);
+    assert.equal(links.length,2,page);
+    assert.equal(links[0],'#contact');
+    assert.equal(new URL(links[1]).hostname,'wa.me');
+    assert.match(nav,/<svg class="action-arrow"/);
+  }
   assert.ok(!/href="#"/.test(html));
   assert.ok(!/hello@windesigner\.com/.test(html));
 });
 test('the original logo keeps its natural proportions in navigation and footer',()=>{
   const logo=readFileSync(data.site.logo);
   const width=logo.readUInt32BE(16),height=logo.readUInt32BE(20);
-  for(const page of ['index.html','about.html','project.html']){
+  for(const page of ['index.html','project.html']){
     const tags=[...read(page).matchAll(/<img\b[^>]*>/g)].map(match=>match[0]).filter(tag=>tag.includes(data.site.logo));
     assert.equal(tags.length,2,page);
     for(const tag of tags){
@@ -53,32 +60,30 @@ test('the original logo keeps its natural proportions in navigation and footer',
   assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-brand img\s*\{[^}]*height:\s*auto/);
   assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-bottom \.js-year\s*\{\s*display:\s*inline;?\s*\}/);
 });
-test('contact form validates and prepares an encoded WhatsApp draft without sending',()=>{
-  let submit,opened;
-  const status={textContent:''};
-  let fields=new Map([['name','Test & Example'],['phone','000000000'],['email','test@example.invalid'],['property','Condominium'],['projectType','Interior Design'],['message','Room A + B\nPlanning only']]);
-  const form={querySelector:s=>s==='.form-status'?status:null,addEventListener:(event,callback)=>{if(event==='submit')submit=callback;}};
-  const document={readyState:'complete',body:{},querySelector:()=>null,querySelectorAll:s=>s==='.contact-form'?[form]:[]};
-  const window={WIN_DESIGN_DATA:data,open:(...args)=>{opened=args;}};
-  const FormData=class{get(key){return fields.get(key)}};
-  vm.runInNewContext(read('assets/js/main.js'),{window,document,FormData,URL,URLSearchParams});
-  submit({preventDefault(){}});
-  const url=new URL(opened[0]);
-  assert.equal(url.origin,'https://wa.me');assert.equal(url.pathname,'/601172455699');
-  assert.ok(url.searchParams.get('text').includes('Name: Test & Example'));
-  assert.ok(url.searchParams.get('text').includes('Room A + B\nPlanning only'));
-  assert.ok(url.searchParams.get('text').includes('Email: test@example.invalid'));
-  assert.ok(url.searchParams.get('text').includes('Property: Condominium'));
-  assert.equal(opened[2],'noopener');
-  opened=null;fields=new Map();submit({preventDefault(){}});
-  assert.equal(opened,null);assert.match(status.textContent,/name and phone/);
+test('minimal contact links prepare WhatsApp drafts without collecting form data',()=>{
+  for(const page of ['index.html','project.html']){
+    const source=read(page);
+    assert.doesNotMatch(source,/<form\b|class="contact-form"/);
+    const links=[...source.matchAll(/<a\b[^>]*href="(https:\/\/wa\.me\/[^"]+)"[^>]*>/g)];
+    assert.ok(links.length>0,page);
+    for(const [tag,href] of links){
+      const url=new URL(href);
+      assert.equal(url.pathname,'/601172455699');
+      assert.ok(url.searchParams.get('text').includes('discuss my interior project'));
+      assert.match(tag,/target="_blank"/);
+      assert.match(tag,/rel="noopener"/);
+    }
+  }
+  assert.doesNotMatch(read('assets/js/main.js'),/initContactForms|FormData|renderTransformationPreview|renderHome/);
 });
-test('production build contains legacy modules, SEO files, images and lighting',()=>{
+test('production build retains project photography, SEO files and lighting',()=>{
   for(const p of ['index.html','about.html','project.html','assets/js/main.js','assets/data/projects.js','assets/js/vendor/three.module.min.js','assets/js/studio-sculpture-geometry.js','american-walnut.jpg.jpeg','models/win_interior_demo.glb','robots.txt','sitemap.xml'])assert.ok(existsSync(resolve('dist',p)),p);
   const verify=dir=>{for(const entry of readdirSync(resolve('public',dir),{withFileTypes:true})){const p=dir+'/'+entry.name;if(entry.isDirectory())verify(p);else assert.ok(existsSync(resolve('dist',p)),p);}};
   verify('lighting');
-  assert.match(read('about.html'),/type="module" src="src\/about.js"/);
-  assert.match(read('src/about.js'),/studio-sculpture\.js/);
+  assert.match(read('about.html'),/http-equiv="refresh" content="0; url=\/#contact"/);
+  assert.match(read('about.html'),/name="robots" content="noindex, follow"/);
+  assert.doesNotMatch(read('about.html'),/src\/about\.js|<section\b/);
+  assert.ok(JSON.parse(read('vercel.json')).redirects.some(route=>route.source==='/about.html'&&route.destination==='/#contact'));
 });
 
 test('Vercel build does not depend on empty local-only directories',()=>{
@@ -90,7 +95,7 @@ test('production SEO always uses the existing official domain',()=>{
   const origin='https://win-designer.vercel.app';
   assert.equal(data.site.url,`${origin}/`);
   assert.match(read('vite.config.js'),/SITE_URL \|\| 'https:\/\/win-designer\.vercel\.app'/);
-  for(const page of ['index.html','about.html','project.html']){
+  for(const page of ['index.html','project.html']){
     const output=read(`dist/${page}`);
     assert.ok(output.includes(`rel="canonical" href="${origin}/`),page);
     assert.ok(output.includes(`property="og:image" content="${origin}/`),page);
@@ -121,7 +126,7 @@ test('3D failure leaves a static interior and navigable site',()=>{
 });
 
 test('people-free two-space build loops by time, with completed holds and overlap',()=>{
-  assert.equal(CYCLE_MS,2*(SEQUENCE.build+SEQUENCE.hold+SEQUENCE.transition));
+  assert.equal(CYCLE_MS,2*(SEQUENCE.build+SEQUENCE.daylight+SEQUENCE.hold+SEQUENCE.transition));
   for(const ms of [0,500,3000,7600,9900,11000,14000,21000,23100]){
     const state=loopState(ms);
     assert.deepEqual(loopState(ms+CYCLE_MS),{...state,cycle:state.cycle+1});
@@ -130,9 +135,9 @@ test('people-free two-space build loops by time, with completed holds and overla
   }
   assert.equal(loopState(0).firstLocal,0);
   assert.equal(loopState(SEQUENCE.build+100).firstLocal,1);
-  assert.equal(loopState(SEQUENCE.build+SEQUENCE.hold+800).phase,'transition');
-  assert.equal(loopState(SEQUENCE.build+SEQUENCE.hold+800).blend,.5);
-  assert.equal(loopState(SEQUENCE.build+SEQUENCE.hold+SEQUENCE.transition+100).space,1);
+  assert.equal(loopState(SEQUENCE.build+SEQUENCE.daylight+SEQUENCE.hold+SEQUENCE.transition/2).phase,'transition');
+  assert.equal(loopState(SEQUENCE.build+SEQUENCE.daylight+SEQUENCE.hold+SEQUENCE.transition/2).blend,.5);
+  assert.equal(loopState(SEQUENCE.build+SEQUENCE.daylight+SEQUENCE.hold+SEQUENCE.transition+100).space,1);
   assert.equal(loopState(100,true).firstLocal,1);
   assert.equal(loopState(100,true).phase,'reduced');
 });
@@ -194,36 +199,36 @@ test('completed rooms and kitchen details remain inside the isometric framing',(
   assert.ok(names.filter(name=>name.startsWith('JOINERY_Cooktop 01 inset etched ring')).length>=4);
 });
 
-test('comparison pointer drag clamps, reverses and stops on release',()=>{
-  const handlers={},rangeHandlers={};
-  let reveal='',captured;
-  const range={value:'52',addEventListener:(name,fn)=>{rangeHandlers[name]=fn;}};
-  const frame={getBoundingClientRect:()=>({left:100,width:400}),setPointerCapture:id=>{captured=id;},style:{setProperty:(_name,value)=>{reveal=value;}},addEventListener:(name,fn)=>{handlers[name]=fn;}};
-  const document={readyState:'complete',querySelector:selector=>selector==='#compare-range'?range:selector==='#renovation-compare'?frame:null,addEventListener(){}};
-  const window={matchMedia:()=>({addEventListener(){}})};
+test('compact navigation closes on Escape, outside click and desktop resize',()=>{
+  const events={},classes=new Set(['menu-open']);
+  let expanded='true',focused=false,resize;
+  const menu={setAttribute:(_key,value)=>{expanded=value;},focus:()=>{focused=true;}};
+  const document={readyState:'complete',body:{classList:{contains:name=>classes.has(name),remove:name=>classes.delete(name)}},
+    querySelector:selector=>selector==='.menu-toggle'?menu:null,addEventListener:(name,fn)=>{events[name]=fn;}};
+  const window={matchMedia:()=>({addEventListener:(_name,fn)=>{resize=fn;}})};
   vm.runInNewContext(read('assets/js/site-integration.js'),{window,document});
-  handlers.pointerdown({isPrimary:true,button:0,pointerId:7,clientX:200});
-  assert.equal(captured,7);assert.equal(reveal,'25%');
-  handlers.pointermove({pointerId:7,clientX:600});assert.equal(reveal,'100%');
-  handlers.pointermove({pointerId:7,clientX:100});assert.equal(reveal,'0%');
-  handlers.pointerup();handlers.pointermove({pointerId:7,clientX:300});assert.equal(reveal,'0%');
-  range.value='52';rangeHandlers.input();assert.equal(reveal,'52%');
+  events.keydown({key:'Escape'});
+  assert.equal(classes.has('menu-open'),false);assert.equal(expanded,'false');assert.equal(focused,true);
+  classes.add('menu-open');events.click({target:{closest:()=>null}});
+  assert.equal(classes.has('menu-open'),false);
+  classes.add('menu-open');resize({matches:true});assert.equal(classes.has('menu-open'),false);
+  assert.doesNotMatch(read('assets/js/site-integration.js'),/renovation-compare|compare-range/);
 });
 
-test('navigation follows the portfolio and contact sections in both directions',()=>{
+test('Contact navigation follows the contact section in both directions',()=>{
   let scrollY=0;
   const listeners={};
   const sections=[{id:'portfolio',top:1000,bottom:6000},{id:'contact',top:6000,bottom:8500}]
     .map(section=>({...section,getBoundingClientRect:()=>({top:section.top-scrollY,bottom:section.bottom-scrollY})}));
-  const links=sections.map(section=>({href:`https://win-designer.vercel.app/#${section.id}`,active:false,addEventListener(){},getAttribute(){return null;},classList:{toggle(_name,value){const link=links.find(link=>link.href.endsWith('#'+section.id));link.active=value===undefined?!link.active:Boolean(value);}}}));
+  const links=sections.filter(section=>section.id==='contact').map(section=>({href:`https://win-designer.vercel.app/#${section.id}`,active:false,addEventListener(){},getAttribute(){return null;},classList:{toggle(_name,value){const link=links.find(link=>link.href.endsWith('#'+section.id));link.active=value===undefined?!link.active:Boolean(value);}}}));
   const nav={getBoundingClientRect:()=>({bottom:78}),classList:{add(){}}};
   const document={readyState:'complete',body:{},querySelector:selector=>selector==='.site-nav'?nav:null,querySelectorAll:selector=>selector==='[data-nav-section]'?sections:selector==='.nav-links a'?links:[]};
   const window={WIN_DESIGN_DATA:data,addEventListener:(name,fn)=>{listeners[name]=fn;},requestAnimationFrame:fn=>fn()};
   vm.runInNewContext(read('assets/js/main.js'),{window,document,URL,URLSearchParams,location:{href:'https://win-designer.vercel.app/',pathname:'/'}});
   const active=()=>links.filter(link=>link.active).map(link=>new URL(link.href).hash);
   assert.deepEqual(active(),[]);
-  scrollY=1000;listeners.scroll();assert.deepEqual(active(),['#portfolio']);
-  scrollY=5000;listeners.scroll();assert.deepEqual(active(),['#portfolio']);
+  scrollY=1000;listeners.scroll();assert.deepEqual(active(),[]);
+  scrollY=5000;listeners.scroll();assert.deepEqual(active(),[]);
   scrollY=7500;listeners.scroll();assert.deepEqual(active(),['#contact']);
   scrollY=6000;listeners.scroll();assert.deepEqual(active(),['#contact']);
   scrollY=0;listeners.resize();assert.deepEqual(active(),[]);
@@ -263,10 +268,13 @@ test('the portfolio book has four images per page and spreads advance by two',()
   assert.equal(nextBookPosition(0,false,pages.length),2);
   assert.equal(nextBookPosition(2,false,pages.length),2);
   assert.equal(previousBookPosition(2,false),0);
-  assert.equal(previousBookPosition(0,false),-1);
-  assert.equal(nextBookPosition(2,true,pages.length),3);
-  assert.equal(previousBookPosition(3,true),2);
-  assert.match(read('assets/css/portfolio-book.css'),/rotateY\(-180deg\)/);
+  assert.equal(previousBookPosition(0,false),0);
+  assert.equal(nextBookPosition(0,true,pages.length),2);
+  assert.equal(nextBookPosition(2,true,pages.length),2);
+  assert.equal(previousBookPosition(2,true),0);
+  assert.equal(previousBookPosition(0,true),0);
+  assert.doesNotMatch(read('assets/css/portfolio-book.css'),/rotateY/);
+  assert.match(read('src/book-curl.js'),/paperRow\(p, row/);
 });
 
 test('the short homepage keeps local accessible images and normal page scrolling',()=>{
@@ -286,9 +294,18 @@ test('the short homepage keeps local accessible images and normal page scrolling
   assert.match(read('src/diorama.js'),/Promise\.all/);
 });
 
+test('mobile book fallback keeps both printed pages and their project navigation',()=>{
+  const css=read('assets/css/portfolio-book.css');
+  assert.match(css,/\.book-fallback \.book-object\s*\{[^}]*flex-direction:\s*column/);
+  assert.match(css,/\.book-fallback \.book-page\s*\{[^}]*display:\s*block/);
+  assert.doesNotMatch(css,/\.book-fallback \.book-page--left\s*\{[^}]*display:\s*none/);
+  assert.doesNotMatch(read('src/portfolio-book.js'),/function coverMarkup|function insideMarkup/);
+  assert.match(html,/>01—02 \/ 04<\/span>/);
+});
+
 test('all content image URLs are served by dev and production preview',async()=>{
   const urls=new Set(['index.html','about.html','project.html?project=stone-kitchen','models/win_interior_demo.glb','3d/space-01/win_space_01.glb','3d/space-02/win_space_02.glb','assets/js/main.js','assets/js/vendor/three.module.min.js','assets/js/studio-sculpture-geometry.js','american-walnut.jpg.jpeg']);
-  for(const project of data.projects)urls.add(`project.html?project=${project.slug}`);
+  for(const project of data.projects){urls.add(`project.html?project=${project.slug}`);urls.add(`projects/${project.slug}/`);}
   const walk=value=>{if(!value||typeof value!=='object')return;if(value.src)urls.add(value.src);for(const child of Object.values(value))walk(child);};walk(data);
   for(const match of html.matchAll(/<img\s[^>]*src="([^"]+)"/g))urls.add(match[1]);
   for(const port of [5175,4175])for(const path of urls){const response=await fetch(`http://127.0.0.1:${port}/${path}`,{method:'HEAD'});assert.equal(response.status,200,`${port}/${path}`);}

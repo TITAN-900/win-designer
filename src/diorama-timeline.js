@@ -5,8 +5,9 @@ export const smooth = value => {
   return p * p * (3 - 2 * p);
 };
 
-export const SEQUENCE = Object.freeze({ build: 7600, hold: 2400, transition: 1600 });
-export const CYCLE_MS = 2 * (SEQUENCE.build + SEQUENCE.hold + SEQUENCE.transition);
+export const SEQUENCE = Object.freeze({ build: 7600, daylight: 2400, hold: 2600, transition: 1800 });
+export const ROOM_MS = SEQUENCE.build + SEQUENCE.daylight + SEQUENCE.hold + SEQUENCE.transition;
+export const CYCLE_MS = 2 * ROOM_MS;
 
 // GLTFLoader normalizes Blender object names by replacing spaces with underscores.
 export const isShellCore = name => /structural|back wall|left .*pier|window .*wall|window head/i.test(name.replaceAll('_', ' '));
@@ -14,46 +15,26 @@ export const isShellCore = name => /structural|back wall|left .*pier|window .*wa
 export function loopState(elapsedMs, reducedMotion = false) {
   if (reducedMotion) return {
     phase: 'reduced', space: 0, from: 0, to: 0,
-    firstLocal: 1, secondLocal: 0, blend: 0, progress: 1, cycle: 0
+    firstLocal: 1, secondLocal: 0, firstLight: 1, secondLight: 0,
+    blend: 0, progress: 1, cycle: 0
   };
   const cycle = Math.floor(Math.max(0, elapsedMs) / CYCLE_MS);
-  let time = ((elapsedMs % CYCLE_MS) + CYCLE_MS) % CYCLE_MS;
-  const { build, hold, transition } = SEQUENCE;
-  if (time < build) return {
-    phase: 'build', space: 0, from: 0, to: 0,
-    firstLocal: smooth(time / build), secondLocal: 0,
-    blend: 0, progress: time / CYCLE_MS, cycle
+  const loopTime = ((elapsedMs % CYCLE_MS) + CYCLE_MS) % CYCLE_MS;
+  const from = Math.floor(loopTime / ROOM_MS);
+  const time = loopTime - from * ROOM_MS;
+  const { build, daylight, hold, transition } = SEQUENCE;
+  const phase = time < build ? 'build' : time < build + daylight ? 'daylight'
+    : time < build + daylight + hold ? 'hold' : 'transition';
+  const local = phase === 'build' ? smooth(time / build) : 1;
+  const light = clamp01((time - build) / daylight);
+  const blend = phase === 'transition' ? smooth((time - build - daylight - hold) / transition) : 0;
+  return {
+    phase, from, to: phase === 'transition' ? 1 - from : from,
+    space: blend < .5 ? from : 1 - from,
+    firstLocal: from === 0 ? local : 0, secondLocal: from === 1 ? local : 0,
+    firstLight: from === 0 ? light : 0, secondLight: from === 1 ? light : 0,
+    blend, progress: loopTime / CYCLE_MS, cycle
   };
-  time -= build;
-  if (time < hold) return {
-    phase: 'hold', space: 0, from: 0, to: 0,
-    firstLocal: 1, secondLocal: 0, blend: 0,
-    progress: (build + time) / CYCLE_MS, cycle
-  };
-  time -= hold;
-  if (time < transition) {
-    const blend = smooth(time / transition);
-    return { phase: 'transition', space: blend < .5 ? 0 : 1,
-      from: 0, to: 1, firstLocal: 1, secondLocal: 0, blend,
-      progress: (build + hold + time) / CYCLE_MS, cycle };
-  }
-  time -= transition;
-  if (time < build) return {
-    phase: 'build', space: 1, from: 1, to: 1,
-    firstLocal: 0, secondLocal: smooth(time / build), blend: 0,
-    progress: (build + hold + transition + time) / CYCLE_MS, cycle
-  };
-  time -= build;
-  if (time < hold) return {
-    phase: 'hold', space: 1, from: 1, to: 1,
-    firstLocal: 0, secondLocal: 1, blend: 0,
-    progress: (2 * build + hold + transition + time) / CYCLE_MS, cycle
-  };
-  time -= hold;
-  const blend = smooth(time / transition);
-  return { phase: 'transition', space: blend < .5 ? 1 : 0,
-    from: 1, to: 0, firstLocal: 0, secondLocal: 1, blend,
-    progress: (2 * build + 2 * hold + transition + time) / CYCLE_MS, cycle };
 }
 
 export function headline(space, local) {

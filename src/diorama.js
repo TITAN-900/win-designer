@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clamp01, smooth, loopState, headline, isShellCore } from './diorama-timeline.js';
+import { RoomCrossfade } from './room-crossfade.js';
+import { RoomDaylight } from './room-daylight.js';
+import { activateSceneFallback } from './scene-fallback.js';
 
 const canvas = document.querySelector('#viewer');
 const visual = document.querySelector('.diorama-visual');
@@ -19,31 +22,17 @@ const camera = new THREE.OrthographicCamera(-8, 8, 5, -5, .1, 100);
 const rooms = [null, null];
 const records = [[], []];
 const bases = [null, null];
+const pendingRooms = new Set();
 let renderer;
+let crossfade;
+let daylight;
 let observer;
 let frame = 0;
 let lastFrameTime = null;
 let elapsed = 0;
 let inView = false;
 let disposed = false;
-
-scene.add(new THREE.HemisphereLight(0xf5f2eb, 0x786f64, 1.25));
-const key = new THREE.DirectionalLight(0xfff9ef, 2.35);
-key.position.set(-4, 8, 6);
-key.castShadow = true;
-key.shadow.mapSize.set(1024, 1024);
-key.shadow.camera.left = -8;
-key.shadow.camera.right = 8;
-key.shadow.camera.top = 8;
-key.shadow.camera.bottom = -8;
-key.shadow.bias = -.00015;
-key.shadow.normalBias = .025;
-key.shadow.radius = 4;
-key.shadow.intensity = .68;
-scene.add(key);
-const fill = new THREE.DirectionalLight(0xe8edf1, .65);
-fill.position.set(5, 5, -4);
-scene.add(fill);
+let failed = false;
 
 function setLoadProgress(done) {
   const percent = Math.round(done * 50);
@@ -79,7 +68,9 @@ function roomSetup(gltf, roomIndex) {
     const meshes = [];
     group.traverse(mesh => {
       if (!mesh.isMesh) return;
-      mesh.castShadow = groupIndex > 0 && groupIndex < 7;
+      // The actual window frames, piers and head must occlude exterior sun.
+      // Glass and the distant backdrop transmit light rather than blocking it.
+      mesh.castShadow = groupIndex < 7 && !/glazing/i.test(mesh.name);
       mesh.receiveShadow = groupIndex < 7;
       const original = mesh.material;
       const variants = (Array.isArray(original) ? original : [original]).map(fadeVariant);
@@ -107,6 +98,7 @@ function roomSetup(gltf, roomIndex) {
       : { all: meshes };
     for (const [kind, batch] of Object.entries(batches)) {
       const bedOrder = name => {
+        name = name.replaceAll('_', ' ');
         if (/Bed recessed support/i.test(name)) return 0;
         if (/Bed low solid oak plinth/i.test(name)) return 1;
         if (/Bed inset black shadow reveal/i.test(name)) return 2;
@@ -126,6 +118,7 @@ function roomSetup(gltf, roomIndex) {
   scene.add(root);
   rooms[roomIndex] = root;
   bases[roomIndex] = root.position.clone();
+  pendingRooms.delete(root);
 }
 
 function fitCamera() {
@@ -157,9 +150,8 @@ function fitCamera() {
   camera.updateProjectionMatrix();
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, smallQuery.matches ? 1.35 : 2));
   renderer.setSize(rect.width, rect.height, false);
-  key.shadow.mapSize.set(smallQuery.matches ? 512 : 1024, smallQuery.matches ? 512 : 1024);
-  key.shadow.map?.dispose();
-  key.shadow.map = null;
+  crossfade?.resize();
+  daylight?.resize(smallQuery.matches);
 }
 
 function setRoom(roomIndex, build, opacity, offset) {
@@ -186,15 +178,25 @@ function setRoom(roomIndex, build, opacity, offset) {
 }
 
 function draw(state = loopState(elapsed, reducedQuery.matches)) {
-  if (!renderer || disposed) return;
+  if (!renderer || disposed || failed) return;
   const transition = state.phase === 'transition';
-  const firstAlpha = transition ? state.from === 0 ? 1 - state.blend : state.blend : state.space === 0 ? 1 : 0;
-  const secondAlpha = transition ? state.from === 1 ? 1 - state.blend : state.blend : state.space === 1 ? 1 : 0;
-  // Both resident GLBs share one canvas. They overlap briefly, with a small
-  // counter-move and eased transparency; neither scene nor camera is reset.
-  const shift = transition ? .30 : 0;
-  setRoom(0, state.firstLocal, firstAlpha, transition ? state.from === 0 ? -shift * state.blend : shift * (1 - state.blend) : 0);
-  setRoom(1, state.secondLocal, secondAlpha, transition ? state.from === 1 ? -shift * state.blend : shift * (1 - state.blend) : 0);
+  if (transition) {
+    crossfade.render(state.from, state.blend, (roomIndex, target) => {
+      setRoom(0, state.firstLocal, roomIndex === 0 ? 1 : 0, 0);
+      setRoom(1, state.secondLocal, roomIndex === 1 ? 1 : 0, 0);
+      daylight.apply(roomIndex, roomIndex === 0 ? state.firstLight : state.secondLight,
+        roomIndex === 0 ? state.firstLocal : state.secondLocal);
+      renderer.setRenderTarget(target);
+      renderer.render(scene, camera);
+    });
+  } else {
+    setRoom(0, state.firstLocal, state.space === 0 ? 1 : 0, 0);
+    setRoom(1, state.secondLocal, state.space === 1 ? 1 : 0, 0);
+    daylight.apply(state.space, state.space === 0 ? state.firstLight : state.secondLight,
+      state.space === 0 ? state.firstLocal : state.secondLocal);
+    renderer.setRenderTarget(null);
+    renderer.render(scene, camera);
+  }
   const local = state.space === 0 ? state.firstLocal : state.secondLocal;
   const [label, heading, deck] = headline(state.space, local);
   if (index.textContent !== label) index.textContent = label;
@@ -203,17 +205,19 @@ function draw(state = loopState(elapsed, reducedQuery.matches)) {
   counter.textContent = `0${state.space + 1} / 02`;
   // The short copy changes only while momentarily dimmed at the midpoint.
   hero.style.setProperty('--copy-opacity', transition ? Math.max(.08, Math.abs(state.blend - .5) * 2) : 1);
-  renderer.render(scene, camera);
   canvas.dataset.space = `0${state.space + 1}`;
   canvas.dataset.build = local.toFixed(3);
+  canvas.dataset.daylight = (state.space === 0 ? state.firstLight : state.secondLight).toFixed(3);
   canvas.dataset.phase = state.phase;
   canvas.dataset.blend = state.blend.toFixed(3);
   canvas.dataset.loop = String(state.cycle);
   canvas.dataset.elapsed = String(Math.round(elapsed));
   canvas.dataset.drawCalls = String(renderer.info.render.calls);
+  canvas.dataset.textures = String(renderer.info.memory.textures);
+  canvas.dataset.geometries = String(renderer.info.memory.geometries);
 }
 
-function shouldPlay() { return !disposed && inView && !document.hidden && !reducedQuery.matches && Boolean(renderer); }
+function shouldPlay() { return !disposed && !failed && inView && !document.hidden && !reducedQuery.matches && Boolean(renderer); }
 function stop() {
   if (frame) cancelAnimationFrame(frame);
   frame = 0;
@@ -229,7 +233,7 @@ function tick(now) {
   frame = requestAnimationFrame(tick);
 }
 function syncPlayback() {
-  if (!renderer || disposed) return;
+  if (!renderer || disposed || failed) return;
   if (shouldPlay()) {
     if (!frame) {
       lastFrameTime = null;
@@ -242,26 +246,47 @@ function syncPlayback() {
   }
 }
 
-function warmMaterials() {
+async function warmMaterials() {
   // Compile/upload both spaces before the timeline starts. No intermediate
   // room is ever painted to the visible canvas during this warm-up.
   const target = new THREE.WebGLRenderTarget(32, 32);
-  for (const root of rooms) root.visible = true;
-  for (const room of records) for (const record of room) {
-    record.mesh.visible = true;
-    record.mesh.material = record.fade;
-    const faded = Array.isArray(record.fade) ? record.fade : [record.fade];
-    faded.forEach((material, index) => { material.opacity = record.baseOpacity[index] * .5; });
+  try {
+  for (const roomIndex of [0, 1]) {
+    setRoom(0, 1, roomIndex === 0 ? 1 : 0, 0);
+    setRoom(1, 1, roomIndex === 1 ? 1 : 0, 0);
+    daylight.apply(roomIndex, 1, 1, true);
+    for (const faded of [true, false]) {
+      for (const record of records[roomIndex]) {
+        record.mesh.material = faded ? record.fade : record.original;
+        const materials = Array.isArray(record.fade) ? record.fade : [record.fade];
+        materials.forEach((material, index) => { material.opacity = record.baseOpacity[index] * .5; });
+      }
+      // Precompile the screen's sRGB shaders as well as the targets' linear
+      // variants. Upload textures and allocate both shadow maps offscreen.
+      renderer.setRenderTarget(null);
+      await renderer.compileAsync(scene, camera);
+      if (disposed || failed) return;
+      renderer.setRenderTarget(target);
+      renderer.render(scene, camera);
+    }
   }
-  renderer.setRenderTarget(target);
-  renderer.render(scene, camera);
-  for (const room of records) for (const record of room) record.mesh.material = record.original;
-  renderer.render(scene, camera);
-  renderer.setRenderTarget(null);
-  target.dispose();
+  crossfade.warm((roomIndex, renderTarget) => {
+    setRoom(0, roomIndex === 0 ? 1 : 0, roomIndex === 0 ? 1 : 0, 0);
+    setRoom(1, 0, roomIndex === 1 ? 1 : 0, 0);
+    daylight.apply(roomIndex, roomIndex === 0 ? 1 : 0, roomIndex === 0 ? 1 : 0, true);
+    renderer.setRenderTarget(renderTarget);
+    renderer.render(scene, camera);
+  }, target);
+  } finally {
+    if (!disposed && !failed) renderer.setRenderTarget(null);
+    target.dispose();
+  }
 }
 
 async function init() {
+  // Navigation and context failure can occur while GLBs/shaders are pending.
+  window.addEventListener('pagehide', dispose, { once: true });
+  canvas.addEventListener('webglcontextlost', onContextLost, { once: true });
   try {
     renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -274,6 +299,11 @@ async function init() {
     let count = 0;
     const load = async path => {
       const gltf = await loader.loadAsync(url(path));
+      if (disposed || failed) {
+        disposePendingRoom(gltf.scene);
+        return null;
+      }
+      pendingRooms.add(gltf.scene);
       setLoadProgress(++count);
       return gltf;
     };
@@ -282,52 +312,86 @@ async function init() {
       load('3d/space-01/win_space_01.glb'),
       load('3d/space-02/win_space_02.glb')
     ]);
-    if (disposed) return;
+    if (disposed || failed) return;
     roomSetup(first, 0);
     roomSetup(second, 1);
+    daylight = new RoomDaylight(renderer, scene, rooms, smallQuery.matches);
+    crossfade = new RoomCrossfade(renderer);
     fitCamera();
-    warmMaterials();
+    await warmMaterials();
+    if (disposed || failed) return;
     draw(loopState(0, reducedQuery.matches));
     canvas.dataset.loaded = 'true';
     loading.classList.add('is-complete');
     observer = new IntersectionObserver(entries => {
-      inView = entries[0].isIntersecting && entries[0].intersectionRatio > .06;
+      inView = entries[0].isIntersecting && entries[0].intersectionRatio > .15;
       syncPlayback();
-    }, { threshold: [0, .06, .15], rootMargin: '80px 0px' });
-    observer.observe(hero);
+    }, { threshold: [0, .15, .5] });
+    observer.observe(visual);
     window.addEventListener('resize', onResize, { passive: true });
     document.addEventListener('visibilitychange', syncPlayback);
     reducedQuery.addEventListener('change', onMotionChange);
-    window.addEventListener('pagehide', dispose, { once: true });
-    canvas.addEventListener('webglcontextlost', onContextLost, { once: true });
   } catch (error) {
+    if (disposed || failed) return;
     console.error('The isometric interior could not load:', error);
-    document.querySelector('#error-detail').textContent = error.message || String(error);
-    errorPanel.hidden = false;
-    loading.classList.add('is-complete');
+    failed = true;
+    stop();
+    pendingRooms.forEach(disposePendingRoom);
+    pendingRooms.clear();
+    activateSceneFallback(document, error);
   }
 }
 
-function onResize() { fitCamera(); draw(loopState(elapsed, reducedQuery.matches)); }
+function onResize() { if (disposed || failed) return; fitCamera(); draw(loopState(elapsed, reducedQuery.matches)); }
 function onMotionChange() { syncPlayback(); if (!reducedQuery.matches) draw(); }
 function onContextLost(event) {
   event.preventDefault();
+  if (disposed || failed) return;
+  failed = true;
   stop();
-  document.querySelector('#error-detail').textContent = 'WebGL became unavailable. The room preview remains visible.';
-  errorPanel.hidden = false;
+  pendingRooms.forEach(disposePendingRoom);
+  pendingRooms.clear();
+  activateSceneFallback(document, new Error('WebGL became unavailable. The room preview remains visible.'));
+}
+function disposePendingRoom(root) {
+  const textures = new Set(), materials = new Set(), geometries = new Set();
+  root.traverse(mesh => {
+    if (!mesh.isMesh) return;
+    geometries.add(mesh.geometry);
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      materials.add(material);
+      for (const value of Object.values(material)) if (value?.isTexture) textures.add(value);
+    }
+  });
+  textures.forEach(texture => texture.dispose());
+  materials.forEach(material => material.dispose());
+  geometries.forEach(geometry => geometry.dispose());
 }
 function dispose() {
+  if (disposed) return;
   disposed = true;
   stop();
   observer?.disconnect();
   window.removeEventListener('resize', onResize);
   document.removeEventListener('visibilitychange', syncPlayback);
   reducedQuery.removeEventListener('change', onMotionChange);
+  canvas.removeEventListener('webglcontextlost', onContextLost);
+  pendingRooms.forEach(disposePendingRoom);
+  pendingRooms.clear();
+  const textures = new Set(), materials = new Set(), geometries = new Set();
   for (const room of records) for (const record of room) {
-    record.mesh.geometry.dispose();
+    geometries.add(record.mesh.geometry);
     for (const material of [...(Array.isArray(record.original) ? record.original : [record.original]),
-      ...(Array.isArray(record.fade) ? record.fade : [record.fade])]) material?.dispose();
+      ...(Array.isArray(record.fade) ? record.fade : [record.fade])]) {
+      materials.add(material);
+      for (const value of Object.values(material)) if (value?.isTexture) textures.add(value);
+    }
   }
+  textures.forEach(texture => texture.dispose());
+  materials.forEach(material => material.dispose());
+  geometries.forEach(geometry => geometry.dispose());
+  crossfade?.dispose();
+  daylight?.dispose();
   renderer?.dispose();
 }
 

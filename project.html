@@ -1,132 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WIN DESIGN | Project Portfolio</title>
-  <link rel="preload" href="assets/fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/fonts/manrope-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <meta name="description" content="WIN DESIGN project page with large interior photography, minimal project notes and image gallery.">
-  <meta name="theme-color" content="#f7f1e8">
-  <meta property="og:title" content="WIN DESIGN | Project Portfolio">
-  <meta property="og:description" content="Large interior photography and project details from WIN DESIGN.">
-  <meta property="og:type" content="article">
-  <meta property="og:url" content="__SITE_ORIGIN__/project.html">
-  <meta property="og:image" content="__SITE_ORIGIN__/assets/win20/hero-condo.webp">
-  <link rel="canonical" href="__SITE_ORIGIN__/project.html">
-  <link rel="icon" href="favicon.ico" sizes="any">
-  <link rel="stylesheet" href="assets/css/styles.css">
-  <link rel="stylesheet" href="assets/css/site-integration.css">
-  <link rel="stylesheet" href="assets/css/ui-refresh.css">
-  <link rel="stylesheet" href="assets/css/typography.css">
-  <link rel="stylesheet" href="assets/css/ui-icons.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>WIN DESIGN | Project Portfolio</title>
+<link rel="preload" href="/assets/fonts/syne-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="description" content="Interior photography from the WIN DESIGN portfolio."><meta name="theme-color" content="#f4f0e7">
+<meta property="og:title" content="WIN DESIGN | Project Portfolio"><meta property="og:description" content="Interior photography from the WIN DESIGN portfolio."><meta property="og:type" content="article"><meta property="og:url" content="__SITE_ORIGIN__/project.html"><meta property="og:image" content="__SITE_ORIGIN__/assets/win20/hero-condo.webp"><meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="__SITE_ORIGIN__/project.html"><link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="stylesheet" href="/assets/css/styles.css"><link rel="stylesheet" href="/assets/css/site-integration.css"><link rel="stylesheet" href="/assets/css/ui-refresh.css"><link rel="stylesheet" href="/assets/css/typography.css"><link rel="stylesheet" href="/assets/css/ui-icons.css"><link rel="stylesheet" href="/assets/css/minimal-site.css">
 </head>
 <body class="project-page">
-  <header class="site-nav" aria-label="Primary navigation">
-<a class="brand" href="index.html#home" aria-label="WIN DESIGN home"><img class="brand-logo" src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="946" height="512"></a>
-<nav class="nav-links" id="navLinks" aria-label="Site sections"><a href="about.html">About</a><a href="about.html#services">Services</a><a href="index.html#portfolio">Projects</a><a href="project.html?project=walnut-residence#projectBeforeAfter">Before + After</a><a href="#contact">Contact</a><a class="nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp <span class="line-arrow" aria-hidden="true"></span></a></nav>
+<a class="skip-link" href="#projectContent">Skip to project</a>
+<header class="site-nav" aria-label="Primary navigation">
+<a class="brand" href="/#home" aria-label="WIN DESIGN home"><img class="brand-logo" src="/assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="946" height="512"></a>
+<nav class="nav-links" id="navLinks" aria-label="Site sections"><a href="#contact">Contact</a><a class="nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp <svg class="action-arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16 16 4M4 4h12v12"/></svg></a></nav>
 <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
 </header>
-
-  <main>
-    <section class="project-hero" id="top">
-      <img class="project-hero-image" id="projectHeroImage" src="livingroom.jpg.jpg" alt="" width="1280" height="854" fetchpriority="high" decoding="async">
-      <div class="container project-hero-copy">
-        <p class="brand-line" id="projectType">Residential Interior</p>
-        <h1 id="projectTitle">Project</h1>
-        <p class="lead" id="projectIntro">Space and detail.</p>
-      </div>
-    </section>
-
-    <section class="section section-anchor" id="overview">
-      <div class="container project-overview">
-        <div data-reveal>
-          <h2>Project Overview</h2>
-          <p id="projectDescription">Material, proportion, craft.</p>
-        </div>
-        <aside class="project-facts" aria-label="Project facts" data-reveal style="--delay: 90ms;">
-          <div>
-            <span>Project Type</span>
-            <strong id="projectFactType">Residential Interior</strong>
-          </div>
-          <div>
-            <span>Gallery</span>
-            <strong id="projectFactImages">Images</strong>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <section class="section section-anchor" id="gallery" data-nav-section>
-      <div class="container">
-        <div class="section-intro" data-reveal>
-          <h2>Project Gallery</h2>
-        </div>
-        <div class="masonry-gallery" id="projectGallery" aria-label="Project image gallery"></div>
-      </div>
-    </section>
-
-    <section class="section project-before-after section-anchor" id="projectBeforeAfter">
-      <div class="container">
-        <div class="section-intro" data-reveal>
-          <h2>Before and After</h2>
-        </div>
-        <div id="projectBeforeAfterGrid"></div>
-      </div>
-    </section>
-
-    <section class="section contact section-anchor" id="contact" data-nav-section>
-      <div class="container contact-layout">
-        <div class="contact-copy" data-reveal>
-          <h2>Discuss a similar space.</h2>
-          <div class="contact-actions">
-            <a class="btn btn-dark" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp</a>
-            <a class="phone-link" href="tel:+601172455699">+60 1172455699</a>
-          </div>
-        </div>
-
-        <form class="contact-form" data-reveal style="--delay: 90ms;">
-          <input type="hidden" name="projectType" id="projectSelect" value="Project enquiry">
-          <div class="field">
-            <label for="projectName">Name</label>
-            <input id="projectName" name="name" type="text" autocomplete="name" required>
-          </div>
-          <div class="field">
-            <label for="projectPhone">Phone</label>
-            <input id="projectPhone" name="phone" type="tel" autocomplete="tel" required>
-          </div>
-          <div class="field"><label for="projectEmail">Email (optional)</label><input id="projectEmail" name="email" type="email" autocomplete="email"></div>
-          <div class="field"><label for="projectProperty">Property type (optional)</label><input id="projectProperty" name="property" type="text" placeholder="Condominium, terrace, bungalow…"></div>
-          <div class="field">
-            <label for="projectMessage">Project notes</label>
-            <textarea id="projectMessage" name="message" placeholder="Property type, room, location or timeline"></textarea>
-          </div>
-          <button class="btn btn-dark" type="submit">Prepare WhatsApp enquiry <span class="line-arrow" aria-hidden="true"></span></button>
-          <p class="form-status" aria-live="polite"></p>
-          <p class="form-privacy">Your details open as a WhatsApp draft. Nothing is sent until you choose to send it there.</p>
-        </form>
-      </div>
-
-      <div class="container">
-        <footer class="site-footer">
-<div class="footer-brand"><a href="index.html#home" aria-label="WIN DESIGN home"><img src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="946" height="512"></a><p>Interiors and custom cabinetry, Malaysia.</p></div>
-<nav class="footer-links" aria-label="Footer navigation"><span class="footer-label">Explore</span><a href="about.html">About Win Design</a><a href="about.html#services">Services</a><a href="index.html#portfolio">Projects</a><a href="project.html?project=walnut-residence#projectBeforeAfter">Before + After</a></nav>
-<div class="footer-links"><span class="footer-label">Get in touch</span><a href="tel:+601172455699">+60 1172455699</a><a href="https://wa.me/601172455699" target="_blank" rel="noopener">WhatsApp <span class="line-arrow" aria-hidden="true"></span></a><a href="index.html#contact">Project enquiry</a><a href="index.html#home">Back to top <span class="line-arrow up" aria-hidden="true"></span></a></div>
-<div class="footer-bottom"><span>© <span class="js-year"></span> WIN DESIGN</span><span>Considered spaces. Custom-built details.</span></div></footer>
-      </div>
-    </section>
-  </main>
-
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Image viewer">
-    <button class="lightbox-close" type="button" data-lightbox-close>Close</button>
-    <button class="lightbox-prev" type="button" data-lightbox-prev>Prev</button>
-    <figure class="lightbox-figure">
-      <img class="lightbox-image" id="lightboxImage" src="assets/win20/hero-condo.webp" alt="">
-      <figcaption class="lightbox-caption" id="lightboxCaption"></figcaption>
-    </figure>
-    <button class="lightbox-next" type="button" data-lightbox-next>Next</button>
-  </div>
-
-  <script type="module" src="src/project.js"></script>
+<main id="projectContent"><!--PROJECT_CONTENT_START--><!--PROJECT_CONTENT_END--></main>
+<footer class="site-footer minimal-footer">
+<div class="footer-brand"><a href="/#home" aria-label="WIN DESIGN home"><img src="/assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="946" height="512"></a></div>
+<span>© <span class="js-year"></span> WIN DESIGN</span>
+</footer>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Image viewer">
+<button class="lightbox-close" type="button" data-lightbox-close>Close</button><button class="lightbox-prev" type="button" data-lightbox-prev>Prev</button>
+<figure class="lightbox-figure"><img class="lightbox-image" id="lightboxImage" src="/assets/win20/hero-condo.webp" alt=""><figcaption class="lightbox-caption" id="lightboxCaption"></figcaption></figure><button class="lightbox-next" type="button" data-lightbox-next>Next</button>
+</div>
+<script type="module" src="/src/project.js"></script>
 </body>
 </html>

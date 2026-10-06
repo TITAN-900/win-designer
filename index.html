@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>WIN DESIGN | Malaysian Interior Design & Custom Cabinetry</title>
-<link rel="preload" href="assets/fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/manrope-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/syne-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="description" content="Thoughtful Malaysian interiors, renovation, space planning and custom cabinetry. Explore WIN DESIGN's approach and portfolio, and discuss your space with our team.">
 <meta name="theme-color" content="#f3efe8">
 <link rel="stylesheet" href="src/style.css">
@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="assets/css/diorama-hero.css">
 <link rel="stylesheet" href="assets/css/ui-icons.css">
 <link rel="stylesheet" href="assets/css/portfolio-book.css">
+<link rel="stylesheet" href="assets/css/minimal-site.css">
 <meta property="og:title" content="WIN DESIGN | Interiors crafted around your life"><meta property="og:description" content="Interior design, renovation, space planning and custom cabinetry for Malaysian homes."><meta property="og:type" content="website"><meta property="og:url" content="__SITE_ORIGIN__/"><meta property="og:image" content="__SITE_ORIGIN__/assets/win20/hero-condo.webp"><meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="__SITE_ORIGIN__/"><link rel="icon" href="favicon.ico" sizes="any">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"HomeAndConstructionBusiness","name":"WIN DESIGN","url":"__SITE_ORIGIN__/","logo":"__SITE_ORIGIN__/assets/win20/win-design-logo-nav-compact.png","image":"__SITE_ORIGIN__/assets/win20/hero-condo.webp","telephone":"+601172455699","description":"Malaysian interior design, renovation, space planning and custom cabinetry.","areaServed":{"@type":"Country","name":"Malaysia"},"contactPoint":{"@type":"ContactPoint","telephone":"+601172455699","contactType":"customer service","availableLanguage":["en","ms","zh"]}}</script>
@@ -23,12 +24,8 @@
 <header class="site-nav" aria-label="Primary navigation">
 <a class="brand" href="#home" aria-label="WIN DESIGN home"><img class="brand-logo" src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="946" height="512"></a>
 <nav class="nav-links" id="navLinks" aria-label="Site sections">
-  <a href="about.html">About</a>
-  <a href="about.html#services">Services</a>
-  <a href="#portfolio">Projects</a>
-  <a href="project.html?project=walnut-residence#projectBeforeAfter">Before + After</a>
   <a href="#contact">Contact</a>
-  <a class="nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp <span class="line-arrow" aria-hidden="true"></span></a>
+  <a class="nav-cta" href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp <svg class="action-arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16 16 4M4 4h12v12"/></svg></a>
 </nav>
 <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="navLinks" aria-expanded="false"><span></span><span></span><span></span></button>
 </header>
@@ -57,23 +54,25 @@
     <p>A quiet look at interiors, material and detail.</p>
   </div>
   <div class="book-stage" id="portfolioBook" role="group" aria-label="Interactive WIN DESIGN portfolio book" tabindex="0">
-    <div class="book-object is-cover">
+    <div class="book-object">
       <div class="book-page book-page--left" data-book-left></div>
       <div class="book-page book-page--right" data-book-right></div>
-      <div class="book-turn-sheet" data-book-turn hidden></div>
     </div>
   </div>
+  <p class="book-hint">Drag a page edge to explore</p>
   <div class="book-controls" aria-label="Portfolio page controls">
     <button id="bookPrevious" type="button" aria-label="Previous portfolio pages"><span class="line-arrow previous" aria-hidden="true"></span> Previous</button>
-    <span id="bookStatus" role="status" aria-live="polite">COVER / 04</span>
+    <span id="bookStatus" role="status" aria-live="polite">01—02 / 04</span>
     <button id="bookNext" type="button" aria-label="Next portfolio pages">Next <span class="line-arrow" aria-hidden="true"></span></button>
   </div>
 </section>
-<footer class="site-footer book-footer" id="contact" data-nav-section>
-  <div class="footer-brand"><a href="#home" aria-label="WIN DESIGN home"><img src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="946" height="512"></a><p>Interiors and custom cabinetry, Malaysia.</p></div>
-  <div class="book-footer-contact"><span>HAVE A SPACE IN MIND?</span><a href="https://wa.me/601172455699" target="_blank" rel="noopener">Let's begin <span class="line-arrow" aria-hidden="true"></span></a><a href="tel:+601172455699">+60 1172455699</a></div>
-  <nav class="book-footer-nav" aria-label="Footer navigation"><a href="about.html">About</a><a href="about.html#services">Services</a><a href="#portfolio">Projects</a><a href="project.html?project=walnut-residence#projectBeforeAfter">Before + After</a><a href="project.html?project=walnut-residence#contact">Project enquiry</a><a href="#home">Back to top</a></nav>
-  <div class="footer-bottom"><span>© <span class="js-year"></span> WIN DESIGN</span><span>Considered spaces. Custom-built details.</span></div>
+<section class="minimal-contact" id="contact" aria-labelledby="contact-title" data-nav-section>
+  <div><span class="contact-label">CONTACT</span><h2 id="contact-title">Your next space.</h2></div>
+  <div class="minimal-contact-actions"><a href="https://wa.me/601172455699?text=Hi%20WIN%20DESIGN%2C%20I%20would%20like%20to%20discuss%20my%20interior%20project." target="_blank" rel="noopener">WhatsApp <svg class="action-arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16 16 4M4 4h12v12"/></svg></a><a class="contact-phone" href="tel:+601172455699">+60 1172455699</a></div>
+</section>
+<footer class="site-footer minimal-footer">
+  <div class="footer-brand"><a href="#home" aria-label="WIN DESIGN home"><img src="assets/win20/win-design-logo-nav-compact.png" alt="WIN DESIGN logo" width="946" height="512"></a></div>
+  <span>© <span class="js-year"></span> WIN DESIGN</span>
 </footer>
 <div id="loading" class="loading-panel" role="status" aria-live="polite"><div class="loading-label"><span>Preparing your space</span><span id="loading-value">0%</span></div><div class="progress-track"><div id="progress-bar"></div></div></div>
 <div id="error" class="error-panel" role="alert" hidden><strong>Unable to load the interior</strong><span id="error-detail"></span></div>

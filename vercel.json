@@ -2,6 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/about.html", "destination": "/#contact", "permanent": true },
+    { "source": "/about", "destination": "/#contact", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/models/(.*)",

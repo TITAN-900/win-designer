@@ -7,12 +7,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "node --test tests/integration.test.mjs tests/typography.test.mjs",
+    "test": "node --test tests/*.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fontsource-variable/newsreader": "^5.3.0",
-    "@fontsource/manrope": "^5.3.0",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource-variable/syne": "^5.3.0",
     "three": "^0.180.0"
   },
   "devDependencies": {

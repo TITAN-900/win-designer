@@ -1,44 +1,40 @@
-/* WIN DESIGN: optical-size editorial display and precise architectural text.
-   Three local WOFF2 files; no network font request or synthetic weight. */
+/* WIN DESIGN: sculptural Syne display, precise Manrope text.
+   Two local variable fonts; real weights, no synthetic bold or remote fonts. */
 @font-face {
-  font-family: 'Newsreader';
-  src: url('../fonts/newsreader-latin-opsz-normal.woff2') format('woff2');
+  font-family: 'Syne';
+  src: url('../fonts/syne-latin-wght-normal.woff2') format('woff2');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope-latin-wght-normal.woff2') format('woff2');
   font-weight: 200 800;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Manrope';
-  src: url('../fonts/manrope-latin-400-normal.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Manrope';
-  src: url('../fonts/manrope-latin-500-normal.woff2') format('woff2');
-  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 :root {
-  --font-heading: 'Newsreader', Georgia, serif;
+  --font-heading: 'Syne', sans-serif;
   --font-body: 'Manrope', Arial, sans-serif;
-  --type-display: clamp(3.1rem, 5.2vw, 5rem);
-  --type-hero: clamp(4rem, 5.5vw, 5.5rem);
-  --type-section: clamp(3.15rem, 4.65vw, 5rem);
+  --type-display-xl: clamp(3.4rem, 6.2vw, 6.5rem);
+  --type-display: clamp(3rem, 5vw, 5rem);
+  --type-hero: clamp(3.1rem, 4.65vw, 4.875rem);
+  --type-section: clamp(2.6rem, 4.2vw, 4.25rem);
   --type-subheading: clamp(1.6rem, 2.2vw, 2.15rem);
   --type-body: clamp(.975rem, .95rem + .12vw, 1.0625rem);
   --type-ui: .84375rem;
   --type-small: .8125rem;
   --type-label: .6875rem;
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --leading-heading: .98;
+  --weight-regular: 450;
+  --weight-medium: 600;
+  --weight-display: 750;
+  --weight-display-strong: 800;
+  --leading-heading: 1.02;
   --leading-body: 1.63;
-  --tracking-heading: -.042em;
-  --tracking-label: .15em;
+  --tracking-heading: -.048em;
+  --tracking-label: .12em;
   font-family: var(--font-body);
   font-synthesis: none;
 }
@@ -58,13 +54,11 @@ body {
 
 :where(h1,h2,h3,h4,h5,h6,.sculpture-title) {
   font-family: var(--font-heading);
-  font-weight: var(--weight-regular);
+  font-weight: var(--weight-display);
   font-style: normal;
   line-height: var(--leading-heading);
   letter-spacing: var(--tracking-heading);
   text-wrap: balance;
-  font-optical-sizing: none;
-  font-variation-settings: 'opsz' 64;
 }
 h1 { font-size: var(--type-display); }
 h2 { font-size: var(--type-section); }
@@ -73,7 +67,7 @@ h2 { font-size: var(--type-section); }
   font: inherit;
   letter-spacing: inherit;
 }
-#intro-title { font-size: var(--type-hero); line-height: .95; letter-spacing: -.05em; font-variation-settings: 'opsz' 72; }
+#intro-title { font-size: var(--type-hero); line-height: 1.01; letter-spacing: -.052em; }
 #intro-title em { display: block; font-family: var(--font-heading); font-size: var(--type-hero); letter-spacing: inherit; }
 .phase-list h2,#studio .story-step h3 { font-size: var(--type-section); }
 
@@ -142,7 +136,7 @@ h2 { font-size: var(--type-section); }
 .home-page :is(.project-gallery-link,.material-palette figcaption) { font-family: var(--font-body); font-size: var(--type-small); font-weight: 400; line-height: 1.6; }
 .home-page .project-story .project-meta { font-size: var(--type-small); letter-spacing: .09em; }
 .home-page .project-open { font-size: 1.5rem; line-height: 1; }
-.home-page .service-lines li>span:first-child { font-family: var(--font-heading); font-size: 2rem; font-weight: var(--weight-regular); line-height: 1; letter-spacing: -.03em; font-variation-settings: 'opsz' 56; }
+.home-page .service-lines li>span:first-child { font-family: var(--font-heading); font-size: 2rem; font-weight: var(--weight-display); line-height: 1; letter-spacing: -.03em; }
 .home-page .service-panorama figcaption { font-size: var(--type-label); letter-spacing: .1em; text-transform: uppercase; }
 .home-page .material-palette figcaption span { font-size: var(--type-label); }
 .home-page .contact-banner h2 { font-size: var(--type-section); }
@@ -151,7 +145,7 @@ h2 { font-size: var(--type-section); }
 /* One architectural navigation rhythm across home, studio and project pages. */
 body .site-nav .nav-links { gap: clamp(18px, 2.05vw, 34px); }
 body .site-nav .nav-links a {
-  font: 500 12px/1.4 var(--font-body); letter-spacing: .075em;
+  font: 650 12px/1.4 var(--font-body); letter-spacing: .065em;
   text-transform: uppercase; transition: opacity .2s ease, color .2s ease;
 }
 body .site-nav .nav-links a:hover { color: #74654e; }
@@ -165,8 +159,8 @@ body .site-nav .nav-links .nav-cta .line-arrow { transform: translateY(-1px); }
   body .site-nav .nav-links a { font-size: 13px; letter-spacing: .07em; }
 }
 @media(max-width:760px) {
-  :root { --type-section: clamp(2.65rem, 10vw, 3.45rem); --type-display: clamp(3rem, 10.5vw, 3.7rem); }
-  #intro-title,#intro-title em { font-size: clamp(3.2rem, 13vw, 4.1rem); }
+  :root { --type-section: clamp(2.3rem, 9vw, 3rem); --type-display: clamp(2.6rem, 10vw, 3.4rem); }
+  #intro-title,#intro-title em { font-size: clamp(2.25rem, 9.7vw, 2.875rem); }
   .home-page .intro-content { width: 100%; max-width: 355px; }
   .home-page .intro-copy { max-width: none; }
   .intro-actions { flex-wrap: wrap; }

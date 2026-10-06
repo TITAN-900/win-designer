@@ -1,0 +1,59 @@
+/* Shared two-action navigation, concise contact and photography-first projects. */
+.action-arrow { display:inline-block; width:18px; height:18px; flex:0 0 18px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:square; }
+body.menu-open, html:has(body.menu-open) { overflow:visible; }
+body .site-nav .nav-links .nav-cta { margin-left:0; }
+body .minimal-contact, body.home-page #contact.minimal-contact {
+  display:flex; align-items:flex-end; justify-content:space-between; gap:36px;
+  padding:clamp(56px,8vw,112px) var(--page-inset); background:#eae2d5;
+}
+.minimal-contact h2 { margin:14px 0 0; max-width:10ch; font-size:clamp(38px,5.2vw,78px); line-height:.98; }
+.contact-label, .portfolio-return { font-size:12px; font-weight:650; letter-spacing:.09em; text-transform:uppercase; }
+.portfolio-return { display:inline-block; min-height:44px; padding-block:12px; }
+.minimal-contact-actions { display:flex; flex-direction:column; gap:12px; padding-bottom:3px; }
+.minimal-contact-actions a { display:inline-flex; align-items:center; justify-content:space-between; gap:34px; min-height:44px; text-decoration:none; font-weight:650; }
+.minimal-contact-actions a:first-child { border-bottom:1px solid #8d7e66; font-size:clamp(21px,2vw,28px); }
+.minimal-contact-actions .contact-phone { font-size:14px; }
+body .site-footer.minimal-footer { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:26px var(--page-inset); margin:0; background:#f4f0e7; border:0; }
+.minimal-footer .footer-brand { margin:0; }
+.minimal-footer > span { font-size:10px; font-weight:600; letter-spacing:.07em; }
+.minimal-footer .footer-brand img { width:76px; }
+body.project-page .project-hero { display:block; position:relative; min-height:0; padding:0; margin-top:78px; color:#34332e; background:#f4f0e7; }
+body.project-page .project-hero::before { display:none; }
+body.project-page .project-hero-image { position:static; display:block; width:100%; height:min(70vw,740px); max-height:75svh; object-fit:cover; }
+body.project-page .project-hero-copy { position:static; width:100%; padding:40px var(--page-inset) 46px; color:inherit; text-shadow:none; }
+.project-hero-copy .brand-line { margin:0 0 14px; color:inherit; }
+.project-hero-copy h1 { max-width:none; margin:0; font-size:clamp(44px,7.5vw,112px); line-height:.98; }
+body.project-page .project-hero-copy .lead { margin:20px 0 0; color:inherit; }
+.project-photography { padding:0 var(--page-inset) 64px; }
+.project-photography .masonry-gallery { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.project-photography .masonry-gallery .gallery-button { margin:0; width:100%; }
+.project-photography .masonry-gallery .gallery-button:first-child { grid-column:1/-1; }
+.project-photography .masonry-gallery img { display:block; width:100%; height:auto; aspect-ratio:1.4; object-fit:cover; }
+.project-photography .masonry-gallery .gallery-button:first-child img { aspect-ratio:1.7; }
+.project-note { display:flex; align-items:baseline; justify-content:space-between; gap:24px; padding:36px 0 0; }
+.project-note h2 { margin:0; font-size:clamp(25px,3vw,38px); }
+.project-note p { margin:0; max-width:38ch; }
+.project-comparison { padding:0 var(--page-inset) 64px; }
+.project-comparison figure { margin:0; }
+.project-comparison figcaption { padding-block:12px; }
+.project-missing { min-height:65svh; padding:160px var(--page-inset) 70px; }
+.project-missing a { display:block; padding-block:12px; }
+@media(max-width:1040px) {
+  body .site-nav .nav-links { width:min(272px,80vw); padding:10px 24px 16px; max-height:none; }
+  body .site-nav .nav-links .nav-cta { margin:0; }
+  body.project-page .project-hero { margin-top:74px; }
+}
+@media(max-width:760px) {
+  body.project-page .project-hero { margin-top:70px; }
+  body.project-page .project-hero-image { height:58svh; max-height:620px; object-fit:cover; }
+  body.project-page .project-hero-copy { padding-block:30px 36px; }
+  body .minimal-contact, body.home-page #contact.minimal-contact { flex-direction:column; align-items:stretch; gap:24px; padding-block:50px; }
+  .minimal-contact h2 { max-width:none; }
+  .minimal-contact-actions { max-width:320px; }
+  .project-photography .masonry-gallery { grid-template-columns:1fr; gap:16px; }
+  .project-photography .masonry-gallery .gallery-button:first-child { grid-column:auto; }
+  .project-photography .masonry-gallery img, .project-photography .masonry-gallery .gallery-button:first-child img { aspect-ratio:auto; }
+  .project-note { display:block; }
+  .project-note p { margin-top:16px; }
+  body .site-footer.minimal-footer { padding-block:24px; }
+}

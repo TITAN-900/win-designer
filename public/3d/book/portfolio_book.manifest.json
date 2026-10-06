@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "generator": "scripts/build_portfolio_book.py",
+  "source": "design/portfolio_book.blend",
+  "asset": "/3d/book/portfolio_book.glb",
+  "units": "Page width = 1; page height = 1.30",
+  "blender_axes": "XY page plane; Z up; spine X=0; front cover opened to left",
+  "gltf_axes": "X=x; Y=z; Z=-y. To use original Blender coordinates, rotate root +90 degrees around X before baking transforms.",
+  "page": {
+    "width": 1.0,
+    "height": 1.3,
+    "thickness": 0.00072,
+    "segments": [
+      72,
+      18
+    ],
+    "vertices_per_side": 1387,
+    "triangles_per_side": 2592,
+    "rest_fore_edge_z": 0.034,
+    "rest_spine_z": 0.02989400391535703,
+    "active_center_offset": 0.00115,
+    "active_front_fore_edge_z": 0.03551,
+    "active_back_fore_edge_z": 0.03479,
+    "active_front_spine_z": 0.031404003915357026,
+    "rest_profile": "0.034 + 0.005*exp(-((abs(x)-0.060)/0.12)^2) - 0.008*exp(-abs(x)/0.021)",
+    "UV": "Blender u increases world left-to-right, v increases y from -0.65 to +0.65. glTF export flips V: glTF v=0 is page top (Blender y=+0.65). CanvasTexture.flipY=false. Back UV intentionally same as front; runtime may mirror U for the reverse printed page.",
+    "active_back_mapping": "Front and back use u=x; vertex positions are independently deformable. Edge vertices use same UV, with two thickness levels. Use stored rest position for thickness offset.",
+    "inspection_shape_keys": [
+      "Inspect curl 20%",
+      "Inspect curl 50%",
+      "Inspect curl 80%"
+    ],
+    "exported_shape_keys": false
+  },
+  "permanent_meshes": [
+    "Book_Cover_Left",
+    "Book_Cover_Right",
+    "Book_Endpaper_Left",
+    "Book_Endpaper_Right",
+    "Book_Spine",
+    "Book_Binding",
+    "Book_Stack_Left",
+    "Book_EdgeLines_Left",
+    "Book_Stack_Right",
+    "Book_EdgeLines_Right",
+    "Book_Page_Left",
+    "Book_Page_Right"
+  ],
+  "active_meshes": [
+    "Book_Active_Front",
+    "Book_Active_Back",
+    "Book_Active_Edge"
+  ],
+  "mesh_counts": {
+    "Book_Cover_Left": {
+      "vertices": 152,
+      "triangles": 300
+    },
+    "Book_Cover_Right": {
+      "vertices": 152,
+      "triangles": 300
+    },
+    "Book_Endpaper_Left": {
+      "vertices": 152,
+      "triangles": 300
+    },
+    "Book_Endpaper_Right": {
+      "vertices": 152,
+      "triangles": 300
+    },
+    "Book_Spine": {
+      "vertices": 28,
+      "triangles": 52
+    },
+    "Book_Binding": {
+      "vertices": 51,
+      "triangles": 64
+    },
+    "Book_Stack_Left": {
+      "vertices": 196,
+      "triangles": 388
+    },
+    "Book_EdgeLines_Left": {
+      "vertices": 3536,
+      "triangles": 3380
+    },
+    "Book_Stack_Right": {
+      "vertices": 196,
+      "triangles": 388
+    },
+    "Book_EdgeLines_Right": {
+      "vertices": 3536,
+      "triangles": 3380
+    },
+    "Book_Page_Left": {
+      "vertices": 1387,
+      "triangles": 2592
+    },
+    "Book_Page_Right": {
+      "vertices": 1387,
+      "triangles": 2592
+    },
+    "Book_Active_Front": {
+      "vertices": 1387,
+      "triangles": 2592
+    },
+    "Book_Active_Back": {
+      "vertices": 1387,
+      "triangles": 2592
+    },
+    "Book_Active_Edge": {
+      "vertices": 360,
+      "triangles": 360
+    }
+  },
+  "total_triangles": 19580,
+  "glb_bytes": 516488,
+  "validation": {
+    "front_normals": "positive Z",
+    "back_normals": "negative Z",
+    "UV": "0..1 checked",
+    "active_rim": "closed perimeter, actual thickness",
+    "spine": "independent cloth spine + binding",
+    "stacks": "permanent independent left/right page stacks",
+    "curl_samples": {
+      "20": {
+        "max_height": 0.3208680748939514,
+        "free_edge_midpoint": [
+          0.7897561192512512,
+          0.0,
+          0.29225072264671326
+        ]
+      },
+      "50": {
+        "max_height": 0.5546553730964661,
+        "free_edge_midpoint": [
+          -3.5510724956111517e-06,
+          0.0,
+          0.5546553730964661
+        ]
+      },
+      "80": {
+        "max_height": 0.3207748532295227,
+        "free_edge_midpoint": [
+          -0.7900527715682983,
+          0.0,
+          0.29209473729133606
+        ]
+      }
+    }
+  }
+}

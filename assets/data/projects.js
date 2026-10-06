@@ -49,6 +49,7 @@
       ],
       beforeAfter: [
         {
+          verified: false,
           note: "Reference pair. Replace with verified same-room, same-angle client photos when available.",
           before: {
             src: "assets/projects/optimized/before-empty-concrete-condo.webp",
