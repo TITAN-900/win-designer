@@ -1,0 +1,599 @@
+{
+  "source": "win_space_02.blend",
+  "window": {
+    "front_jamb_overlap_m": 0.005000114440917969,
+    "rear_jamb_overlap_m": 0.005000114440917969,
+    "sill_top_m": 0.8600000143051147,
+    "head_bottom_m": 2.5999999046325684,
+    "rear_pier_bounds": {
+      "min": [
+        -3.9700000286102295,
+        0.434999942779541,
+        0.0
+      ],
+      "max": [
+        -3.7900002002716064,
+        3.1649999618530273,
+        2.9200000762939453
+      ]
+    },
+    "glazing_bounds": {
+      "min": [
+        -3.9090001583099365,
+        -1.965000033378601,
+        0.8300000429153442
+      ],
+      "max": [
+        -3.8910000324249268,
+        0.42500007152557373,
+        2.630000114440918
+      ]
+    }
+  },
+  "mesh_objects": 133,
+  "evaluated_mesh_triangles": 80576,
+  "collections": {
+    "01_ARCH_EmptyBedroom": [
+      "ARCH_Back painted cornice",
+      "ARCH_Bedroom back wall",
+      "ARCH_Bedroom glazing",
+      "ARCH_Bedroom left front pier",
+      "ARCH_Bedroom left rear pier",
+      "ARCH_Bedroom oak floating floor",
+      "ARCH_Bedroom structural floor",
+      "ARCH_Bedroom window head",
+      "ARCH_Bedroom window sill wall",
+      "ARCH_Curtain pocket",
+      "ARCH_Left painted cornice",
+      "ARCH_Oak plank joint 01",
+      "ARCH_Oak plank joint 02",
+      "ARCH_Oak plank joint 03",
+      "ARCH_Oak plank joint 04",
+      "ARCH_Oak plank joint 05",
+      "ARCH_Oak plank joint 06",
+      "ARCH_Oak plank joint 07",
+      "ARCH_Oak plank joint 08",
+      "ARCH_Oak plank joint 09",
+      "ARCH_Oak plank joint 10",
+      "ARCH_Oak plank joint 11",
+      "ARCH_Oak plank joint 12",
+      "ARCH_Oak plank joint 13",
+      "ARCH_Oak plank joint 14",
+      "ARCH_Oak plank joint 15",
+      "ARCH_Oak plank joint 16",
+      "ARCH_Oak plank joint 17",
+      "ARCH_Recessed ceiling cove reveal",
+      "ARCH_Skirting back",
+      "ARCH_Staggered cross joint +0.00",
+      "ARCH_Staggered cross joint +1.56",
+      "ARCH_Staggered cross joint -1.56",
+      "ARCH_Window horizontal rail 0.87",
+      "ARCH_Window horizontal rail 2.60",
+      "ARCH_Window slim bronze mullion +0.43",
+      "ARCH_Window slim bronze mullion -0.77",
+      "ARCH_Window slim bronze mullion -1.98"
+    ],
+    "02_JOINERY_Wardrobe": [
+      "JOINERY_Niche recessed back",
+      "JOINERY_Niche shelf 0.67",
+      "JOINERY_Niche shelf 1.30",
+      "JOINERY_Niche shelf 1.94",
+      "JOINERY_Niche solid oak side -0.83",
+      "JOINERY_Niche solid oak side -1.47",
+      "JOINERY_Niche structural cap 0.21",
+      "JOINERY_Niche structural cap 2.60",
+      "JOINERY_Wardrobe crown",
+      "JOINERY_Wardrobe full-height door 1",
+      "JOINERY_Wardrobe full-height door 2",
+      "JOINERY_Wardrobe full-height door 3",
+      "JOINERY_Wardrobe left carcass",
+      "JOINERY_Wardrobe recessed door head reveal 1",
+      "JOINERY_Wardrobe recessed door head reveal 2",
+      "JOINERY_Wardrobe recessed door head reveal 3",
+      "JOINERY_Wardrobe tall oak end cheek",
+      "JOINERY_Wardrobe toe recess",
+      "JOINERY_Wardrobe vertical bronze pull 1",
+      "JOINERY_Wardrobe vertical bronze pull 2",
+      "JOINERY_Wardrobe vertical bronze pull 3"
+    ],
+    "03_JOINERY_Headboard": [
+      "JOINERY_Bedside drawer shadow line 1",
+      "JOINERY_Bedside drawer shadow line 2",
+      "JOINERY_Bedside floating oak table 1",
+      "JOINERY_Bedside floating oak table 2",
+      "JOINERY_Bedside narrow drawer 1",
+      "JOINERY_Bedside narrow drawer 2",
+      "JOINERY_Headboard bay reveal 1",
+      "JOINERY_Headboard bay reveal 2",
+      "JOINERY_Headboard bay reveal 3",
+      "JOINERY_Headboard bay reveal 4",
+      "JOINERY_Headboard bay reveal 5",
+      "JOINERY_Headboard inset base shadow line",
+      "JOINERY_Headboard light oak upper rail",
+      "JOINERY_Headboard lower oak shelf",
+      "JOINERY_Headboard recessed oak backing",
+      "JOINERY_Headboard upholstered vertical bay 1",
+      "JOINERY_Headboard upholstered vertical bay 2",
+      "JOINERY_Headboard upholstered vertical bay 3",
+      "JOINERY_Headboard upholstered vertical bay 4",
+      "JOINERY_Headboard upholstered vertical bay 5",
+      "JOINERY_Vanity oak top",
+      "JOINERY_Vanity slim lower drawer"
+    ],
+    "04_FURN_Bedroom": [
+      "FURN_Bed inset black shadow reveal",
+      "FURN_Bed low solid oak plinth",
+      "FURN_Bed recessed support 0.38 0.13",
+      "FURN_Bed recessed support 0.38 2.57",
+      "FURN_Bed recessed support 2.54 0.13",
+      "FURN_Bed recessed support 2.54 2.57",
+      "FURN_Bed upholstered mattress",
+      "FURN_Vanity dark leg -0.84",
+      "FURN_Vanity dark leg -1.79",
+      "FURN_Vanity padded stool seat",
+      "FURN_Vanity stool support"
+    ],
+    "05_SOFT_BeddingCurtains": [
+      "SOFT_Bed flat woven duvet",
+      "SOFT_Bed folded top-sheet edge",
+      "SOFT_Foot of bed folded wool throw",
+      "SOFT_Full bedroom wool rug",
+      "SOFT_Left linen bedroom curtain",
+      "SOFT_Right linen bedroom curtain",
+      "SOFT_Standing pillow 1",
+      "SOFT_Standing pillow 2",
+      "SOFT_Tailored lumbar cushion"
+    ],
+    "06_DECOR_Objects": [
+      "DECOR_Bedside ceramic cup",
+      "DECOR_Planter 00 floor vessel",
+      "DECOR_Planter 01 stems",
+      "DECOR_Planter 02 tapered leaf 1",
+      "DECOR_Planter 02 tapered leaf 2",
+      "DECOR_Planter 02 tapered leaf 3",
+      "DECOR_Planter 02 tapered leaf 4",
+      "DECOR_Planter 02 tapered leaf 5",
+      "DECOR_Planter 02 tapered leaf 6",
+      "DECOR_Planter 02 tapered leaf 7",
+      "DECOR_Vanity folded letter",
+      "DECOR_Vanity small bronzed tray",
+      "DECOR_Wardrobe niche linen books",
+      "DECOR_Wardrobe niche vessel"
+    ],
+    "07_LIGHTS": [
+      "LIGHT_Bedroom recessed spot diffuser 1",
+      "LIGHT_Bedroom recessed spot diffuser 2",
+      "LIGHT_Bedroom recessed spot diffuser 3",
+      "LIGHT_Bedroom recessed spot rim 1",
+      "LIGHT_Bedroom recessed spot rim 2",
+      "LIGHT_Bedroom recessed spot rim 3",
+      "LIGHT_Bedside hanging cord 1",
+      "LIGHT_Bedside hanging cord 2",
+      "LIGHT_Bedside lower warm diffuser 1",
+      "LIGHT_Bedside lower warm diffuser 2",
+      "LIGHT_Bedside soft opal shade 1",
+      "LIGHT_Bedside soft opal shade 2",
+      "LIGHT_Headboard continuous warm cove",
+      "LIGHT_Niche concealed diffuser 0.23",
+      "LIGHT_Niche concealed diffuser 0.69",
+      "LIGHT_Niche concealed diffuser 1.32",
+      "LIGHT_Niche concealed diffuser 1.97"
+    ],
+    "08_EXT_WindowView": [
+      "EXT_Residence silhouette 1",
+      "EXT_Residence silhouette 2",
+      "EXT_Residence silhouette 3",
+      "EXT_Soft sky outside bedroom"
+    ]
+  },
+  "materials": {
+    "MAT_01_Warm plaster": {
+      "textures": [
+        {
+          "image": "wall-plaster-v1-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "limewash-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_02_Cream limewash": {
+      "textures": [
+        {
+          "image": "wall-plaster-v1-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "limewash-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_03_Satin pale oak floor": {
+      "textures": [
+        {
+          "image": "bedroom-oak-plank-atlas-v2-768.png",
+          "size": [
+            768,
+            768
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "bedroom-oak-floor_rough-v2-768.png",
+          "size": [
+            768,
+            768
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        },
+        {
+          "image": "bedroom-oak-floor_normal-v2-768.png",
+          "size": [
+            768,
+            768
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Color"
+          ]
+        }
+      ],
+      "normal_strength": [
+        0.07999999821186066
+      ]
+    },
+    "MAT_04_Floor joint": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_05_Cut architectural edge": {
+      "textures": [
+        {
+          "image": "honed-stone-v2-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "stone-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_06_Light oak": {
+      "textures": [
+        {
+          "image": "light-oak-v2-1024.jpg",
+          "size": [
+            1024,
+            1024
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "oak-rough-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        },
+        {
+          "image": "oak-normal-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Color"
+          ]
+        }
+      ],
+      "normal_strength": [
+        0.10000000149011612
+      ]
+    },
+    "MAT_07_Oak grain edge": {
+      "textures": [
+        {
+          "image": "warm-oak-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "oak-rough-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        },
+        {
+          "image": "oak-normal-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Color"
+          ]
+        }
+      ],
+      "normal_strength": [
+        0.10000000149011612
+      ]
+    },
+    "MAT_08_Matte ivory cabinet": {
+      "textures": [
+        {
+          "image": "limewash-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "limewash-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_09_Honed warm stone": {
+      "textures": [
+        {
+          "image": "honed-stone-v2-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "stone-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_10_Dark brushed bronze": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_11_Greige woven upholstery": {
+      "textures": [
+        {
+          "image": "woven-greige-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "woven-rough-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        },
+        {
+          "image": "woven-normal-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Color"
+          ]
+        }
+      ],
+      "normal_strength": [
+        0.14000000059604645
+      ]
+    },
+    "MAT_12_Washed ivory linen": {
+      "textures": [
+        {
+          "image": "woven-linen-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "woven-rough-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        },
+        {
+          "image": "woven-normal-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Color"
+          ]
+        }
+      ],
+      "normal_strength": [
+        0.11999999731779099
+      ]
+    },
+    "MAT_13_Muted russet cushion": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_14_Wool oatmeal rug": {
+      "textures": [
+        {
+          "image": "wool-oat-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "woven-rough-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        },
+        {
+          "image": "woven-normal-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Color"
+          ]
+        }
+      ],
+      "normal_strength": [
+        0.1599999964237213
+      ]
+    },
+    "MAT_15_Window glass": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_16_Warm LED diffuser": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_17_Foliage": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_18_Distant daylight sky": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_19_Distant residence": {
+      "textures": [],
+      "normal_strength": []
+    }
+  },
+  "checks": "Window joins, opening, finished-edge clearance, finite geometry/UVs, PBR color spaces and normal strengths passed."
+}

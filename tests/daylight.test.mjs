@@ -2,8 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { CYCLE_MS, ROOM_MS, SEQUENCE, loopState } from '../src/diorama-timeline.js';
-import { DAYLIGHT_PRESETS, daylightEnvelope, inspectWindow } from '../src/room-daylight.js';
+import { DAYLIGHT_PRESETS, daylightEnvelope, inspectWindow, inspectFixtures, interiorEnvelope,
+  heroQualityProfile, setRoomTextureQuality, captureRoomEmission, setRoomEmission } from '../src/room-daylight.js';
 import { RoomCrossfade } from '../src/room-crossfade.js';
 
 test('each fully constructed room reveals daylight, holds, then overlaps its empty successor', () => {
@@ -74,6 +76,86 @@ test('ambient begins before sunlight and both approach the final value smoothly'
   }
 });
 
+test('mobile quality improves fine detail within a fixed backing-store and sampling budget', () => {
+  for (const width of [390, 430]) {
+    const quality = heroQualityProfile(width * .98, 844 * .74, 3, true, 16);
+    assert.equal(quality.pixelRatio, 1.8);
+    assert.equal(quality.anisotropy, 4);
+    assert.equal(quality.contactShadow, 768);
+    assert.equal(quality.sunShadow, 1536);
+    assert.equal(quality.transmissionScale, .5);
+    assert.ok(width * .98 * 844 * .74 * quality.pixelRatio ** 2 <= quality.pixelBudget);
+  }
+  const tall = heroQualityProfile(760, 1600, 3, true, 2);
+  assert.ok(tall.pixelRatio < 1.8);
+  assert.ok(760 * 1600 * tall.pixelRatio ** 2 <= tall.pixelBudget);
+  assert.equal(tall.anisotropy, 2);
+  assert.equal(heroQualityProfile(390, 600, 1, true, 1).pixelRatio, 1);
+  const desktop = heroQualityProfile(1100, 700, 3, false, 16);
+  assert.equal(desktop.pixelRatio, 2);
+  assert.equal(desktop.anisotropy, 8);
+  assert.equal(desktop.transmissionScale, 1);
+});
+
+test('texture quality preserves authored color and wrapping, shares maps and does not re-upload each resize', () => {
+  const texture = new THREE.Texture();
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(4, 2);
+  const material = new THREE.MeshStandardMaterial({ map: texture, roughnessMap: texture });
+  const root = new THREE.Group();
+  root.add(new THREE.Mesh(new THREE.PlaneGeometry(), material), new THREE.Mesh(new THREE.PlaneGeometry(), material.clone()));
+  const originalVersion = texture.version;
+  assert.equal(setRoomTextureQuality(root, 4), 1);
+  assert.equal(texture.anisotropy, 4);
+  assert.equal(texture.minFilter, THREE.LinearMipmapLinearFilter);
+  assert.equal(texture.magFilter, THREE.LinearFilter);
+  assert.equal(texture.version, originalVersion + 1);
+  setRoomTextureQuality(root, 4);
+  assert.equal(texture.version, originalVersion + 1);
+  assert.equal(texture.colorSpace, THREE.SRGBColorSpace);
+  assert.equal(texture.wrapS, THREE.RepeatWrapping);
+  assert.deepEqual(texture.repeat.toArray(), [4, 2]);
+  root.traverse(mesh => { mesh.geometry?.dispose(); mesh.material?.dispose(); });
+  texture.dispose();
+});
+
+test('warm interior fixtures remain off during construction and reveal continuously with daylight', () => {
+  assert.equal(interiorEnvelope(0), 0);
+  assert.equal(interiorEnvelope(.04), 0);
+  assert.equal(interiorEnvelope(1), 1);
+  let previous = 0;
+  for (let step = 1; step <= 240; step++) {
+    const next = interiorEnvelope(step / 240);
+    assert.ok(next >= previous && next - previous < .008);
+    previous = next;
+  }
+  for (const space of [0, 1]) {
+    assert.equal(interiorEnvelope(loopState(space * ROOM_MS + SEQUENCE.build - 1)[space ? 'secondLight' : 'firstLight']), 0);
+  }
+});
+
+test('authored diffuser emission and construction variants reveal together without new shader programs', () => {
+  const original = new THREE.MeshStandardMaterial({ emissive: 0xffd7a0, emissiveIntensity: 2.5 });
+  const faded = original.clone();
+  faded.transparent = true;
+  const unlit = new THREE.MeshStandardMaterial({ color: 0xf5f1e9 });
+  const colors = [original.emissive.clone(), faded.emissive.clone()];
+  const versions = [original.version, faded.version];
+  const emitters = captureRoomEmission([original, faded, original, unlit]);
+  assert.equal(emitters.length, 2);
+  for (const progress of [0, .15, .5, 1, .5, 0, 1]) {
+    setRoomEmission(emitters, progress);
+    for (const [index, material] of [original, faded].entries()) {
+      assert.equal(material.emissiveIntensity, 2.5 * interiorEnvelope(progress));
+      assert.deepEqual(material.emissive, colors[index]);
+      assert.equal(material.version, versions[index]);
+    }
+    assert.equal(unlit.emissiveIntensity, 1);
+  }
+  original.dispose(); faded.dispose(); unlit.dispose();
+});
+
 function boundsOnlyGLB(path) {
   const buffer = readFileSync(path);
   const gltf = JSON.parse(buffer.subarray(20, 20 + buffer.readUInt32LE(12)));
@@ -85,7 +167,7 @@ function boundsOnlyGLB(path) {
       geometry.setAttribute('position', new THREE.Float32BufferAttribute([...position.min, ...position.max], 3));
       object = new THREE.Mesh(geometry);
     }
-    object.name = node.name.replaceAll(' ', '_');
+    object.name = THREE.PropertyBinding.sanitizeNodeName(node.name);
     if (node.translation) object.position.fromArray(node.translation);
     if (node.rotation) object.quaternion.fromArray(node.rotation);
     if (node.scale) object.scale.fromArray(node.scale);
@@ -106,7 +188,7 @@ test('sun directions enter the measured GLB windows and reach the actual room in
     assert.ok(Math.abs(window.center.x + 3.9) < .001);
     assert.ok(Math.abs(window.center.z - .77) < .001);
     assert.ok(Math.abs(window.aperture.min.y - .86) < .001);
-    assert.ok(Math.abs(window.aperture.max.y - 2.38) < .001);
+    assert.ok(Math.abs(window.aperture.max.y - 2.60) < .001);
     const direction = new THREE.Vector3(...DAYLIGHT_PRESETS[roomIndex].travel);
     assert.ok(direction.x > 0 && direction.y < 0);
     const floor = window.center.clone().addScaledVector(direction, -window.center.y / direction.y);
@@ -115,6 +197,66 @@ test('sun directions enter the measured GLB windows and reach the actual room in
     root.traverse(object => { object.geometry?.dispose(); object.material?.dispose(); });
   }
   assert.notDeepEqual(DAYLIGHT_PRESETS[0].travel, DAYLIGHT_PRESETS[1].travel);
+});
+
+test('each interior lighting rig uses its own six existing GLB fixtures', () => {
+  const layouts = [];
+  for (const roomIndex of [0, 1]) {
+    const id = `0${roomIndex + 1}`;
+    const root = boundsOnlyGLB(`public/3d/space-${id}/win_space_${id}.glb`);
+    const fixtures = inspectFixtures(root, roomIndex);
+    assert.equal(fixtures.length, 6);
+    assert.equal(fixtures.filter(fixture => fixture.kind === 'area').length, 2);
+    assert.equal(fixtures.filter(fixture => fixture.kind === 'spot').length, 4);
+    for (const fixture of fixtures) {
+      const source = root.getObjectByName(fixture.source);
+      assert.ok(source);
+      const center = new THREE.Box3().setFromObject(source).getCenter(new THREE.Vector3());
+      assert.ok(fixture.position.distanceTo(center) < .035);
+      assert.ok(fixture.intensity > 0 && fixture.intensity <= 24);
+      assert.equal(fixture.position.x, center.x);
+      assert.equal(fixture.position.z, center.z);
+      if (fixture.kind === 'spot') assert.ok(fixture.target.y < fixture.position.y);
+    }
+    layouts.push(fixtures.map(fixture => fixture.source));
+    root.traverse(object => { object.geometry?.dispose(); object.material?.dispose(); });
+  }
+  assert.notDeepEqual(layouts[0], layouts[1]);
+});
+
+test('real GLTFLoader node names resolve fixtures and retain authored emissive strengths', async () => {
+  for (const roomIndex of [0, 1]) {
+    const id = `0${roomIndex + 1}`;
+    const buffer = readFileSync(`public/3d/space-${id}/win_space_${id}.glb`);
+    const loader = new GLTFLoader();
+    // Node has no image decoder. Stub only image upload; real GLTFLoader still
+    // parses all nodes, transforms, geometry, materials and emissive metadata.
+    loader.register(() => ({ name: 'TEST_IMAGE_UPLOAD', loadTexture: () => Promise.resolve(new THREE.Texture()) }));
+    const gltf = await loader.parseAsync(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength), '');
+    const fixtures = inspectFixtures(gltf.scene, roomIndex);
+    assert.equal(fixtures.length, 6);
+    if (roomIndex === 1) assert.ok(fixtures.some(fixture => /diffuser_132$/.test(fixture.source)));
+    for (const fixture of fixtures) {
+      const source = gltf.scene.getObjectByName(fixture.source);
+      assert.ok(source.isMesh);
+      const materials = Array.isArray(source.material) ? source.material : [source.material];
+      const emitted = captureRoomEmission(materials);
+      assert.ok(emitted.length > 0, `${fixture.source} has no authored emission`);
+      assert.ok(emitted.every(entry => entry.peak === 2.5));
+    }
+    const geometries = new Set(), materials = new Set(), textures = new Set();
+    gltf.scene.traverse(mesh => {
+      if (!mesh.isMesh) return;
+      geometries.add(mesh.geometry);
+      for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+        materials.add(material);
+        for (const value of Object.values(material)) if (value?.isTexture) textures.add(value);
+      }
+    });
+    geometries.forEach(geometry => geometry.dispose());
+    materials.forEach(material => material.dispose());
+    textures.forEach(texture => texture.dispose());
+  }
 });
 
 test('crossfade allocates two targets once, captures only at entry and reuses them across three loops', () => {

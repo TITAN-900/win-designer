@@ -141,8 +141,9 @@ export function initPortfolioBook(data) {
   function texture(pageIndex) {
     if (!textures.has(pageIndex)) {
       const currentVersion = version;
-      const pageWidth = mobile() ? width * .72 : width * .42;
-      textures.set(pageIndex, paintPage(markup(pageIndex), pageWidth, pageWidth * 1.3, mobile()).then(canvas => {
+      const pageWidth = curl.pageLayoutWidth();
+      textures.set(pageIndex, paintPage(markup(pageIndex), pageWidth, pageWidth * 1.3,
+        mobile(), curl.renderer.capabilities.maxTextureSize).then(canvas => {
         if (disposed || currentVersion !== version) return null;
         const value = curl.texture(canvas);
         textureValues.set(pageIndex, value);
@@ -305,7 +306,8 @@ export function initPortfolioBook(data) {
     if (!curl?.ready) return;
     handles.forEach((handle, i) => {
       const bounds = curl.grabBounds(i ? 1 : -1);
-      Object.assign(handle.style, { left: `${bounds.x - 16}px`, right: 'auto', top: `${bounds.y}px`, bottom: 'auto', height: `${bounds.height}px`, width: '32px' });
+      Object.assign(handle.style, { left: `${bounds.x - bounds.width / 2}px`, right: 'auto',
+        top: `${bounds.y}px`, bottom: 'auto', height: `${bounds.height}px`, width: `${bounds.width}px` });
     });
   }
   function resize() {

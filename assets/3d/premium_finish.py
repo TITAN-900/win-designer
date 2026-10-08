@@ -17,10 +17,12 @@ DERIVED = ROOT / "materials" / "diorama-derived"
 DERIVED.mkdir(parents=True, exist_ok=True)
 
 
-def _image(name, size, pixel):
+def _image(name, size, pixel, non_color=False):
     destination = DERIVED / name
     if not destination.exists():
         image = bpy.data.images.new(name, width=size, height=size, alpha=False)
+        if non_color:
+            image.colorspace_settings.name = "Non-Color"
         rgba = array("f", [0.0]) * (size * size * 4)
         for y in range(size):
             for x in range(size):
@@ -33,16 +35,18 @@ def _image(name, size, pixel):
         image.save()
         bpy.data.images.remove(image)
     result = bpy.data.images.load(str(destination), check_existing=True)
+    if non_color:
+        result.colorspace_settings.name = "Non-Color"
     result.pack()
     return result
 
 
-def _resized_oak(name, mix, destination_color):
+def _resized_oak(name, mix, destination_color, size=512):
     destination = DERIVED / name
     if not destination.exists():
         source = bpy.data.images.load(str(ROOT / "materials" / "wood_floor_Diffuse.jpg"), check_existing=False)
-        source.scale(512, 512)
-        values = array("f", [0.0]) * (512 * 512 * 4)
+        source.scale(size, size)
+        values = array("f", [0.0]) * (size * size * 4)
         source.pixels.foreach_get(values)
         for offset in range(0, len(values), 4):
             # Retain the actual grain, but remove the brown cast of the floor
@@ -51,11 +55,14 @@ def _resized_oak(name, mix, destination_color):
             for channel in range(3):
                 source_value = .70 * values[offset + channel] + .30 * grey
                 values[offset + channel] = min(1.0, destination_color[channel] * (1 - mix) + source_value * mix)
-        target = bpy.data.images.new(name, width=512, height=512, alpha=False)
+        target = bpy.data.images.new(name, width=size, height=size, alpha=False)
         target.pixels.foreach_set(values)
         target.filepath_raw = str(destination)
-        target.file_format = "PNG"
-        target.save()
+        # Photographic albedo tolerates high-quality JPEG well; retain PNG for
+        # every normal/roughness data map. This keeps the two rooms' payload
+        # under the existing combined budget without reducing visible detail.
+        target.file_format = "JPEG" if destination.suffix.lower() in {".jpg", ".jpeg"} else "PNG"
+        target.save(quality=95)
         bpy.data.images.remove(target)
         bpy.data.images.remove(source)
     result = bpy.data.images.load(str(destination), check_existing=True)
@@ -103,32 +110,49 @@ def _cloud(x, y):
 
 def _surface_maps():
     maps = {}
-    maps["oak"] = _resized_oak("light-oak-512.png", .40, (.72, .63, .51))
+    # Only the frequently seen cabinet/veneer albedo uses the full 1K source.
+    # Secondary colors and micro-surface maps stay small.
+    maps["oak"] = _resized_oak("light-oak-v2-1024.jpg", .40, (.72, .63, .51), 1024)
     maps["oak_deep"] = _resized_oak("warm-oak-512.png", .65, (.56, .43, .31))
     # A single atlas gives the bedroom's visible planks distinct grain phases.
     # It is still derived from the local licensed oak photograph and travels in
     # the GLB, rather than relying on a Blender-only procedural node.
-    oak_pixels = array("f", [0.0]) * (512 * 512 * 4)
+    oak_size = maps["oak"].size[0]
+    oak_pixels = array("f", [0.0]) * (oak_size * oak_size * 4)
     maps["oak"].pixels.foreach_get(oak_pixels)
-    def plank_pixel(x, y, size):
+    def plank_sample(x, y, size):
         plank = min(17, int(x * 18 / size))
         strip = min(3, int(y * 4 / size))
         local_x = (x * 18 / size - plank) * .76 + (plank * .217) % 1
         local_y = (y * 4 / size - strip) * .83 + (plank * .379 + strip * .133) % 1
-        sx = int(local_x * 511) % 512
-        sy = int(local_y * 511) % 512
-        offset = 4 * (sy * 512 + sx)
+        return local_x % 1, local_y % 1, plank, strip
+    def plank_pixel(x, y, size):
+        u, v, plank, strip = plank_sample(x, y, size)
+        sx, sy = int(u * (oak_size-1)), int(v * (oak_size-1))
+        offset = 4 * (sy * oak_size + sx)
         tone = 1 + .045 * math.sin(plank * 7.13 + strip * 2.41)
         return tuple(min(1.0, oak_pixels[offset + c] * tone) for c in range(3))
-    maps["floor_atlas"] = _image("bedroom-oak-plank-atlas-v1-768.png", 768, plank_pixel)
+    maps["floor_atlas"] = _image("bedroom-oak-plank-atlas-v2-768.png", 768, plank_pixel)
     maps["wood_rough"] = _resized_map("oak-rough-512.png", "wood_floor_Rough.jpg")
     maps["wood_normal"] = _resized_map("oak-normal-512.png", "wood_floor_nor_gl.jpg")
+    # The original floor albedo was shuffled into individual planks while its
+    # normal/roughness maps still spanned the whole room. Match all three maps.
+    for source_name, output_name in (("wood_rough", "floor_rough"), ("wood_normal", "floor_normal")):
+        image = maps[source_name]
+        image_size = image.size[0]
+        values = array("f", [0.0]) * (image_size * image_size * 4)
+        image.pixels.foreach_get(values)
+        def atlas_pixel(x, y, size, values=values, image_size=image_size):
+            u, v, _, _ = plank_sample(x, y, size)
+            offset = 4 * (int(v*(image_size-1))*image_size + int(u*(image_size-1)))
+            return tuple(values[offset+c] for c in range(3))
+        maps[output_name] = _image(f"bedroom-oak-{output_name}-v2-768.png", 768, atlas_pixel, True)
 
     maps["stone"] = _image("honed-stone-v2-512.png", 512, lambda x, y, n: tuple(
         min(1.0, base + .025 * _cloud(x, y))
         for base in (.735, .716, .680)))
     maps["stone_rough"] = _image("stone-rough-v2-256.png", 256, lambda x, y, n: (
-        .57 + .060 * _cloud(x, y),) * 3)
+        .57 + .060 * _cloud(x, y),) * 3, non_color=True)
     maps["plaster"] = _image("limewash-v2-256.png", 256, lambda x, y, n: tuple(
         base + .012 * _cloud(x, y)
         for base in (.805, .785, .745)))
@@ -136,23 +160,22 @@ def _surface_maps():
         base + .012 * _cloud(x, y)
         for base in (.745, .725, .690)))
     maps["plaster_rough"] = _image("limewash-rough-v2-256.png", 256, lambda x, y, n: (
-        .82 + .050 * _cloud(x, y),) * 3)
+        .82 + .050 * _cloud(x, y),) * 3, non_color=True)
 
     def cloth(base, x, y, large=False):
         weave = math.sin(x * (1.12 if large else 1.73)) * math.sin(y * (1.26 if large else 1.91))
         fleck = math.sin(x * .51 + y * .37) * math.sin(y * .83 - x * .22)
-        variation = .018 * weave + .012 * fleck
+        variation = .009 * weave + .006 * fleck
         return tuple(max(0, min(1, c + variation)) for c in base)
 
-    maps["fabric"] = _image("woven-greige-256.png", 256, lambda x, y, n: cloth((.64, .607, .56), x, y))
-    maps["linen"] = _image("woven-linen-256.png", 256, lambda x, y, n: cloth((.79, .764, .715), x, y))
-    maps["rug"] = _image("wool-oat-256.png", 256, lambda x, y, n: cloth((.68, .65, .60), x, y, True))
+    maps["fabric"] = _image("woven-greige-v2-256.png", 256, lambda x, y, n: cloth((.64, .607, .56), x, y))
+    maps["linen"] = _image("woven-linen-v2-256.png", 256, lambda x, y, n: cloth((.79, .764, .715), x, y))
+    maps["rug"] = _image("wool-oat-v2-256.png", 256, lambda x, y, n: cloth((.68, .65, .60), x, y, True))
     maps["fabric_rough"] = _image("woven-rough-256.png", 256, lambda x, y, n: (
-        .87 + .055 * math.sin(x * 1.22) * math.sin(y * 1.31),) * 3)
+        .87 + .055 * math.sin(x * 1.22) * math.sin(y * 1.31),) * 3, non_color=True)
     maps["fabric_normal"] = _image("woven-normal-256.png", 256, lambda x, y, n: (
         .5 - .055*math.cos(x*1.73)*math.sin(y*1.91),
-        .5 - .055*math.sin(x*1.73)*math.cos(y*1.91), 1.0))
-    maps["fabric_normal"].colorspace_settings.name = "Non-Color"
+        .5 - .055*math.sin(x*1.73)*math.cos(y*1.91), 1.0), non_color=True)
     return maps
 
 
@@ -385,18 +408,18 @@ def refine_room(room):
         elif "cabinet" in name or "matte ivory" in name:
             _connect(material, maps["plaster"], maps["plaster_rough"])
         elif "floor" in name and room == "bedroom" and "joint" not in name:
-            _connect(material, maps["floor_atlas"], maps["wood_rough"], maps["wood_normal"], .12)
+            _connect(material, maps["floor_atlas"], maps["floor_rough"], maps["floor_normal"], .08)
         elif "oak" in name:
             tone = "oak_deep" if "edge" in name else "oak"
-            _connect(material, maps[tone], maps["wood_rough"], maps["wood_normal"], .15)
+            _connect(material, maps[tone], maps["wood_rough"], maps["wood_normal"], .10)
         elif any(part in name for part in ("stone", "limestone", "cut architectural")):
             _connect(material, maps["stone"], maps["stone_rough"])
         elif "rug" in name or "wool" in name:
-            _connect(material, maps["rug"], maps["fabric_rough"], maps["fabric_normal"], .28)
+            _connect(material, maps["rug"], maps["fabric_rough"], maps["fabric_normal"], .16)
         elif any(part in name for part in ("boucle", "linen")):
-            _connect(material, maps["linen"], maps["fabric_rough"], maps["fabric_normal"], .24)
+            _connect(material, maps["linen"], maps["fabric_rough"], maps["fabric_normal"], .12)
         elif "woven" in name or "upholstery" in name:
-            _connect(material, maps["fabric"], maps["fabric_rough"], maps["fabric_normal"], .24)
+            _connect(material, maps["fabric"], maps["fabric_rough"], maps["fabric_normal"], .14)
 
     for obj in bpy.context.scene.objects:
         if obj.type != "MESH":
@@ -429,10 +452,12 @@ def refine_room(room):
         surface = obj.data.materials[0].name.lower()
         if room == "bedroom" and "oak floating floor" in name:
             _uv_floor_atlas(obj)
-        elif any(part in surface for part in ("oak", "floor", "stone", "limestone", "plaster", "limewash", "cabinet", "ivory")):
-            _uv_by_surface(obj.data, 1.45 if "oak" in surface else 1.8)
+        # Semantic textile classification must precede the color word ivory;
+        # otherwise ivory linen accidentally receives the coarse wall UV scale.
         elif any(part in surface for part in ("woven", "linen", "boucle", "rug", "wool", "upholstery")):
             _uv_by_surface(obj.data, .36)
+        elif any(part in surface for part in ("oak", "floor", "stone", "limestone", "plaster", "limewash", "cabinet", "ivory")):
+            _uv_by_surface(obj.data, 1.45 if "oak" in surface else 1.8)
 
     # Pack every imported map into the editable Blender source as well as the GLB.
     for image in maps.values():

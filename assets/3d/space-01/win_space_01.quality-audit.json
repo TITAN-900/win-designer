@@ -1,0 +1,648 @@
+{
+  "source": "win_space_01.blend",
+  "window": {
+    "front_jamb_overlap_m": 0.005000114440917969,
+    "rear_jamb_overlap_m": 0.005000114440917969,
+    "sill_top_m": 0.8600000143051147,
+    "head_bottom_m": 2.5999999046325684,
+    "rear_pier_bounds": {
+      "min": [
+        -3.9700000286102295,
+        0.434999942779541,
+        0.0
+      ],
+      "max": [
+        -3.7900002002716064,
+        3.1649999618530273,
+        2.9200000762939453
+      ]
+    },
+    "glazing_bounds": {
+      "min": [
+        -3.9090001583099365,
+        -1.965000033378601,
+        0.8300000429153442
+      ],
+      "max": [
+        -3.8910000324249268,
+        0.42500007152557373,
+        2.630000114440918
+      ]
+    }
+  },
+  "mesh_objects": 160,
+  "evaluated_mesh_triangles": 101776,
+  "collections": {
+    "01_ARCH_EmptyRoom": [
+      "ARCH_Back plaster cornice",
+      "ARCH_Back skirting",
+      "ARCH_Back wall",
+      "ARCH_Floor structural slab",
+      "ARCH_Left plaster cornice",
+      "ARCH_Left skirting front",
+      "ARCH_Left skirting rear",
+      "ARCH_Left wall front pier",
+      "ARCH_Left wall rear pier",
+      "ARCH_Limestone floor finish",
+      "ARCH_Recessed curtain track",
+      "ARCH_Tile cross joint 01",
+      "ARCH_Tile cross joint 02",
+      "ARCH_Tile cross joint 03",
+      "ARCH_Tile joint 01",
+      "ARCH_Tile joint 02",
+      "ARCH_Tile joint 03",
+      "ARCH_Tile joint 04",
+      "ARCH_Tile joint 05",
+      "ARCH_Window glazing",
+      "ARCH_Window head",
+      "ARCH_Window mullion +0.43",
+      "ARCH_Window mullion -0.77",
+      "ARCH_Window mullion -1.98",
+      "ARCH_Window rail 0.87",
+      "ARCH_Window rail 2.60",
+      "ARCH_Window sill wall"
+    ],
+    "02_JOINERY_Kitchen": [
+      "JOINERY_Back run stone countertop",
+      "JOINERY_Back run undercut shadow joint",
+      "JOINERY_Cooktop 00 inset dark glass",
+      "JOINERY_Cooktop 01 inset etched ring 1",
+      "JOINERY_Cooktop 01 inset etched ring 2",
+      "JOINERY_Cooktop 01 inset etched ring 3",
+      "JOINERY_Cooktop 01 inset etched ring 4",
+      "JOINERY_High cabinet carcass 1",
+      "JOINERY_High cabinet carcass 2",
+      "JOINERY_High cabinet door 1",
+      "JOINERY_High cabinet door 2",
+      "JOINERY_High cabinet pull 1",
+      "JOINERY_High cabinet pull 2",
+      "JOINERY_High cabinet recessed toe support 1",
+      "JOINERY_High cabinet recessed toe support 2",
+      "JOINERY_High cabinet vertical oak reveal",
+      "JOINERY_Island core",
+      "JOINERY_Island faucet arch",
+      "JOINERY_Island inset sink dark well",
+      "JOINERY_Island oak end panel reveal",
+      "JOINERY_Island recessed toe kick",
+      "JOINERY_Island slim oak flute 01",
+      "JOINERY_Island slim oak flute 02",
+      "JOINERY_Island slim oak flute 03",
+      "JOINERY_Island slim oak flute 04",
+      "JOINERY_Island slim oak flute 05",
+      "JOINERY_Island slim oak flute 06",
+      "JOINERY_Island slim oak flute 07",
+      "JOINERY_Island slim oak flute 08",
+      "JOINERY_Island slim oak flute 09",
+      "JOINERY_Island slim oak flute 10",
+      "JOINERY_Island slim oak flute 11",
+      "JOINERY_Island slim oak flute 12",
+      "JOINERY_Island slim oak flute 13",
+      "JOINERY_Island slim oak flute 14",
+      "JOINERY_Island slim oak flute 15",
+      "JOINERY_Island stone end cheek",
+      "JOINERY_Island stone waterfall top",
+      "JOINERY_Kitchen oak rail",
+      "JOINERY_Kitchen pale stone backsplash",
+      "JOINERY_Lower cabinet carcass 1",
+      "JOINERY_Lower cabinet carcass 2",
+      "JOINERY_Lower cabinet carcass 3",
+      "JOINERY_Lower cabinet carcass 4",
+      "JOINERY_Lower cabinet finger groove 1",
+      "JOINERY_Lower cabinet finger groove 2",
+      "JOINERY_Lower cabinet finger groove 3",
+      "JOINERY_Lower cabinet finger groove 4",
+      "JOINERY_Lower cabinet front 1",
+      "JOINERY_Lower cabinet front 2",
+      "JOINERY_Lower cabinet front 3",
+      "JOINERY_Lower cabinet front 4",
+      "JOINERY_Lower cabinet recessed plinth",
+      "JOINERY_Under cabinet warm LED",
+      "JOINERY_Wall cabinet case 1",
+      "JOINERY_Wall cabinet case 2",
+      "JOINERY_Wall cabinet case 3",
+      "JOINERY_Wall cabinet case 4",
+      "JOINERY_Wall cabinet oak door 1",
+      "JOINERY_Wall cabinet oak door 2",
+      "JOINERY_Wall cabinet oak door 3",
+      "JOINERY_Wall cabinet oak door 4"
+    ],
+    "03_JOINERY_LivingTV": [
+      "DETAIL_TV screen",
+      "DETAIL_TV shadow spacer",
+      "DETAIL_TV slim frame",
+      "JOINERY_TV console door 1",
+      "JOINERY_TV console door 2",
+      "JOINERY_TV console door 3",
+      "JOINERY_TV console shadow line 1",
+      "JOINERY_TV console shadow line 2",
+      "JOINERY_TV console shadow line 3",
+      "JOINERY_TV fine oak batten 1",
+      "JOINERY_TV fine oak batten 2",
+      "JOINERY_TV fine oak batten 3",
+      "JOINERY_TV fine oak batten 4",
+      "JOINERY_TV fine oak batten 5",
+      "JOINERY_TV floating console body",
+      "JOINERY_TV floating console wall shadow gap",
+      "JOINERY_TV oak backing panel",
+      "JOINERY_TV under console light"
+    ],
+    "04_FURN_Living": [
+      "FURN_Coffee table tapered pedestal 1.20",
+      "FURN_Coffee table tapered pedestal 2.20",
+      "FURN_Island stool pedestal 1",
+      "FURN_Island stool pedestal 2",
+      "FURN_Island upholstered stool seat 1",
+      "FURN_Island upholstered stool seat 2",
+      "FURN_Oval stone coffee table top",
+      "FURN_Side table leg",
+      "FURN_Side table slim top",
+      "FURN_Sofa dark leg 0.44 -1.12",
+      "FURN_Sofa dark leg 0.44 -2.01",
+      "FURN_Sofa dark leg 2.72 -1.12",
+      "FURN_Sofa dark leg 2.72 -2.01",
+      "FURN_Sofa low timber subframe",
+      "FURN_Sofa plush seat 0.73",
+      "FURN_Sofa plush seat 1.58",
+      "FURN_Sofa plush seat 2.43",
+      "FURN_Sofa rounded arm 0.17",
+      "FURN_Sofa rounded arm 2.99",
+      "FURN_Sofa tailored seat seam 0.73",
+      "FURN_Sofa tailored seat seam 1.58",
+      "FURN_Sofa tailored seat seam 2.43",
+      "FURN_Sofa upright back cushion 0.73",
+      "FURN_Sofa upright back cushion 1.58",
+      "FURN_Sofa upright back cushion 2.43"
+    ],
+    "05_SOFT_CurtainsRug": [
+      "SOFT_Left floor-length curtain",
+      "SOFT_Right floor-length curtain",
+      "SOFT_Rug under seating",
+      "SOFT_Sofa boucle loose cushion 1",
+      "SOFT_Sofa boucle loose cushion 2"
+    ],
+    "06_DECOR_Objects": [
+      "DECOR_Coffee table book one",
+      "DECOR_Coffee table book two",
+      "DECOR_Coffee table ceramic vessel",
+      "DECOR_Floor pot",
+      "DECOR_Plant branching stem",
+      "DECOR_Plant tapered leaf 1",
+      "DECOR_Plant tapered leaf 2",
+      "DECOR_Plant tapered leaf 3",
+      "DECOR_Plant tapered leaf 4",
+      "DECOR_Plant tapered leaf 5",
+      "DECOR_Plant tapered leaf 6",
+      "DECOR_Plant tapered leaf 7",
+      "DECOR_Plant tapered leaf 8",
+      "DECOR_TV console book 1",
+      "DECOR_TV console book 2",
+      "DECOR_TV console book 3"
+    ],
+    "07_LIGHTS": [
+      "LIGHT_Pendant cord 1",
+      "LIGHT_Pendant cord 2",
+      "LIGHT_Pendant lower diffuser 1",
+      "LIGHT_Pendant lower diffuser 2",
+      "LIGHT_Pendant opal dome 1",
+      "LIGHT_Pendant opal dome 2",
+      "LIGHT_Recessed ceiling spot diffuser 1",
+      "LIGHT_Recessed ceiling spot diffuser 2",
+      "LIGHT_Recessed ceiling spot diffuser 3",
+      "LIGHT_Recessed ceiling spot diffuser 4",
+      "LIGHT_Recessed ceiling spot trim 1",
+      "LIGHT_Recessed ceiling spot trim 2",
+      "LIGHT_Recessed ceiling spot trim 3",
+      "LIGHT_Recessed ceiling spot trim 4"
+    ],
+    "08_EXT_WindowView": [
+      "EXT_Distant residence silhouette 1",
+      "EXT_Distant residence silhouette 2",
+      "EXT_Distant residence silhouette 3",
+      "EXT_Soft blue grey sky"
+    ]
+  },
+  "materials": {
+    "MAT_01_Warm painted plaster": {
+      "textures": [
+        {
+          "image": "wall-plaster-v1-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "limewash-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_02_Cream limewash": {
+      "textures": [
+        {
+          "image": "wall-plaster-v1-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "limewash-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_03_Pale limestone floor": {
+      "textures": [
+        {
+          "image": "honed-stone-v2-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "stone-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_04_Cut architectural edge": {
+      "textures": [
+        {
+          "image": "honed-stone-v2-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "stone-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_05_Light natural oak": {
+      "textures": [
+        {
+          "image": "light-oak-v2-1024.jpg",
+          "size": [
+            1024,
+            1024
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "oak-rough-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        },
+        {
+          "image": "oak-normal-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Color"
+          ]
+        }
+      ],
+      "normal_strength": [
+        0.10000000149011612
+      ]
+    },
+    "MAT_06_Oak edge grain": {
+      "textures": [
+        {
+          "image": "warm-oak-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "oak-rough-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        },
+        {
+          "image": "oak-normal-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Color"
+          ]
+        }
+      ],
+      "normal_strength": [
+        0.10000000149011612
+      ]
+    },
+    "MAT_07_Matte oat cabinetry": {
+      "textures": [
+        {
+          "image": "limewash-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "limewash-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_08_Honed warm stone": {
+      "textures": [
+        {
+          "image": "honed-stone-v2-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "stone-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_09_Stone edge": {
+      "textures": [
+        {
+          "image": "honed-stone-v2-512.png",
+          "size": [
+            512,
+            512
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "stone-rough-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        }
+      ],
+      "normal_strength": []
+    },
+    "MAT_10_Brushed dark bronze": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_11_Soft greige woven upholstery": {
+      "textures": [
+        {
+          "image": "woven-greige-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "woven-rough-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        },
+        {
+          "image": "woven-normal-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Color"
+          ]
+        }
+      ],
+      "normal_strength": [
+        0.14000000059604645
+      ]
+    },
+    "MAT_12_Boucle ivory cushion": {
+      "textures": [
+        {
+          "image": "woven-linen-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "woven-rough-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        },
+        {
+          "image": "woven-normal-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Color"
+          ]
+        }
+      ],
+      "normal_strength": [
+        0.11999999731779099
+      ]
+    },
+    "MAT_13_Wool oat rug": {
+      "textures": [
+        {
+          "image": "wool-oat-v2-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "sRGB",
+          "targets": [
+            "Base Color"
+          ]
+        },
+        {
+          "image": "woven-rough-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Roughness"
+          ]
+        },
+        {
+          "image": "woven-normal-256.png",
+          "size": [
+            256,
+            256
+          ],
+          "color_space": "Non-Color",
+          "targets": [
+            "Color"
+          ]
+        }
+      ],
+      "normal_strength": [
+        0.1599999964237213
+      ]
+    },
+    "MAT_14_Muted sage": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_15_Unglazed ceramic": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_16_Quiet screen glass": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_17_Window glazing": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_18_Warm LED diffuser": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_19_Muted daylight sky": {
+      "textures": [],
+      "normal_strength": []
+    },
+    "MAT_20_Distant warm residence": {
+      "textures": [],
+      "normal_strength": []
+    }
+  },
+  "checks": "Window joins, opening, finished-edge clearance, finite geometry/UVs, PBR color spaces and normal strengths passed."
+}

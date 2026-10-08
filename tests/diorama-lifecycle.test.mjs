@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import * as THREE from 'three';
 import { loopState, clamp01, smooth, headline, isShellCore } from '../src/diorama-timeline.js';
 import { activateSceneFallback } from '../src/scene-fallback.js';
+import { interiorEnvelope, setRoomEmission } from '../src/room-daylight.js';
 
 const deferred = () => {
   let resolve, reject;
@@ -53,14 +54,20 @@ function harness() {
     THREE: { ...THREE, WebGLRenderer: Renderer, WebGLRenderTarget: Target },
     GLTFLoader: class { loadAsync() { const load = deferred(); loads.push(load); return load.promise; } },
     document, window, activateSceneFallback, loopState, clamp01, smooth, headline, isShellCore,
+    interiorEnvelope, setRoomEmission,
     console: { error() {} },
     requestAnimationFrame() { return ++calls.frames; }, cancelAnimationFrame() {},
   };
   vm.runInNewContext(`${source}
     globalThis.controller = {
-      init, shouldPlay, syncPlayback, onContextLost, onResize, onMotionChange, dispose,
+      init, shouldPlay, syncPlayback, onContextLost, onResize, onMotionChange, dispose, draw,
       state: () => ({ disposed, failed, pending: pendingRooms.size, active: canvas.dataset.active }),
       ready() { renderer = new THREE.WebGLRenderer(); inView = true; canvas.dataset.loaded = 'true'; },
+      renderable() {
+        renderer = new THREE.WebGLRenderer(); setRoom = () => {};
+        daylight = { apply() {}, dispose() {} };
+        crossfade = { render(from, blend, capture) { capture(from, null); }, dispose() {} };
+      },
       warm() {
         renderer = new THREE.WebGLRenderer(); setRoom = () => {};
         daylight = { apply() {}, dispose() {} };
@@ -143,4 +150,25 @@ test('shader warm-up cannot render after disposal and always releases its scratc
   assert.equal(h.calls.renders, 0);
   assert.equal(h.calls.scratchDisposals, 1);
   assert.equal(h.calls.disposals, 1);
+});
+
+test('completed hold reuses the full-quality frame but resize and the next stage redraw', () => {
+  const h = harness();
+  h.controller.renderable();
+  const hold = loopState(10_000);
+  assert.equal(hold.phase, 'hold');
+  h.controller.draw(hold);
+  assert.equal(h.calls.renders, 1);
+  for (let ms = 10_016; ms < 12_600; ms += 16) h.controller.draw(loopState(ms));
+  assert.equal(h.calls.renders, 1);
+  assert.equal(h.nodes.get('#viewer').dataset.rendering, 'held');
+  h.controller.draw(hold, true);
+  assert.equal(h.calls.renders, 2);
+  h.controller.draw(loopState(12_700));
+  assert.equal(h.calls.renders, 3);
+  assert.equal(h.nodes.get('#viewer').dataset.phase, 'transition');
+  h.controller.draw(loopState(24_400));
+  assert.equal(h.calls.renders, 4);
+  assert.equal(h.nodes.get('#viewer').dataset.space, '02');
+  h.controller.dispose();
 });

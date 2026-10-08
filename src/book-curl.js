@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { paperRow } from './page-curl-math.js';
+import { bookFrame, bookPixelRatio, visibleGrabBounds } from './book-quality.js';
 
 const paperMaterial = () => new THREE.MeshStandardMaterial({
-  color: 0xffffff, roughness: .94, metalness: 0, side: THREE.DoubleSide,
+  color: 0xffffff, roughness: .86, metalness: 0, side: THREE.DoubleSide,
   polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1
 });
 
@@ -30,8 +31,8 @@ export class BookCurl {
     this.light.castShadow = true;
     Object.assign(this.light.shadow.camera, { left: -1.6, right: 1.6, top: 1.4, bottom: -1.4, near: .1, far: 14 });
     this.light.shadow.bias = -.00012;
-    this.light.shadow.normalBias = .002;
-    this.light.shadow.radius = 3;
+    this.light.shadow.normalBias = .001;
+    this.light.shadow.radius = 2;
     this.scene.add(this.light);
     this.ground = new THREE.Mesh(new THREE.PlaneGeometry(5, 4), new THREE.ShadowMaterial({ color: 0x5d5142, opacity: .16 }));
     this.ground.position.z = -.06;
@@ -73,9 +74,12 @@ export class BookCurl {
     this.back = this.meshes.find(mesh => mesh.name === 'Book_Active_Back');
     this.pages = ['Left', 'Right'].map(side => this.meshes.find(mesh => mesh.name === 'Book_Page_' + side));
     if (!this.front || !this.back || this.pages.some(page => !page)) throw new Error('The Blender book is missing a required paper mesh.');
-    this.front.material = paperMaterial();
-    this.back.material = paperMaterial();
-    this.pages.forEach(page => { page.material = paperMaterial(); });
+    const printSurfaces = [this.front, this.back, ...this.pages];
+    const replaced = new Set(printSurfaces.map(page => page.material));
+    printSurfaces.forEach(page => { page.material = paperMaterial(); });
+    for (const material of replaced) {
+      if (!this.meshes.some(mesh => mesh.material === material)) material.dispose();
+    }
     // Normalize print coordinates from the actual Blender surface positions.
     for (const [index, page] of this.pages.entries()) {
       const position = page.geometry.attributes.position, uv = page.geometry.attributes.uv;
@@ -91,25 +95,28 @@ export class BookCurl {
 
   resize(width, height, mobile) {
     this.width = width; this.pixelHeight = height; this.mobile = mobile;
-    this.leftAngle = mobile ? THREE.MathUtils.degToRad(76) : .035;
+    const framing = bookFrame(width, height, mobile);
+    this.leftAngle = framing.leftAngle;
     this.leftWing.rotation.y = this.leftAngle;
-    // Rotate the raised mobile wing about the binding, not below the cover.
+    // Both stacks stay almost flat. Mobile crops the complete physical spread.
     this.leftWing.position.set(-.03 * Math.sin(this.leftAngle), 0, .03 * (1 - Math.cos(this.leftAngle)));
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.5 : 1.75));
+    this.renderer.setPixelRatio(bookPixelRatio(width, height, devicePixelRatio || 1, mobile));
     this.renderer.setSize(width, height, false);
     Object.assign(this.canvas.style, { left: '0px', top: '0px', width: '100%', height: '100%' });
     const aspect = width / height;
-    const worldWidth = mobile ? 1.55 : 2.42;
-    const worldHeight = Math.max(1.58, worldWidth / aspect);
+    const { worldHeight, centerX, cameraY } = framing;
     Object.assign(this.camera, { fov: THREE.MathUtils.radToDeg(2 * Math.atan(worldHeight / 14)), aspect });
-    this.camera.position.set(mobile ? .35 : 0, 0, 7);
-    this.camera.lookAt(mobile ? .35 : 0, 0, 0);
+    this.camera.position.set(centerX, cameraY, 7);
+    this.camera.lookAt(centerX, 0, 0);
     this.camera.updateProjectionMatrix();
-    const shadowSize = mobile ? 512 : 1024;
+    const shadowSize = mobile ? 768 : 1024;
     if (this.light.shadow.mapSize.x !== shadowSize) {
       this.light.shadow.mapSize.set(shadowSize, shadowSize);
       this.light.shadow.map?.dispose(); this.light.shadow.map = null;
     }
+    Object.assign(this.host.dataset, { bookDpr: this.renderer.getPixelRatio().toFixed(2),
+      bookBuffer: `${this.canvas.width}x${this.canvas.height}`, bookWorldWidth: framing.worldWidth.toFixed(3),
+      bookLeftAngle: this.leftAngle.toFixed(3), bookShadow: String(shadowSize) });
     if (this.ready) this.render();
   }
 
@@ -168,18 +175,32 @@ export class BookCurl {
 
   render() {
     if (this.disposed) return;
+    const started = performance.now();
     this.scene.updateMatrixWorld(true);
     this.renderer.render(this.scene, this.camera);
     this.host.dataset.bookTextures = String(this.renderer.info.memory.textures);
     this.host.dataset.bookGeometries = String(this.renderer.info.memory.geometries);
+    this.host.dataset.bookDrawCalls = String(this.renderer.info.render.calls);
+    this.host.dataset.bookRenderMs = (performance.now() - started).toFixed(2);
   }
   texture(canvas) {
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = Math.min(4, this.renderer.capabilities.getMaxAnisotropy());
+    texture.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
+    texture.generateMipmaps = true;
+    texture.minFilter = THREE.LinearMipmapLinearFilter;
+    texture.magFilter = THREE.LinearFilter;
     texture.userData.links = canvas.pageLinks;
     this.renderer.initTexture(texture);
+    this.host.dataset.pageTexture = `${canvas.width}x${canvas.height}`;
+    this.host.dataset.pageAnisotropy = String(texture.anisotropy);
     return texture;
+  }
+  pageLayoutWidth() {
+    // Match the projected reading page, not an arbitrary fraction of the canvas.
+    const a = new THREE.Vector3(0, 0, .035).project(this.camera);
+    const b = new THREE.Vector3(1, 0, .035).project(this.camera);
+    return Math.abs(b.x - a.x) * this.width / 2;
   }
   pageHit(clientX, clientY) {
     const rect = this.canvas.getBoundingClientRect();
@@ -193,7 +214,9 @@ export class BookCurl {
     const z = direction > 0 ? .035 : Math.sin(this.leftAngle) + .035;
     const top = new THREE.Vector3(x, .65, z).project(this.camera);
     const bottom = new THREE.Vector3(x, -.65, z).project(this.camera);
-    return { x: (top.x + 1) * this.width / 2, y: (1 - top.y) * this.pixelHeight / 2, height: (top.y - bottom.y) * this.pixelHeight / 2 };
+    return visibleGrabBounds({ x: (top.x + 1) * this.width / 2,
+      y: (1 - top.y) * this.pixelHeight / 2, height: (top.y - bottom.y) * this.pixelHeight / 2 },
+    this.width, this.pixelHeight, this.mobile ? 24 : 32);
   }
   hide() { this.active.forEach(mesh => { mesh.visible = false; }); delete this.host.dataset.curlProgress; if (this.ready) this.render(); }
   dispose() {

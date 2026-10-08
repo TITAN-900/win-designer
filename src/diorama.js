@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { clamp01, smooth, loopState, headline, isShellCore } from './diorama-timeline.js';
 import { RoomCrossfade } from './room-crossfade.js';
-import { RoomDaylight } from './room-daylight.js';
+import { RoomDaylight, heroQualityProfile, setRoomTextureQuality, interiorEnvelope, captureRoomEmission, setRoomEmission } from './room-daylight.js';
 import { activateSceneFallback } from './scene-fallback.js';
 
 const canvas = document.querySelector('#viewer');
@@ -21,6 +21,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(-8, 8, 5, -5, .1, 100);
 const rooms = [null, null];
 const records = [[], []];
+const emitters = [[], []];
 const bases = [null, null];
 const pendingRooms = new Set();
 let renderer;
@@ -29,8 +30,10 @@ let daylight;
 let observer;
 let frame = 0;
 let lastFrameTime = null;
+let meanFrameInterval = 0;
 let elapsed = 0;
 let inView = false;
+let heldSpace = -1;
 let disposed = false;
 let failed = false;
 
@@ -114,6 +117,9 @@ function roomSetup(gltf, roomIndex) {
       });
     }
   });
+  emitters[roomIndex] = captureRoomEmission(records[roomIndex].flatMap(record =>
+    [...(Array.isArray(record.original) ? record.original : [record.original]),
+      ...(Array.isArray(record.fade) ? record.fade : [record.fade])]));
   root.visible = false;
   scene.add(root);
   rooms[roomIndex] = root;
@@ -148,10 +154,21 @@ function fitCamera() {
   camera.top = vertical;
   camera.bottom = -vertical;
   camera.updateProjectionMatrix();
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, smallQuery.matches ? 1.35 : 2));
+  const quality = heroQualityProfile(rect.width, rect.height, window.devicePixelRatio || 1,
+    smallQuery.matches, renderer.capabilities.getMaxAnisotropy());
+  renderer.setPixelRatio(quality.pixelRatio);
+  // Only the tiny, slightly frosted glazing uses this secondary scene buffer.
+  // Keep the opaque room sharp while avoiding a second full-resolution pass.
+  renderer.transmissionResolutionScale = quality.transmissionScale;
   renderer.setSize(rect.width, rect.height, false);
+  rooms.forEach(root => setRoomTextureQuality(root, quality.anisotropy));
   crossfade?.resize();
   daylight?.resize(smallQuery.matches);
+  canvas.dataset.pixelRatio = quality.pixelRatio.toFixed(2);
+  canvas.dataset.renderSize = `${canvas.width}x${canvas.height}`;
+  canvas.dataset.anisotropy = String(quality.anisotropy);
+  canvas.dataset.shadowQuality = `${quality.contactShadow}/${quality.sunShadow}`;
+  canvas.dataset.transmissionScale = String(quality.transmissionScale);
 }
 
 function setRoom(roomIndex, build, opacity, offset) {
@@ -177,8 +194,20 @@ function setRoom(roomIndex, build, opacity, offset) {
   }
 }
 
-function draw(state = loopState(elapsed, reducedQuery.matches)) {
+function draw(state = loopState(elapsed, reducedQuery.matches), force = false) {
   if (!renderer || disposed || failed) return;
+  canvas.dataset.elapsed = String(Math.round(elapsed));
+  // A completed room is perfectly static for the hold. Keep its full-quality
+  // composited canvas instead of repeating the opaque/transmission/shadow
+  // passes; the timeline clock continues unchanged into the next transition.
+  if (!force && state.phase === 'hold' && heldSpace === state.space) {
+    canvas.dataset.rendering = 'held';
+    return;
+  }
+  heldSpace = state.phase === 'hold' ? state.space : -1;
+  canvas.dataset.rendering = 'live';
+  setRoomEmission(emitters[0], state.firstLight);
+  setRoomEmission(emitters[1], state.secondLight);
   const transition = state.phase === 'transition';
   if (transition) {
     crossfade.render(state.from, state.blend, (roomIndex, target) => {
@@ -208,10 +237,10 @@ function draw(state = loopState(elapsed, reducedQuery.matches)) {
   canvas.dataset.space = `0${state.space + 1}`;
   canvas.dataset.build = local.toFixed(3);
   canvas.dataset.daylight = (state.space === 0 ? state.firstLight : state.secondLight).toFixed(3);
+  canvas.dataset.interiorLight = interiorEnvelope(state.space === 0 ? state.firstLight : state.secondLight).toFixed(3);
   canvas.dataset.phase = state.phase;
   canvas.dataset.blend = state.blend.toFixed(3);
   canvas.dataset.loop = String(state.cycle);
-  canvas.dataset.elapsed = String(Math.round(elapsed));
   canvas.dataset.drawCalls = String(renderer.info.render.calls);
   canvas.dataset.textures = String(renderer.info.memory.textures);
   canvas.dataset.geometries = String(renderer.info.memory.geometries);
@@ -222,12 +251,18 @@ function stop() {
   if (frame) cancelAnimationFrame(frame);
   frame = 0;
   lastFrameTime = null;
+  heldSpace = -1;
   canvas.dataset.active = 'false';
 }
 function tick(now) {
   frame = 0;
   if (!shouldPlay()) return stop();
-  if (lastFrameTime !== null) elapsed += Math.min(64, now - lastFrameTime);
+  if (lastFrameTime !== null) {
+    const interval = now - lastFrameTime;
+    elapsed += Math.min(64, interval);
+    meanFrameInterval = meanFrameInterval ? .9 * meanFrameInterval + .1 * interval : interval;
+    canvas.dataset.frameInterval = meanFrameInterval.toFixed(2);
+  }
   lastFrameTime = now;
   draw();
   frame = requestAnimationFrame(tick);
@@ -342,7 +377,7 @@ async function init() {
   }
 }
 
-function onResize() { if (disposed || failed) return; fitCamera(); draw(loopState(elapsed, reducedQuery.matches)); }
+function onResize() { if (disposed || failed) return; fitCamera(); draw(loopState(elapsed, reducedQuery.matches), true); }
 function onMotionChange() { syncPlayback(); if (!reducedQuery.matches) draw(); }
 function onContextLost(event) {
   event.preventDefault();

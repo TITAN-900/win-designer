@@ -86,10 +86,12 @@ for i in range(1,18):
 for y in (-1.56,0,1.56):
     box(f'ARCH_Staggered cross joint {y:+.2f}',ARCH,(0,y,.022),(7.5,.004,.002),floor_seam,0)
 box('ARCH_Bedroom back wall',ARCH,(0,3.17,1.46),(7.8,.18,2.92),plaster,.014)
-box('ARCH_Bedroom left front pier',ARCH,(-3.88,-2.54,1.46),(.18,1.13,2.92),wall,.012)
-box('ARCH_Bedroom left rear pier',ARCH,(-3.88,2.07,1.46),(.18,2.19,2.92),wall,.012)
-box('ARCH_Bedroom window sill wall',ARCH,(-3.88,-.77,.43),(.18,2.42,.86),wall,.012)
-box('ARCH_Bedroom window head',ARCH,(-3.88,-.77,2.65),(.18,2.42,.54),wall,.012)
+# Continuous wall at both jambs: 5 mm overlap with the sill/head, with small
+# finished edges that cannot carve a second light leak through the joint.
+box('ARCH_Bedroom left front pier',ARCH,(-3.88,-2.54,1.46),(.18,1.13,2.92),wall,.002)
+box('ARCH_Bedroom left rear pier',ARCH,(-3.88,1.80,1.46),(.18,2.73,2.92),wall,.002)
+box('ARCH_Bedroom window sill wall',ARCH,(-3.88,-.77,.43),(.18,2.42,.86),wall,.002)
+box('ARCH_Bedroom window head',ARCH,(-3.88,-.77,2.76),(.18,2.42,.32),wall,.002)
 box('ARCH_Bedroom glazing',ARCH,(-3.90,-.77,1.73),(.018,2.39,1.80),glass,.003)
 for y in (-1.98,-.77,.43):
     box(f'ARCH_Window slim bronze mullion {y:+.2f}',ARCH,(-3.81,y,1.73),(.032,.030,1.82),bronze,.003)

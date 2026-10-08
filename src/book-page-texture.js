@@ -1,6 +1,8 @@
 // Paint the same measured page layout onto paper textures. Photos, labels and
 // branding all deform with the sheet; no flat DOM image sits above the curl.
-export async function paintPage(markup, width, height, mobile) {
+import { pageRasterSize } from './book-quality.js';
+
+export async function paintPage(markup, width, height, mobile, maxTextureSize) {
   await document.fonts.ready;
   const source = document.createElement('div');
   source.className = 'book-texture-source';
@@ -14,10 +16,13 @@ export async function paintPage(markup, width, height, mobile) {
       await image.decode();
     }));
     const canvas = document.createElement('canvas');
-    const scale = Math.min(mobile ? 2 : 2.2, (mobile ? 768 : 1200) / width);
-    canvas.width = Math.ceil(width * scale);
-    canvas.height = Math.ceil(height * scale);
+    const raster = pageRasterSize(width, height, mobile, maxTextureSize);
+    const scale = raster.scale;
+    canvas.width = raster.width;
+    canvas.height = raster.height;
     const context = canvas.getContext('2d');
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = 'high';
     context.scale(scale, scale);
     const origin = source.getBoundingClientRect();
     const box = element => {

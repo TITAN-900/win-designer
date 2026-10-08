@@ -164,10 +164,13 @@ for idx in range(1, 4):
     box(f"ARCH_Tile cross joint {idx:02d}", ARCH, (0, y, 0.021), (7.6, 0.007, 0.002), stone_edge, 0)
 
 box("ARCH_Back wall", ARCH, (0, 3.17, 1.46), (7.8, 0.18, 2.92), ivory, 0.014)
-box("ARCH_Left wall front pier", ARCH, (-3.88, -2.54, 1.46), (0.18, 1.13, 2.92), wall_side, 0.012)
-box("ARCH_Left wall rear pier", ARCH, (-3.88, 2.07, 1.46), (0.18, 2.19, 2.92), wall_side, 0.012)
-box("ARCH_Window sill wall", ARCH, (-3.88, -0.77, 0.43), (0.18, 2.42, 0.86), wall_side, 0.012)
-box("ARCH_Window head", ARCH, (-3.88, -0.77, 2.65), (0.18, 2.42, 0.54), wall_side, 0.012)
+# Window jambs span Y=-1.98..+.44. Both piers overlap their jamb by 5 mm;
+# the former rear pier began at +.975, leaving a 535 mm full-height hole.
+box("ARCH_Left wall front pier", ARCH, (-3.88, -2.54, 1.46), (0.18, 1.13, 2.92), wall_side, 0.002)
+box("ARCH_Left wall rear pier", ARCH, (-3.88, 1.80, 1.46), (0.18, 2.73, 2.92), wall_side, 0.002)
+box("ARCH_Window sill wall", ARCH, (-3.88, -0.77, 0.43), (0.18, 2.42, 0.86), wall_side, 0.002)
+# The head meets the existing upper frame at Z=2.60; it no longer masks it.
+box("ARCH_Window head", ARCH, (-3.88, -0.77, 2.76), (0.18, 2.42, 0.32), wall_side, 0.002)
 box("ARCH_Window glazing", ARCH, (-3.90, -0.77, 1.73), (0.018, 2.39, 1.80), glass, 0.003)
 for yy in (-1.98, -0.77, 0.43):
     box(f"ARCH_Window mullion {yy:+.2f}", ARCH, (-3.81, yy, 1.73), (0.035, 0.032, 1.82), oak_edge, 0.004)

@@ -123,7 +123,7 @@
   .book-intro { width: 88vw; margin-bottom: 30px; }
   .book-intro h2 { max-width: 8em; font-size: clamp(38px, 10.2vw, 50px); line-height: 1.06; }
   .book-intro p { font-size: 12px; }
-  .book-object { width: min(98vw, 520px); aspect-ratio: .86; }
+  .book-object { width: min(100%, 520px); aspect-ratio: .78; }
   .book-page--left { display: block; }
   /* A failed GPU must not remove the four projects printed on the left page. */
   .book-fallback .book-object { display: flex; flex-direction: column; gap: 20px; aspect-ratio: auto; }
