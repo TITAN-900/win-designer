@@ -102,11 +102,9 @@ box('ARCH_Left painted cornice',ARCH,(-3.74,0,2.87),(.07,6.05,.035),stone,.006)
 box('ARCH_Recessed ceiling cove reveal',ARCH,(.45,3.02,2.78),(5.9,.08,.025),oak_edge,.002)
 box('ARCH_Skirting back',ARCH,(0,3.055,.09),(7.6,.033,.16),cut,.004)
 box('ARCH_Curtain pocket',ARCH,(-3.67,-.77,2.84),(.06,2.44,.04),stone,.006)
-sky=mat('MAT_18_Distant daylight sky',(.65,.73,.74),1)
-far=mat('MAT_19_Distant residence',(.56,.60,.56),1)
-box('EXT_Soft sky outside bedroom',EXT,(-4.55,-.78,1.80),(.025,2.48,1.75),sky,0)
-for i,(y,h) in enumerate(((-1.67,.8),(-.61,.56),(.15,1.04))):
-    box(f'EXT_Residence silhouette {i+1}',EXT,(-4.40,y,.85+h/2),(.09,.38,h),far,.006)
+# No detached exterior sky slab or miniature buildings: those source meshes
+# projected above the window wall as rectangular blocks. Preserve this empty
+# stage collection, the fitted glazing and the unchanged real daylight rig.
 
 # Built-in wardrobe has real door gaps, exposed oak niche, pulls, plinth and crown.
 box('JOINERY_Wardrobe left carcass',WARDROBE,(-2.67,2.80,1.37),(2.25,.56,2.60),oak_edge,.012)

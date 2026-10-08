@@ -30,8 +30,8 @@
       ]
     }
   },
-  "mesh_objects": 160,
-  "evaluated_mesh_triangles": 101776,
+  "mesh_objects": 156,
+  "evaluated_mesh_triangles": 101200,
   "collections": {
     "01_ARCH_EmptyRoom": [
       "ARCH_Back plaster cornice",
@@ -214,12 +214,7 @@
       "LIGHT_Recessed ceiling spot trim 3",
       "LIGHT_Recessed ceiling spot trim 4"
     ],
-    "08_EXT_WindowView": [
-      "EXT_Distant residence silhouette 1",
-      "EXT_Distant residence silhouette 2",
-      "EXT_Distant residence silhouette 3",
-      "EXT_Soft blue grey sky"
-    ]
+    "08_EXT_WindowView": []
   },
   "materials": {
     "MAT_01_Warm painted plaster": {
@@ -632,14 +627,6 @@
       "normal_strength": []
     },
     "MAT_18_Warm LED diffuser": {
-      "textures": [],
-      "normal_strength": []
-    },
-    "MAT_19_Muted daylight sky": {
-      "textures": [],
-      "normal_strength": []
-    },
-    "MAT_20_Distant warm residence": {
       "textures": [],
       "normal_strength": []
     }

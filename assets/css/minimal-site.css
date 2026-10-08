@@ -57,3 +57,4 @@ body.project-page .project-hero-copy .lead { margin:20px 0 0; color:inherit; }
   .project-note p { margin-top:16px; }
   body .site-footer.minimal-footer { padding-block:24px; }
 }
+.project-return { width: min(1360px, 88vw); margin: 0 auto; padding: 24px 0 80px; }

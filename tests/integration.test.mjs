@@ -28,23 +28,21 @@ test('original six projects and every referenced image exist',()=>{
   };
   walk(data);
 });
-test('real logo, contact details and all homepage anchors are retained',()=>{
-  assert.equal(data.site.phoneHref,'tel:+601172455699');
-  assert.equal(data.site.whatsappBase,'https://wa.me/601172455699');
+test('real logo and portfolio navigation remain while public contact data is removed',()=>{
+  assert.equal(data.site.phoneHref,undefined);
+  assert.equal(data.site.whatsappBase,undefined);
   assert.ok(html.includes(data.site.logo));
   for(const match of html.matchAll(/href="#([^"]+)"/g))assert.ok(html.includes(`id="${match[1]}"`),match[1]);
-  for(const section of ['home','portfolio','contact','showcase'])assert.ok(html.includes(`id="${section}"`));
-  assert.doesNotMatch(html,/href="about\.html|href="[^"]*#(?:services|projectBeforeAfter|process|materials)"/);
+  for(const section of ['home','portfolio','showcase'])assert.ok(html.includes(`id="${section}"`));
   for(const page of ['index.html','project.html']){
     const nav=read(page).match(/<nav class="nav-links"[\s\S]*?<\/nav>/)[0];
     const links=[...nav.matchAll(/<a\b[^>]*href="([^"]+)"/g)].map(match=>match[1]);
     assert.equal(links.length,2,page);
-    assert.equal(links[0],'#contact');
-    assert.equal(new URL(links[1]).hostname,'wa.me');
-    assert.match(nav,/<svg class="action-arrow"/);
+    assert.ok(links[0].endsWith('#home'));
+    assert.ok(links[1].endsWith('#portfolio'));
+    assert.doesNotMatch(nav,/admin|contact|whatsapp/i);
   }
-  assert.ok(!/href="#"/.test(html));
-  assert.ok(!/hello@windesigner\.com/.test(html));
+  assert.doesNotMatch(html,/href="#"/);
 });
 test('the original logo keeps its natural proportions in navigation and footer',()=>{
   const logo=readFileSync(data.site.logo);
@@ -60,19 +58,12 @@ test('the original logo keeps its natural proportions in navigation and footer',
   assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-brand img\s*\{[^}]*height:\s*auto/);
   assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-bottom \.js-year\s*\{\s*display:\s*inline;?\s*\}/);
 });
-test('minimal contact links prepare WhatsApp drafts without collecting form data',()=>{
-  for(const page of ['index.html','project.html']){
+test('public pages and shipped data contain no contact or editing affordances',()=>{
+  for(const page of ['index.html','project.html','about.html','assets/data/projects.js','src/project-content.js','src/project.js']){
     const source=read(page);
     assert.doesNotMatch(source,/<form\b|class="contact-form"/);
-    const links=[...source.matchAll(/<a\b[^>]*href="(https:\/\/wa\.me\/[^"]+)"[^>]*>/g)];
-    assert.ok(links.length>0,page);
-    for(const [tag,href] of links){
-      const url=new URL(href);
-      assert.equal(url.pathname,'/601172455699');
-      assert.ok(url.searchParams.get('text').includes('discuss my interior project'));
-      assert.match(tag,/target="_blank"/);
-      assert.match(tag,/rel="noopener"/);
-    }
+    assert.doesNotMatch(source,/wa\.me|tel:|mailto:|601172455699|#contact|contactPoint|enquiry/i,page);
+    assert.doesNotMatch(source,/>\s*(?:Upload|Edit|Delete|Admin|Add Photo|Publish|\+ Add Project)\s*</i,page);
   }
   assert.doesNotMatch(read('assets/js/main.js'),/initContactForms|FormData|renderTransformationPreview|renderHome/);
 });
@@ -80,10 +71,10 @@ test('production build retains project photography, SEO files and lighting',()=>
   for(const p of ['index.html','about.html','project.html','assets/js/main.js','assets/data/projects.js','assets/js/vendor/three.module.min.js','assets/js/studio-sculpture-geometry.js','american-walnut.jpg.jpeg','models/win_interior_demo.glb','robots.txt','sitemap.xml'])assert.ok(existsSync(resolve('dist',p)),p);
   const verify=dir=>{for(const entry of readdirSync(resolve('public',dir),{withFileTypes:true})){const p=dir+'/'+entry.name;if(entry.isDirectory())verify(p);else assert.ok(existsSync(resolve('dist',p)),p);}};
   verify('lighting');
-  assert.match(read('about.html'),/http-equiv="refresh" content="0; url=\/#contact"/);
+  assert.match(read('about.html'),/http-equiv="refresh" content="0; url=\/#portfolio"/);
   assert.match(read('about.html'),/name="robots" content="noindex, follow"/);
   assert.doesNotMatch(read('about.html'),/src\/about\.js|<section\b/);
-  assert.ok(JSON.parse(read('vercel.json')).redirects.some(route=>route.source==='/about.html'&&route.destination==='/#contact'));
+  assert.ok(JSON.parse(read('vercel.json')).redirects.some(route=>route.source==='/about.html'&&route.destination==='/#portfolio'));
 });
 
 test('Vercel build does not depend on empty local-only directories',()=>{
@@ -215,22 +206,22 @@ test('compact navigation closes on Escape, outside click and desktop resize',()=
   assert.doesNotMatch(read('assets/js/site-integration.js'),/renovation-compare|compare-range/);
 });
 
-test('Contact navigation follows the contact section in both directions',()=>{
+test('Portfolio navigation follows the reading section in both directions',()=>{
   let scrollY=0;
   const listeners={};
   const sections=[{id:'portfolio',top:1000,bottom:6000},{id:'contact',top:6000,bottom:8500}]
     .map(section=>({...section,getBoundingClientRect:()=>({top:section.top-scrollY,bottom:section.bottom-scrollY})}));
-  const links=sections.filter(section=>section.id==='contact').map(section=>({href:`https://win-designer.vercel.app/#${section.id}`,active:false,addEventListener(){},getAttribute(){return null;},classList:{toggle(_name,value){const link=links.find(link=>link.href.endsWith('#'+section.id));link.active=value===undefined?!link.active:Boolean(value);}}}));
+  const links=sections.filter(section=>section.id==='portfolio').map(section=>({href:`https://win-designer.vercel.app/#${section.id}`,active:false,addEventListener(){},getAttribute(){return null;},classList:{toggle(_name,value){const link=links.find(link=>link.href.endsWith('#'+section.id));link.active=value===undefined?!link.active:Boolean(value);}}}));
   const nav={getBoundingClientRect:()=>({bottom:78}),classList:{add(){}}};
   const document={readyState:'complete',body:{},querySelector:selector=>selector==='.site-nav'?nav:null,querySelectorAll:selector=>selector==='[data-nav-section]'?sections:selector==='.nav-links a'?links:[]};
   const window={WIN_DESIGN_DATA:data,addEventListener:(name,fn)=>{listeners[name]=fn;},requestAnimationFrame:fn=>fn()};
   vm.runInNewContext(read('assets/js/main.js'),{window,document,URL,URLSearchParams,location:{href:'https://win-designer.vercel.app/',pathname:'/'}});
   const active=()=>links.filter(link=>link.active).map(link=>new URL(link.href).hash);
   assert.deepEqual(active(),[]);
-  scrollY=1000;listeners.scroll();assert.deepEqual(active(),[]);
-  scrollY=5000;listeners.scroll();assert.deepEqual(active(),[]);
-  scrollY=7500;listeners.scroll();assert.deepEqual(active(),['#contact']);
-  scrollY=6000;listeners.scroll();assert.deepEqual(active(),['#contact']);
+  scrollY=1000;listeners.scroll();assert.deepEqual(active(),['#portfolio']);
+  scrollY=5000;listeners.scroll();assert.deepEqual(active(),['#portfolio']);
+  scrollY=7500;listeners.scroll();assert.deepEqual(active(),[]);
+  scrollY=6000;listeners.scroll();assert.deepEqual(active(),[]);
   scrollY=0;listeners.resize();assert.deepEqual(active(),[]);
 });
 
@@ -254,16 +245,21 @@ test('editorial image movement is bounded and exactly reversible without accumul
   assert.equal(mediaOffset(10000,500,1000),-8);
 });
 
-test('the portfolio book has four images per page and spreads advance by two',()=>{
+test('the portfolio book has four slots per page with unique projects and empty capacity',()=>{
   const pages=createBookPages(data);
   assert.equal(pages.length,4);
   for(const page of pages){
     assert.equal(page.cells.length,4);
     for(const cell of page.cells){
+      if(!cell)continue;
       assert.ok(existsSync(cell.image.src));
       assert.ok(data.projects.some(project=>project.slug===cell.slug));
     }
   }
+  const occupied=pages.flatMap(page=>page.cells).filter(Boolean);
+  assert.equal(occupied.length,6);
+  assert.equal(new Set(occupied.map(cell=>cell.slug)).size,6);
+  assert.equal(pages.flatMap(page=>page.cells).filter(cell=>!cell).length,10);
   assert.equal(nextBookPosition(-1,false,pages.length),0);
   assert.equal(nextBookPosition(0,false,pages.length),2);
   assert.equal(nextBookPosition(2,false,pages.length),2);
@@ -278,7 +274,7 @@ test('the portfolio book has four images per page and spreads advance by two',()
 });
 
 test('the short homepage keeps local accessible images and normal page scrolling',()=>{
-  for(const section of ['home','portfolio','contact'])assert.ok(html.includes(`id="${section}"`));
+  for(const section of ['home','portfolio'])assert.ok(html.includes(`id="${section}"`));
   for(const removed of ['about-home','materials','transformations','process','projectSections'])assert.ok(!html.includes(`id="${removed}"`));
   for(const match of html.matchAll(/<img\s[^>]+>/g)){
     const tag=match[0],src=tag.match(/src="([^"]+)"/)[1];
@@ -299,8 +295,8 @@ test('mobile book fallback keeps both printed pages and their project navigation
   assert.match(css,/\.book-fallback \.book-object\s*\{[^}]*flex-direction:\s*column/);
   assert.match(css,/\.book-fallback \.book-page\s*\{[^}]*display:\s*block/);
   assert.doesNotMatch(css,/\.book-fallback \.book-page--left\s*\{[^}]*display:\s*none/);
-  assert.doesNotMatch(read('src/portfolio-book.js'),/function coverMarkup|function insideMarkup/);
-  assert.match(html,/>01—02 \/ 04<\/span>/);
+  assert.match(read('src/portfolio-book.js'),/function bookCoverMarkup/);
+  assert.match(html,/>COVER<\/span>/);
 });
 
 test('all content image URLs are served by dev and production preview',async()=>{

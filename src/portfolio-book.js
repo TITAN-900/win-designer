@@ -1,24 +1,12 @@
 import { unit, releaseTarget, springStep } from './page-curl-math.js';
 import { paintPage } from './book-page-texture.js';
+import { catalogPages } from './portfolio-catalog.js';
 
-const picks = [
-  [['walnut-residence', 0], ['walnut-residence', 1], ['walnut-residence', 2], ['walnut-residence', 3]],
-  [['stone-kitchen', 0], ['stone-kitchen', 1], ['stone-kitchen', 2], ['foyer-cabinetry', 0]],
-  [['private-suite', 0], ['private-suite', 1], ['private-suite', 2], ['open-living', 0]],
-  [['open-living', 1], ['foyer-cabinetry', 1], ['built-in-study', 0], ['built-in-study', 1]]
-];
 const escapeHTML = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;')
   .replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 
 export function createBookPages(data) {
-  return picks.map((page, pageIndex) => ({
-    number: pageIndex + 1,
-    cells: page.map(([slug, imageIndex]) => {
-      const project = data.projects.find(item => item.slug === slug);
-      if (!project?.gallery[imageIndex]) throw new Error(`Missing book image: ${slug}/${imageIndex}`);
-      return { project: project.title, slug, image: project.gallery[imageIndex] };
-    })
-  }));
+  return catalogPages(data);
 }
 
 export function nextBookPosition(current, mobile, pageCount) {
@@ -27,18 +15,28 @@ export function nextBookPosition(current, mobile, pageCount) {
 export function previousBookPosition(current, mobile) {
   return Math.max(0, current - 2);
 }
+export function canAdvanceBook(coverOpen, position, pageCount) {
+  return !coverOpen || position < pageCount - 2;
+}
 
 function pageMarkup(page) {
   return `<div class="book-paper">
     <div class="book-paper-top"><span>WIN DESIGN</span><span>SELECTED INTERIORS / 0${page.number}</span></div>
-    <div class="book-grid">${page.cells.map(cell => `
+    <div class="book-grid">${page.cells.map(cell => cell ? `
       <a class="book-cell" href="/projects/${encodeURIComponent(cell.slug)}/" aria-label="View ${escapeHTML(cell.project)}">
         <img src="${escapeHTML(cell.image.src)}" alt="${escapeHTML(cell.image.alt)}"
           width="${cell.image.width}" height="${cell.image.height}" loading="lazy" decoding="async">
         <span>${escapeHTML(cell.project)}</span>
-      </a>`).join('')}</div>
+      </a>` : '<div class="book-cell book-cell--empty" aria-hidden="true"></div>').join('')}</div>
     <div class="book-paper-foot"><span>SPACES / MATERIAL / DETAIL</span><span>0${page.number}</span></div>
   </div>`;
+}
+
+function bookCoverMarkup(logo) {
+  return `<div class="book-cover"><span class="book-cover-edition">WIN DESIGN / PORTFOLIO</span>
+    <img src="/${escapeHTML(logo)}" alt="WIN DESIGN" width="946" height="512">
+    <div><span>SELECTED INTERIORS</span><strong>Spaces,<br>collected.</strong></div>
+    <span class="book-cover-bottom">SPACE / MATERIAL / DETAIL</span></div>`;
 }
 
 export function initPortfolioBook(data) {
@@ -54,6 +52,8 @@ export function initPortfolioBook(data) {
   const mobileQuery = window.matchMedia('(max-width: 760px)');
   const reducedQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   let position = 0;
+  let coverOpen = false;
+  let coverProgress = 0;
   let busy = false;
   let curl, preparation, gesture, turn, observer;
   let frame = 0, resizeFrame = 0, version = 0;
@@ -79,17 +79,26 @@ export function initPortfolioBook(data) {
     return handle;
   });
   function mobile() { return mobileQuery.matches; }
-  function markup(pageIndex) { return pageMarkup(pages[pageIndex]); }
+  function markup(pageIndex) { return pageIndex === -1 ? bookCoverMarkup(data.site.logo) : pageMarkup(pages[pageIndex]); }
   function spread(pageIndex) { return [Math.floor(pageIndex / 2) * 2, Math.floor(pageIndex / 2) * 2 + 1]; }
   function destination(direction) { return direction > 0 ? nextBookPosition(position, mobile(), pages.length) : previousBookPosition(position, mobile()); }
   function updateControls() {
-    previous.disabled = position <= 0 || busy;
-    next.disabled = position >= pages.length - 2 || busy;
-    status.textContent = `0${Math.floor(position / 2) * 2 + 1}—0${Math.floor(position / 2) * 2 + 2} / 04`;
+    previous.disabled = !coverOpen || busy || (failure && position === 0);
+    next.disabled = !canAdvanceBook(coverOpen, position, pages.length) || busy;
+    const number = n => String(n).padStart(2, '0');
+    status.textContent = coverOpen ? `${number(position + 1)}—${number(position + 2)} / ${number(pages.length)}` : 'COVER';
+    next.setAttribute('aria-label', coverOpen ? 'Next portfolio pages' : 'Open portfolio cover');
+    book.dataset.cover = coverOpen ? 'open' : 'closed';
+    book.dataset.capacity = String(pages.length * 4);
+    book.dataset.emptySlots = String(pages.flatMap(page => page.cells).filter(cell => !cell).length);
+    const hint = document.querySelector('.book-hint');
+    if (hint) hint.textContent = coverOpen ? 'Drag a page edge to explore' : 'Drag the cover to open';
     book.dataset.page = String(position);
     book.dataset.mode = mobile() ? 'single' : 'spread';
-    handles[0].disabled = position <= 0 || (busy && gesture?.direction !== -1);
-    handles[1].disabled = position >= pages.length - 2 || (busy && gesture?.direction !== 1);
+    handles[0].disabled = !coverOpen || (busy && gesture?.direction !== -1);
+    handles[1].disabled = !canAdvanceBook(coverOpen, position, pages.length) || (busy && gesture?.direction !== 1);
+    handles[1].setAttribute('aria-label', coverOpen ? 'Drag page edge for next page' : 'Drag portfolio cover to open');
+    handles[0].setAttribute('aria-label', position === 0 ? 'Drag portfolio cover to close' : 'Drag page edge for previous page');
   }
   function render() {
     const pair = spread(position);
@@ -102,6 +111,7 @@ export function initPortfolioBook(data) {
     if (disposed) return;
     console.error('Portfolio page curl failed:', error);
     failure = true;
+    coverOpen = true; coverProgress = 1;
     book.classList.add('book-fallback');
     book.classList.remove('book-ready');
     finish(false);
@@ -124,9 +134,14 @@ export function initPortfolioBook(data) {
       curl.resize(width, height, mobile());
       book.dataset.renderer = 'blender-curved-mesh';
       let tap;
-      curl.canvas.addEventListener('pointerdown', event => { if (!busy) tap = { x: event.clientX, y: event.clientY, id: event.pointerId }; });
-      curl.canvas.addEventListener('pointercancel', () => { tap = null; });
+      curl.canvas.addEventListener('pointerdown', event => {
+        if (!coverOpen && !busy) { grab(event, 1, curl.canvas); return; }
+        if (!busy) tap = { x: event.clientX, y: event.clientY, id: event.pointerId };
+      });
+      curl.canvas.addEventListener('pointermove', move);
+      curl.canvas.addEventListener('pointercancel', event => { tap = null; cancel(event); });
       curl.canvas.addEventListener('pointerup', event => {
+        if (gesture?.handle === curl.canvas) { release(event); tap = null; return; }
         if (!busy && tap?.id === event.pointerId && Math.hypot(event.clientX - tap.x, event.clientY - tap.y) < 7) {
           const href = curl.pageHit(event.clientX, event.clientY);
           if (href) window.location.assign(href);
@@ -159,8 +174,8 @@ export function initPortfolioBook(data) {
     try {
       await prepare();
       if (disposed) return;
-      const keys = new Set();
-      for (const index of [position, destination(1), destination(-1)]) {
+      const keys = new Set([-1]);
+      for (const index of [position, destination(1)]) {
         const pair = spread(index);
         pair.forEach(key => keys.add(key));
       }
@@ -170,7 +185,15 @@ export function initPortfolioBook(data) {
         const front = textureValues.get(pair[0]), back = textureValues.get(pair[1]);
         if (!front || !back) return;
         curl.setSpread(front, back);
+        curl.setCoverTexture(textureValues.get(-1));
+        curl.setCover(coverProgress);
+        placeHandles();
         releaseRetired();
+        // Bound future data-driven books to the visible spread and its next
+        // neighbour, plus the cover. Earlier pages are repainted on demand.
+        for (const [key, value] of textureValues) if (!keys.has(key)) {
+          value.dispose(); textureValues.delete(key); textures.delete(key);
+        }
         book.classList.add('book-ready');
       }
     } catch (error) { reportFailure(error); }
@@ -178,9 +201,29 @@ export function initPortfolioBook(data) {
 
   async function begin(direction, intent = null) {
     if (busy || disposed) return;
+    if (failure) { position = destination(direction); render(); return; }
+    if (!coverOpen || (direction < 0 && position === 0)) {
+      if (!coverOpen && direction < 0) return;
+      busy = true; updateControls();
+      const token = version;
+      try {
+        await prepare();
+        const pair = spread(position);
+        await Promise.all([-1, ...pair].map(texture));
+        if (disposed || token !== version) return;
+        curl.setSpread(textureValues.get(pair[0]), textureValues.get(pair[1]), false);
+        curl.setCoverTexture(textureValues.get(-1));
+        turn = { kind: 'cover', direction, progress: intent?.progress || 0, corner: 0 };
+        book.classList.add('book-ready');
+        book.dataset.turning = intent ? 'dragging-cover' : 'settling-cover';
+        drawTurn();
+        if (!intent) settle(1, .3);
+        else if (intent.released) settle(intent.cancelled ? 0 : releaseTarget(intent.progress, intent.velocity), intent.velocity);
+      } catch (error) { reportFailure(error); }
+      return;
+    }
     const target = destination(direction);
     if (target === position) return;
-    if (failure) { position = target; render(); return; }
     busy = true;
     updateControls();
     const token = version;
@@ -192,7 +235,7 @@ export function initPortfolioBook(data) {
       await Promise.all([...new Set([...old, ...upcoming])].map(texture));
       const [front, back] = await Promise.all([texture(frontKey), texture(backKey)]);
       if (disposed || token !== version || !front || !back) return;
-      turn = { target, progress: intent?.progress || 0, corner: intent?.corner || 0 };
+      turn = { kind: 'page', target, progress: intent?.progress || 0, corner: intent?.corner || 0 };
       book.classList.add('book-ready');
       const underneath = direction > 0 ? [old[0], upcoming[1]] : [upcoming[0], old[1]];
       curl.setSpread(textureValues.get(underneath[0]), textureValues.get(underneath[1]), false);
@@ -206,13 +249,13 @@ export function initPortfolioBook(data) {
       curl.draw(turn.progress, turn.corner);
       releaseRetired();
       if (!intent) settle(1, .3);
-      else if (intent.released) settle(intent.cancelled ? 0 : intent.moved < 6 ? 1 : releaseTarget(intent.progress, intent.velocity), intent.velocity);
+      else if (intent.released) settle(intent.cancelled ? 0 : releaseTarget(intent.progress, intent.velocity), intent.velocity);
     } catch (error) { reportFailure(error); }
   }
 
   function grab(event, direction, handle) {
     if (busy || (event.pointerType !== 'touch' && event.button !== 0)) return;
-    event.preventDefault();
+    if (handle !== curl?.canvas) event.preventDefault();
     const rect = object.getBoundingClientRect();
     gesture = { pointerId: event.pointerId, direction, handle, startX: event.clientX, lastX: event.clientX,
       time: event.timeStamp, velocity: 0, progress: 0, moved: 0,
@@ -233,7 +276,7 @@ export function initPortfolioBook(data) {
       frame = 0;
       if (!turn || !gesture || gesture.released) return;
       turn.progress = gesture.progress;
-      curl.draw(turn.progress, turn.corner);
+      drawTurn();
     });
   }
 
@@ -244,7 +287,7 @@ export function initPortfolioBook(data) {
     if (gesture.handle.hasPointerCapture(event.pointerId)) gesture.handle.releasePointerCapture(event.pointerId);
     if (turn) {
       turn.progress = gesture.progress;
-      settle(gesture.moved < 6 ? 1 : releaseTarget(turn.progress, gesture.velocity), gesture.velocity);
+      settle(releaseTarget(turn.progress, gesture.velocity), gesture.velocity);
     }
   }
   function cancel(event) {
@@ -261,15 +304,26 @@ export function initPortfolioBook(data) {
     if (!busy && (event.key === ' ' || event.key === 'Enter')) {
       gesture = { direction, handle, progress: 0, corner: .8, moved: 10, velocity: 0, keyboard: true, released: false };
       void begin(direction, gesture);
-    } else if (turn && gesture?.keyboard) {
-      if (event.key === 'Escape') settle(0, 0);
-      else if (event.key === 'Enter' || event.key === ' ') settle(releaseTarget(turn.progress, 0), 0);
+    } else if (gesture?.keyboard && !gesture.released) {
+      if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+        gesture.released = true;
+        gesture.cancelled = event.key === 'Escape';
+        if (turn) settle(gesture.cancelled ? 0 : releaseTarget(turn.progress, 0), 0);
+      }
       else {
         gesture.progress = unit(gesture.progress + (event.key === 'ArrowLeft' ? direction : -direction) * .05);
-        turn.progress = gesture.progress;
-        curl.draw(turn.progress, turn.corner);
+        // Retain input even while the first GLB/page textures are preparing.
+        if (turn) { turn.progress = gesture.progress; drawTurn(); }
       }
     }
+  }
+
+  function drawTurn() {
+    if (!turn) return;
+    if (turn.kind === 'cover') {
+      coverProgress = turn.direction > 0 ? turn.progress : 1 - turn.progress;
+      curl.setCover(coverProgress);
+    } else curl.draw(turn.progress, turn.corner);
   }
 
   function settle(target, initialVelocity) {
@@ -283,9 +337,9 @@ export function initPortfolioBook(data) {
       const state = springStep(turn.progress, velocity, target, (now - previousTime) / 1000);
       previousTime = now; velocity = state.velocity; turn.progress = state.position;
       if (reducedQuery.matches || now - started > 1000 || (Math.abs(turn.progress - target) < .001 && Math.abs(velocity) < .018)) {
-        curl.draw(target, turn.corner); finish(target === 1); return;
+        turn.progress = target; drawTurn(); finish(target === 1); return;
       }
-      curl.draw(turn.progress, turn.corner);
+      drawTurn();
       frame = requestAnimationFrame(advance);
     };
     frame = requestAnimationFrame(advance);
@@ -293,13 +347,20 @@ export function initPortfolioBook(data) {
 
   function finish(completed) {
     cancelAnimationFrame(frame); frame = 0;
-    if (completed && turn) position = turn.target;
+    if (turn?.kind === 'cover') {
+      if (completed) coverOpen = turn.direction > 0;
+      coverProgress = coverOpen ? 1 : 0;
+      curl?.setCover(coverProgress, false);
+    } else if (completed && turn) position = turn.target;
     const pair = spread(position);
     if (textureValues.has(pair[0]) && textureValues.has(pair[1])) curl?.setSpread(textureValues.get(pair[0]), textureValues.get(pair[1]), false);
     curl?.hide();
     turn = null; gesture = null; busy = false;
     delete book.dataset.turning;
     render();
+    // Cover movement also changes the desktop camera center. Reproject the
+    // narrow drag gutters after release, without moving a captured handle.
+    placeHandles();
     if (!failure) void warm();
   }
   function placeHandles() {
@@ -342,7 +403,11 @@ export function initPortfolioBook(data) {
     observer = new IntersectionObserver(entries => {
       near = entries[0].isIntersecting;
       if (near) void warm();
-      else if (turn) finish(false);
+      else {
+        if (turn) finish(false);
+        coverOpen = false; coverProgress = 0; position = 0;
+        curl?.setCover(0); render(); placeHandles();
+      }
     }, { rootMargin: '350px' });
     observer.observe(book);
   } else { near = true; void warm(); }

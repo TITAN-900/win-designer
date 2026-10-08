@@ -29,7 +29,7 @@ export async function paintPage(markup, width, height, mobile, maxTextureSize) {
       const rect = element.getBoundingClientRect();
       return { x: rect.left - origin.left, y: rect.top - origin.top, w: rect.width, h: rect.height };
     };
-    canvas.pageLinks = [...source.querySelectorAll('.book-cell')].map(cell => {
+    canvas.pageLinks = [...source.querySelectorAll('.book-cell[href]')].map(cell => {
       const b = box(cell);
       return { x: b.x / width, y: b.y / height, w: b.w / width, h: b.h / height, href: cell.getAttribute('href') };
     });
@@ -55,12 +55,22 @@ export async function paintPage(markup, width, height, mobile, maxTextureSize) {
       context.drawImage(image, x + (w - image.naturalWidth * ratio) / 2, y + (h - image.naturalHeight * ratio) / 2, image.naturalWidth * ratio, image.naturalHeight * ratio);
       context.restore();
     }
-    for (const cell of source.querySelectorAll('.book-cell')) {
+    for (const cell of source.querySelectorAll('.book-cell[href]')) {
       const { x, y, w, h } = box(cell);
       const gradient = context.createLinearGradient(0, y + h * .5, 0, y + h);
       gradient.addColorStop(0, '#241e1800'); gradient.addColorStop(1, '#241e18a1');
       context.fillStyle = gradient;
       context.fillRect(x, y + h * .5, w, h * .5);
+    }
+    for (const cell of source.querySelectorAll('.book-cell--empty')) {
+      const { x, y, w, h } = box(cell);
+      context.strokeStyle = '#d8d0c2'; context.lineWidth = .5;
+      const length = Math.min(8, w * .05);
+      context.beginPath();
+      for (const [cx, cy, dx, dy] of [[x,y,1,1],[x+w,y,-1,1],[x,y+h,1,-1],[x+w,y+h,-1,-1]]) {
+        context.moveTo(cx + dx * length, cy); context.lineTo(cx, cy); context.lineTo(cx, cy + dy * length);
+      }
+      context.stroke();
     }
     for (const element of source.querySelectorAll('span, strong')) {
       const { x, y, w } = box(element);

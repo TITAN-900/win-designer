@@ -3,8 +3,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "redirects": [
-    { "source": "/about.html", "destination": "/#contact", "permanent": true },
-    { "source": "/about", "destination": "/#contact", "permanent": true }
+    { "source": "/about.html", "destination": "/#portfolio", "permanent": true },
+    { "source": "/about", "destination": "/#portfolio", "permanent": true }
   ],
   "headers": [
     {

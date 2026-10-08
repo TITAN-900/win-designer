@@ -12,7 +12,7 @@ export function bookPixelRatio(width, height, deviceRatio = 1, mobile = false) {
 }
 
 export function pageRasterSize(width, height, mobile, maxTextureSize = 4096) {
-  // Four cached pages: ~28 MiB including mipmaps on high-density phones.
+  // Four cached pages plus the cover: ~35 MiB including mipmaps on phones.
   // Keep layout CSS-independent from print resolution, so captions don't shrink.
   const maxWidth = mobile ? 1024 : 1536;
   const requested = mobile ? Math.max(768, width * 3) : Math.max(1024, width * 2.2);

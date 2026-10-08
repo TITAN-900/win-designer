@@ -182,13 +182,10 @@ box("ARCH_Back skirting", ARCH, (0, 3.055, 0.09), (7.6, 0.033, 0.16), stone_edge
 box("ARCH_Left skirting front", ARCH, (-3.75, -2.52, 0.09), (0.033, 1.06, 0.16), stone_edge, 0.004)
 box("ARCH_Left skirting rear", ARCH, (-3.75, 2.05, 0.09), (0.033, 2.09, 0.16), stone_edge, 0.004)
 
-# Quiet exterior shapes visible through the opening, clearly behind the glass.
-sky = material("MAT_19_Muted daylight sky", (0.65, 0.73, 0.74), 1.0)
-far_building = material("MAT_20_Distant warm residence", (0.56, 0.60, 0.56), 1.0)
-box("EXT_Soft blue grey sky", OUTSIDE, (-4.55, -0.78, 1.80), (0.025, 2.48, 1.75), sky, 0)
-for i, (yy, h) in enumerate([(-1.67, 0.80), (-.61, 0.56), (.15, 1.04)]):
-    box(f"EXT_Distant residence silhouette {i+1}", OUTSIDE,
-        (-4.40, yy, 0.85 + h/2), (.09, .38, h), far_building, 0.006)
+# The cutaway has no physical exterior backdrop. The former detached sky slab
+# and miniature residence boxes protruded above the wall in the axonometric view.
+# Keep the empty export collection for the established eight-stage asset contract;
+# glazing, real window framing and directional daylight remain unchanged.
 
 # Kitchen tall cabinetry, each body, door, toe kick and pull is independent.
 box("JOINERY_Kitchen oak rail", KITCHEN, (-1.69, 3.025, 2.66), (4.18, 0.055, 0.045), oak, 0.006)

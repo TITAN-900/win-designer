@@ -102,6 +102,17 @@ function pngChannelMeans(image) {
 }
 
 for (const id of ['01', '02']) {
+  test(`Space ${id} has no detached exterior sky slabs or residence blocks in any stage`, () => {
+    const {json} = roomAsset(id);
+    const exterior = json.nodes.find(node=>node.name === '08_EXT_WindowView');
+    assert.ok(exterior, 'preserve the stage contract');
+    assert.equal(exterior.children?.length || 0,0);
+    assert.ok(!json.nodes.some(node=>/EXT_.*(?:sky|residence)/i.test(node.name || '')));
+    assert.ok(json.nodes.some(node=>/glazing/i.test(node.name || '')));
+    assert.ok(json.nodes.some(node=>/mullion/i.test(node.name || '')));
+    const source = readFileSync(new URL(`../assets/3d/space-${id}/build_space_${id}.py`,import.meta.url),'utf8');
+    assert.doesNotMatch(source,/box\([^\n]*EXT_.*(?:sky|residence)/i);
+  });
   test(`Space ${id} exported window has continuous physical piers, sill and head`, () => {
     const { bounds } = roomAsset(id);
     const front = bounds(/left.*front pier/i), rear = bounds(/left.*rear pier/i);

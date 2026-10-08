@@ -21,7 +21,7 @@ if (project) {
   ]) document.querySelector(`meta[${selector}]`)?.setAttribute('content', value);
 } else {
   document.title = 'Project unavailable | WIN DESIGN';
-  content.innerHTML = '<section class="project-missing"><h1>Project unavailable.</h1><a href="/#portfolio">Back to portfolio</a><a href="/#contact">Contact</a></section>';
+  content.innerHTML = '<section class="project-missing"><h1>Project unavailable.</h1><a href="/#portfolio">Back to portfolio</a></section>';
   const robots = document.createElement('meta');
   robots.name = 'robots';
   robots.content = 'noindex, follow';

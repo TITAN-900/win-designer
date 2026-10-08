@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { paperRow } from './page-curl-math.js';
 import { bookFrame, bookPixelRatio, visibleGrabBounds } from './book-quality.js';
+import { coverPose } from './book-cover-math.js';
 
 const paperMaterial = () => new THREE.MeshStandardMaterial({
   color: 0xffffff, roughness: .86, metalness: 0, side: THREE.DoubleSide,
@@ -44,6 +45,7 @@ export class BookCurl {
     this.leftWing = new THREE.Group();
     this.scene.add(this.leftWing);
     this.meshes = [];
+    this.coverProgress = 0;
   }
 
   async load() {
@@ -86,6 +88,14 @@ export class BookCurl {
       for (let i = 0; i < position.count; i++) uv.setXY(i, position.getX(i) + (index === 0 ? 1 : 0), (position.getY(i) + .65) / 1.3);
       uv.needsUpdate = true;
     }
+    // Printed bookcloth is an actual surface on the outside of the existing
+    // front board, not a DOM overlay or a replacement for the Blender cover.
+    this.coverPrint = new THREE.Mesh(new THREE.PlaneGeometry(.99, 1.30),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .9, metalness: 0 }));
+    this.coverPrint.position.set(-.522, 0, -.0091);
+    this.coverPrint.rotation.y = Math.PI;
+    this.coverPrint.receiveShadow = true;
+    this.leftWing.add(this.coverPrint);
     this.host.dataset.bookAsset = 'blender';
     this.host.dataset.bookMeshes = String(this.meshes.length);
     this.host.dataset.curlVertices = String(this.front.geometry.attributes.position.count);
@@ -97,9 +107,6 @@ export class BookCurl {
     this.width = width; this.pixelHeight = height; this.mobile = mobile;
     const framing = bookFrame(width, height, mobile);
     this.leftAngle = framing.leftAngle;
-    this.leftWing.rotation.y = this.leftAngle;
-    // Both stacks stay almost flat. Mobile crops the complete physical spread.
-    this.leftWing.position.set(-.03 * Math.sin(this.leftAngle), 0, .03 * (1 - Math.cos(this.leftAngle)));
     this.renderer.setPixelRatio(bookPixelRatio(width, height, devicePixelRatio || 1, mobile));
     this.renderer.setSize(width, height, false);
     Object.assign(this.canvas.style, { left: '0px', top: '0px', width: '100%', height: '100%' });
@@ -117,7 +124,26 @@ export class BookCurl {
     Object.assign(this.host.dataset, { bookDpr: this.renderer.getPixelRatio().toFixed(2),
       bookBuffer: `${this.canvas.width}x${this.canvas.height}`, bookWorldWidth: framing.worldWidth.toFixed(3),
       bookLeftAngle: this.leftAngle.toFixed(3), bookShadow: String(shadowSize) });
-    if (this.ready) this.render();
+    if (this.ready) this.setCover(this.coverProgress);
+  }
+
+  setCover(progress, render = true) {
+    this.coverProgress = Math.max(0, Math.min(1, progress));
+    const pose = coverPose(this.coverProgress);
+    this.leftWing.rotation.y = pose.angle;
+    this.leftWing.position.set(pose.x, 0, pose.z);
+    // Center the closed book on desktop; keep the approved immersive mobile
+    // crop. Framing follows the finger, never a delayed camera animation.
+    const center = this.mobile ? .40 : .52 * (1 - this.coverProgress);
+    this.camera.position.x = center;
+    this.camera.lookAt(center, 0, 0);
+    this.camera.updateMatrixWorld();
+    this.host.dataset.coverProgress = this.coverProgress.toFixed(3);
+    if (render && this.ready) this.render();
+  }
+  setCoverTexture(texture) {
+    this.coverPrint.material.map = texture;
+    this.coverPrint.material.needsUpdate = true;
   }
 
   setSpread(left, right, render = true) {
@@ -203,6 +229,7 @@ export class BookCurl {
     return Math.abs(b.x - a.x) * this.width / 2;
   }
   pageHit(clientX, clientY) {
+    if (this.coverProgress < .999) return null;
     const rect = this.canvas.getBoundingClientRect();
     this.raycaster.setFromCamera(new THREE.Vector2((clientX - rect.left) / rect.width * 2 - 1, 1 - (clientY - rect.top) / rect.height * 2), this.camera);
     const hit = this.raycaster.intersectObjects(this.pages, false)[0];
@@ -224,7 +251,7 @@ export class BookCurl {
     this.disposed = true;
     this.canvas.removeEventListener('webglcontextlost', this.onLost);
     const materials = new Set();
-    for (const mesh of [...this.meshes, this.ground]) { mesh.geometry.dispose(); materials.add(mesh.material); }
+    for (const mesh of [...this.meshes, this.ground, this.coverPrint].filter(Boolean)) { mesh.geometry.dispose(); materials.add(mesh.material); }
     materials.forEach(material => material.dispose());
     this.light.shadow.map?.dispose(); this.renderer.dispose(); this.canvas.remove();
   }

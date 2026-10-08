@@ -1,6 +1,4 @@
 (function () {
-  const whatsappNumber = "601172455699";
-  const whatsappBase = `https://wa.me/${whatsappNumber}`;
   const siteUrl = "https://win-designer.vercel.app/";
 
   // Future project workflow:
@@ -248,11 +246,7 @@
         alt: "Modern Malaysian condominium interior with warm walnut cabinetry and concealed lighting",
         width: 1536,
         height: 1024
-      },
-      whatsappNumber,
-      whatsappBase,
-      phoneDisplay: "+60 1172455699",
-      phoneHref: "tel:+601172455699"
+      }
     },
     projects
   };

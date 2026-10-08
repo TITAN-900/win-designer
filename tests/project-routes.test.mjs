@@ -22,7 +22,7 @@ test('six static project documents contain the correct photographs, metadata and
     for (const image of project.gallery) assert.ok(html.includes(`src="/${image.src}"`), `${project.slug}: ${image.src}`);
     assert.ok(html.includes(project.description), project.slug);
     assert.match(html, /href="\/#portfolio"/);
-    assert.match(html, /id="contact"/);
+    assert.doesNotMatch(html, /id="contact"|wa\.me|tel:|mailto:|enquiry/i);
     assert.doesNotMatch(html, /__SITE_ORIGIN__|<form\b|id="projectBeforeAfter"/);
     for (const match of html.matchAll(/(?:src|href)="([^"]+)"/g)) {
       const url = match[1];
@@ -56,17 +56,16 @@ test('unverified reference comparisons cannot appear on a project page', () => {
   assert.ok(html.includes(`src="/${pair.after.src}"`));
 });
 
-test('project template escapes content and encodes the project WhatsApp draft', () => {
+test('project template escapes content and keeps a contact-free portfolio return', () => {
   const sample = { ...projects[0], title: 'Timber & Stone <Study>', intro: 'Warm "light".', description: 'Storage & proportion.' };
   const html = renderProjectDocument(read('project.html'), sample, site, origin);
   assert.ok(html.includes('Timber &amp; Stone &lt;Study&gt;'));
   assert.ok(html.includes('Warm &quot;light&quot;.'));
   assert.ok(!html.includes('<Study>'));
   const content = renderProjectContent(sample, site);
-  const link = [...content.matchAll(/href="(https:\/\/wa\.me\/[^\"]+)"/g)][0][1];
-  const whatsapp = new URL(link.replaceAll('&amp;', '&'));
-  assert.equal(whatsapp.pathname, '/601172455699');
-  assert.equal(whatsapp.searchParams.get('text'), `Hi WIN DESIGN, I would like to discuss a space inspired by ${sample.title}.`);
+  assert.match(content,/href="\/#portfolio"/);
+  assert.doesNotMatch(content,/wa\.me|tel:|mailto:/);
+  assert.doesNotMatch(renderProjectContent({...sample,description:''},site),/class="project-note"/);
 });
 
 test('dev and preview serve every dedicated route and reject unknown project routes', async () => {

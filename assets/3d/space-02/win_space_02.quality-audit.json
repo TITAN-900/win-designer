@@ -30,8 +30,8 @@
       ]
     }
   },
-  "mesh_objects": 133,
-  "evaluated_mesh_triangles": 80576,
+  "mesh_objects": 129,
+  "evaluated_mesh_triangles": 80000,
   "collections": {
     "01_ARCH_EmptyBedroom": [
       "ARCH_Back painted cornice",
@@ -179,12 +179,7 @@
       "LIGHT_Niche concealed diffuser 1.32",
       "LIGHT_Niche concealed diffuser 1.97"
     ],
-    "08_EXT_WindowView": [
-      "EXT_Residence silhouette 1",
-      "EXT_Residence silhouette 2",
-      "EXT_Residence silhouette 3",
-      "EXT_Soft sky outside bedroom"
-    ]
+    "08_EXT_WindowView": []
   },
   "materials": {
     "MAT_01_Warm plaster": {
@@ -583,14 +578,6 @@
       "normal_strength": []
     },
     "MAT_17_Foliage": {
-      "textures": [],
-      "normal_strength": []
-    },
-    "MAT_18_Distant daylight sky": {
-      "textures": [],
-      "normal_strength": []
-    },
-    "MAT_19_Distant residence": {
       "textures": [],
       "normal_strength": []
     }
