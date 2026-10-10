@@ -40,8 +40,11 @@ export function releaseTarget(progress, velocity) {
   return progress > .48 ? 1 : 0;
 }
 
-export function springStep(position, velocity, target, seconds) {
+export function springStep(position, velocity, target, seconds, hardcover = false) {
   const dt = Math.min(seconds, 1 / 30);
-  const nextVelocity = velocity + ((target - position) * 210 - velocity * 29) * dt;
+  // A heavier case settles more deliberately than a leaf. Both profiles are
+  // critically damped: no decorative bounce, and no time integration while held.
+  const stiffness = hardcover ? 166 : 210, damping = hardcover ? 26 : 29;
+  const nextVelocity = velocity + ((target - position) * stiffness - velocity * damping) * dt;
   return { position: unit(position + nextVelocity * dt), velocity: nextVelocity };
 }

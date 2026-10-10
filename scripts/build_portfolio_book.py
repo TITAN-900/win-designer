@@ -8,8 +8,9 @@ import bpy
 import bmesh
 import json
 import math
+import numpy as np
 from pathlib import Path
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 ROOT = Path(__file__).resolve().parent.parent
 DESIGN = ROOT / "design"
@@ -19,6 +20,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 NX, NY = 72, 18
 WIDTH, HEIGHT, PAPER = 1.0, 1.30, 0.00072
 REST_Z, ACTIVE_OFFSET = 0.034, 0.00115
+HINGE_Z = .042
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 scene = bpy.context.scene
@@ -26,6 +28,44 @@ book = bpy.data.collections.new("BOOK — independent web geometry")
 scene.collection.children.link(book)
 studio = bpy.data.collections.new("STUDIO — preview only, not exported")
 scene.collection.children.link(studio)
+
+
+def paper_microtexture():
+    """Baked, seamless physical paper maps, not renderer-only noise nodes.
+
+    A restrained fibrous normal and narrow roughness range produce their
+    variation through grazing illumination. Albedo stays clean and ungrained.
+    """
+    size = 512
+    yy, xx = np.mgrid[0:size, 0:size].astype(np.float32) / size
+    rng = np.random.default_rng(9137)
+    field = np.zeros((size, size), dtype=np.float32)
+    for _ in range(18):
+        fx, fy = rng.integers(14, 120), rng.integers(4, 24)
+        phase = rng.random() * 2 * math.pi
+        field += np.sin(2 * math.pi * (xx * fx + yy * fy) + phase) / 18
+    fine = rng.normal(0, .12, (size, size)).astype(np.float32)
+    field = field * .7 + (fine + np.roll(fine, 1, axis=0)) * .15
+    dx = np.roll(field, -1, axis=1) - np.roll(field, 1, axis=1)
+    dy = np.roll(field, -1, axis=0) - np.roll(field, 1, axis=0)
+
+    def bake(name, rgb):
+        rgba = np.ones((size, size, 4), dtype=np.float32)
+        rgba[:, :, :3] = rgb
+        image = bpy.data.images.new(name, width=size, height=size, alpha=False)
+        image.colorspace_settings.name = "Non-Color"
+        image.pixels.foreach_set(rgba.ravel())
+        image.pack()
+        return image
+
+    normal = np.dstack((.5 - dx * .035, .5 - dy * .035,
+                        np.full_like(field, 1)))
+    roughness = np.clip(.80 + field * .045, .775, .825)
+    return bake("Paper wrap — 512px fibre normal", normal), bake(
+        "Paper wrap — 512px fine roughness", np.dstack((roughness,) * 3))
+
+
+normal_image, roughness_image = paper_microtexture()
 
 
 def material(name, color, roughness, noise=False):
@@ -38,23 +78,26 @@ def material(name, color, roughness, noise=False):
     bsdf.inputs["Roughness"].default_value = roughness
     bsdf.inputs["Specular IOR Level"].default_value = 0.22
     if noise:
-        tex = nodes.new("ShaderNodeTexNoise")
-        tex.inputs["Scale"].default_value = 850
-        tex.inputs["Detail"].default_value = 2
-        bump = nodes.new("ShaderNodeBump")
-        bump.inputs["Strength"].default_value = 0.16
-        bump.inputs["Distance"].default_value = 0.0005
-        mat.node_tree.links.new(tex.outputs["Fac"], bump.inputs["Height"])
+        normal = nodes.new("ShaderNodeTexImage")
+        normal.image = normal_image
+        bump = nodes.new("ShaderNodeNormalMap")
+        bump.inputs["Strength"].default_value = .16
+        mat.node_tree.links.new(normal.outputs["Color"], bump.inputs["Color"])
         mat.node_tree.links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+        variation = nodes.new("ShaderNodeTexImage")
+        variation.image = roughness_image
+        # Direct Image -> Roughness is retained by the glTF PBR exporter.
+        mat.node_tree.links.new(variation.outputs["Color"], bsdf.inputs["Roughness"])
     return mat
 
 
-cloth = material("Cover — warm ivory bookcloth", (0.65, 0.592, 0.485), 0.93, True)
-paper = material("Paper — uncoated ivory", (0.94, 0.904, 0.824), 0.98, True)
+cloth = material("Cover — warm ivory fine paper wrap", (0.565, 0.497, 0.392), 0.80, True)
+paper = material("Paper — uncoated ivory", (0.94, 0.904, 0.824), 0.93)
 edges = material("Paper — cut warm edge", (0.785, 0.742, 0.655), 0.98)
 edge_line = material("Paper — fine leaf separation", (0.61, 0.562, 0.465), 1)
-binding_mat = material("Binding — warm linen gutter", (0.435, 0.385, 0.308), 1)
+binding_mat = material("Binding — warm linen gutter", (0.57, 0.512, 0.420), .94)
 endpaper = material("Endpaper — pale oatmeal", (0.80, 0.756, 0.658), 0.98)
+headband_mat = material("Binding — woven ivory headband", (.735, .68, .56), .95)
 
 
 def move(obj, group):
@@ -134,32 +177,112 @@ box("Book_Endpaper_Left", (-.515, 0, .0064), (1.001, 1.332, .0011), endpaper, .0
 box("Book_Endpaper_Right", (.515, 0, .0064), (1.001, 1.332, .0011), endpaper, .0010)
 
 
-# Closed cross-section extruded along the binding: a smooth, flexible cloth
-# spine bridging the two hard boards, with an upper concave hinge seat.
-spine_section = [
-    (-.030, .005), (-.022, .0065), (-.012, .0025), (0, .001),
-    (.012, .0025), (.022, .0065), (.030, .005), (.028, -.004),
-    (.022, -.010), (.012, -.0135), (0, -.0145), (-.012, -.0135),
-    (-.022, -.010), (-.028, -.004),
-]
-verts = [(x, y, z) for y in (-.681, .681) for x, z in spine_section]
-n = len(spine_section)
-faces = [(i, (i+1) % n, (i+1) % n+n, i+n) for i in range(n)]
-faces += [tuple(reversed(range(n))), tuple(range(n, 2*n))]
-spine = mesh_object("Book_Spine", verts, faces, cloth)
+def wrapped_binding(name, anchor_x, anchor_z, thickness, y0, y1, mat):
+    """A closed, genuinely curved case wrapper, not several flat slabs.
 
-# Linen binding rises between the permanent stacks; its top is below the pages.
-verts, faces = [], []
-for j in range(3):
-    for i in range(17):
-        x = -.024 + .048 * i / 16
-        z = .023 + .004 * (1 - (x / .024) ** 2)
-        verts.append((x, -.658 + 1.316 * j / 2, z))
-for j in range(2):
-    for i in range(16):
-        a = j * 17 + i
-        faces.append((a, a+1, a+18, a+17))
-mesh_object("Book_Binding", verts, faces, binding_mat)
+    UV.u encodes cross-section position, used by the browser to keep the
+    rounded spine connected to BOTH boards throughout manual cover movement.
+    The closed inspection key is exactly the same endpoint-constrained pose.
+    """
+    steps, length_steps = 64, 4
+    radius = math.hypot(anchor_x, anchor_z - HINGE_Z)
+    right = math.atan2(anchor_z - HINGE_Z, anchor_x)
+    left = math.atan2(anchor_z - HINGE_Z, -anchor_x)
+    ring = [(i / steps, radius + thickness / 2) for i in range(steps + 1)]
+    ring += [(i / steps, radius - thickness / 2) for i in range(steps, -1, -1)]
+    vv, uv, ff = [], [], []
+    for j in range(length_steps + 1):
+        v = j / length_steps
+        for u, r in ring:
+            theta = right + (left - right) * u
+            vv.append((r * math.cos(theta), y0 + (y1-y0)*v,
+                       HINGE_Z + r * math.sin(theta)))
+            uv.append((u, v))
+    count = len(ring)
+    for j in range(length_steps):
+        for i in range(count):
+            a, b = j * count + i, j * count + (i+1) % count
+            ff.append((a, b, b+count, a+count))
+    ff += [tuple(reversed(range(count))), tuple(range(length_steps*count, (length_steps+1)*count))]
+    obj = mesh_object(name, vv, ff, mat, True, uv)
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    assert all(edge.is_manifold for edge in bm.edges)
+    assert bm.calc_volume(signed=True) > 0
+    bm.to_mesh(obj.data)
+    bm.free()
+    obj.data.polygons[-1].use_smooth = False
+    obj.data.polygons[-2].use_smooth = False
+    obj["binding_flexible"] = True
+    obj["binding_anchor_x"] = anchor_x
+    obj["binding_anchor_z"] = anchor_z
+    obj["binding_hinge_z"] = HINGE_Z
+    obj["binding_thickness"] = thickness
+    obj.shape_key_add(name="Basis — open binding")
+    closed = obj.shape_key_add(name="Inspect closed case spine")
+    for i, vertex in enumerate(obj.data.vertices):
+        u, r = ring[i % count]
+        theta = right + (left - math.pi - right) * u
+        closed.data[i].co = (r * math.cos(theta), vertex.co.y,
+                             HINGE_Z + r * math.sin(theta))
+    return obj
+
+
+spine = wrapped_binding("Book_Spine", .014, -.009, .0014, -.678, .678, cloth)
+binding = wrapped_binding("Book_Binding", .012, profile(.012)-.002,
+                          .0010, -.650, .650, binding_mat)
+headbands = [wrapped_binding("Book_Headband_" + label, .012,
+              profile(.012)-.002, .0024, y-.0023, y+.0023, headband_mat)
+             for label, y in (("Head", .649), ("Tail", -.649))]
+
+
+def hinge_joint(side):
+    """A narrow rounded cloth hinge roll at the actual board/endpaper joint."""
+    vv, ff = [], []
+    steps = 24
+    for y in (-.663, .663):
+        for i in range(steps):
+            a = 2 * math.pi * i / steps
+            vv.append((side*.019 + math.cos(a)*.0033, y,
+                       .0060 + math.sin(a)*.0011))
+    for i in range(steps):
+        ff.append((i, (i+1) % steps, (i+1) % steps + steps, i+steps))
+    ff += [tuple(reversed(range(steps))), tuple(range(steps, steps*2))]
+    obj = mesh_object("Book_Hinge_" + ("Left" if side < 0 else "Right"), vv, ff, cloth)
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    assert bm.calc_volume(signed=True) > 0
+    bm.to_mesh(obj.data)
+    bm.free()
+    return obj
+
+
+hinge_joint(-1)
+hinge_joint(1)
+
+# An authored, conformal printing face 30 microns above the wrapped board.
+# This is not a floating HTML panel. It shares the actual softened board outline
+# and follows the cover hinge. The web renderer supplies ink/foil channels here.
+vv, uv, ff = [], [], []
+cover_min_x, cover_max_x, cover_height = -1.033, -.011, 1.362
+corner_radius = .0025
+corners = ((cover_max_x-corner_radius, .681-corner_radius, 0),
+           (cover_min_x+corner_radius, .681-corner_radius, 90),
+           (cover_min_x+corner_radius, -.681+corner_radius, 180),
+           (cover_max_x-corner_radius, -.681+corner_radius, 270))
+for cx, cy, start in corners:
+    for i in range(9):
+        angle = math.radians(start + i*90/8)
+        x, y = cx + corner_radius*math.cos(angle), cy + corner_radius*math.sin(angle)
+        vv.append((x, y, -.00903))
+        uv.append(((cover_max_x-x)/(cover_max_x-cover_min_x), (y+.681)/cover_height))
+ff.append(tuple(reversed(range(len(vv)))))
+print_face = mesh_object("Book_Cover_Print_Left", vv, ff, cloth, False, uv)
+print_face["cover_print"] = True
+print_face["print_extent"] = [1.022, 1.362]
+print_face["print_uv"] = "glTF U runs right-to-left in open local X; V=0 is physical head. Use CanvasTexture.flipY=false."
 
 
 def stack(side):
@@ -357,7 +480,7 @@ bpy.ops.export_scene.gltf(
 )
 
 manifest = {
-    "version": 1,
+    "version": 2,
     "generator": "scripts/build_portfolio_book.py",
     "source": "design/portfolio_book.blend",
     "asset": "/3d/book/portfolio_book.glb",
@@ -404,3 +527,20 @@ for percent in (20,50,80):
     scene.render.filepath = str(DESIGN / f"portfolio_book_curl{suffix}_preview.png")
     bpy.ops.render.render(write_still=True)
 print("BOOK_EXPORT", json.dumps(manifest,indent=2))
+
+# Inspect the actual closed anatomy as well as the open paper. The original
+# saved source remains editable with open and closed inspection shape keys.
+for obj in (front, back, rim):
+    obj.hide_render = True
+for obj in book.objects:
+    if obj.name.endswith("_Left"):
+        # Rotate the entire authored object about the binding, not its own origin.
+        obj.matrix_world = (Matrix.Translation((0, 0, 2 * HINGE_Z))
+                            @ Matrix.Rotation(math.pi, 4, 'Y') @ obj.matrix_world)
+    if obj.get("binding_flexible"):
+        obj.data.shape_keys.key_blocks["Inspect closed case spine"].value = 1
+camera.location = (1.4, -3.8, 4.8)
+camera.rotation_euler = (Vector((.43, 0, .04))-camera.location).to_track_quat("-Z", "Y").to_euler()
+camera.data.ortho_scale = 2.05
+scene.render.filepath = str(DESIGN / "portfolio_book_closed_preview.png")
+bpy.ops.render.render(write_still=True)

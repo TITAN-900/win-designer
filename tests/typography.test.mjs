@@ -20,11 +20,11 @@ test('font families and weights are limited to the two-family brand system',()=>
   const faces=[...typography.matchAll(/@font-face\s*\{([^}]+)\}/g)].map(m=>m[1]);
   assert.equal(faces.length,2);
   const families=new Set(faces.map(face=>face.match(/font-family:\s*'([^']+)'/)[1]));
-  assert.deepEqual([...families].sort(),['Manrope','Syne']);
-  assert.match(faces.find(face=>face.includes("'Syne'")),/font-weight:\s*400 800;/);
+  assert.deepEqual([...families].sort(),['Archivo','Manrope']);
+  assert.match(faces.find(face=>face.includes("'Archivo'")),/font-weight:\s*100 900;/);
   assert.match(faces.find(face=>face.includes("'Manrope'")),/font-weight:\s*200 800;/);
-  assert.match(typography,/--weight-display:\s*750/);
-  assert.match(typography,/--weight-display-strong:\s*800/);
+  assert.match(typography,/--weight-display:\s*760/);
+  assert.match(typography,/--weight-display-strong:\s*850/);
   assert.match(typography,/--weight-regular:\s*450/);
   assert.match(typography,/font-synthesis:\s*none/);
   for(const file of pages)assert.doesNotMatch(read(file),/cormorant-garamond|inter-latin-/i);
@@ -44,5 +44,5 @@ test('all font files are local, small, licensed and available in the build',asyn
     assert.equal(response.status,200,path);
   }
   assert.ok(bytes<80_000);
-  for(const license of ['Syne-LICENSE.txt','Manrope-LICENSE.txt'])assert.match(read(`assets/fonts/${license}`),/SIL OPEN FONT LICENSE/);
+  for(const license of ['Archivo-LICENSE.txt','Manrope-LICENSE.txt'])assert.match(read(`assets/fonts/${license}`),/SIL OPEN FONT LICENSE/);
 });

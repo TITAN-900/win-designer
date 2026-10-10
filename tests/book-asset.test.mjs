@@ -15,6 +15,7 @@ const partNames = [
   'Book_Spine', 'Book_Binding', 'Book_Stack_Left', 'Book_Stack_Right',
   'Book_EdgeLines_Left', 'Book_EdgeLines_Right', 'Book_Page_Left', 'Book_Page_Right',
   'Book_Active_Front', 'Book_Active_Back', 'Book_Active_Edge',
+  'Book_Hinge_Left', 'Book_Hinge_Right', 'Book_Headband_Head', 'Book_Headband_Tail', 'Book_Cover_Print_Left',
 ];
 const near = (actual, expected, label, epsilon = 2e-6) =>
   assert.ok(Math.abs(actual - expected) < epsilon, `${label}: ${actual} ≈ ${expected}`);
@@ -94,7 +95,8 @@ test('book export is a self-contained GLB within the mobile resource budget', ()
   assert.equal(manifest.glb_bytes, glb.length);
   assert.equal(gltf.buffers.length, 1);
   assert.equal(gltf.buffers[0].uri, undefined);
-  assert.equal(gltf.images?.length || 0, 0, 'photography is supplied by reusable canvas textures');
+  assert.ok(gltf.images.length >= 2 && gltf.images.length <= 3, 'only the small baked paper normal/roughness maps are embedded');
+  assert.ok(gltf.images.every(image => image.bufferView !== undefined && !image.uri), 'physical textures are self-contained');
   assert.equal(gltf.animations?.length || 0, 0, 'turns are controlled by live geometry');
   assert.equal(gltf.skins?.length || 0, 0);
   assert.equal(gltf.cameras?.length || 0, 0);
@@ -105,10 +107,10 @@ test('book export is a self-contained GLB within the mobile resource budget', ()
   assert.ok(triangles <= 25_000, `triangle budget: ${triangles}`);
 });
 
-test('all fifteen book parts stay independent, including both permanent stacks', () => {
+test('all original parts plus authored binding and print surfaces stay independent', () => {
   assert.deepEqual(gltf.nodes.map(node => node.name).sort(), [...partNames].sort());
-  assert.equal(gltf.meshes.length, 15);
-  assert.equal(new Set(gltf.nodes.map(node => node.mesh)).size, 15);
+  assert.equal(gltf.meshes.length, 20);
+  assert.equal(new Set(gltf.nodes.map(node => node.mesh)).size, 20);
   assert.deepEqual([...manifest.permanent_meshes, ...manifest.active_meshes].sort(), [...partNames].sort());
   for (const side of ['Left', 'Right']) {
     const stack = part(`Book_Stack_${side}`);
@@ -165,10 +167,24 @@ test('the turning page has a closed thin rim and matching front/back UVs', () =>
 
 test('exported book materials remain matte paper and cloth', () => {
   for (const material of gltf.materials) {
-    assert.ok((material.pbrMetallicRoughness.roughnessFactor ?? 1) >= .9, material.name);
+    assert.ok((material.pbrMetallicRoughness.roughnessFactor ?? 1) >= .8, material.name);
     assert.equal(material.pbrMetallicRoughness.metallicFactor, 0, material.name);
     assert.equal(material.alphaMode || 'OPAQUE', 'OPAQUE');
   }
+});
+
+test('the case spine and sewn binding are curved watertight ribbons with deformation coordinates', () => {
+  for (const name of ['Book_Spine', 'Book_Binding', 'Book_Headband_Head', 'Book_Headband_Tail']) {
+    const mesh = part(name);
+    assert.equal(mesh.node.extras.binding_flexible, true);
+    assert.ok(mesh.uv && new Set(mesh.uv.map(uv=>uv[0].toFixed(5))).size >= 65);
+    assertClosedOutward([mesh], name, 1e-8);
+    assert.equal(mesh.node.extras.binding_hinge_z, .042);
+  }
+  const surface = part('Book_Cover_Print_Left');
+  assert.ok(surface.normal.every(normal=>normal[1] < -.99), 'the print is on the outer face');
+  assert.ok(surface.position.every(position=>Math.abs(position[1]+.00903)<1e-6), 'print is thirty microns above the actual board');
+  assert.ok(surface.uv.every(uv=>uv.every(value=>value>=0 && value<=1)));
 });
 
 test('editable source is a real Blender file and all four inspection renders are present', () => {

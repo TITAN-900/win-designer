@@ -76,15 +76,11 @@
 .book-ready .book-page:focus-within .book-cell { background: #f5f0e6; padding: 12px; overflow: visible; }
 .book-ready .book-page:focus-within .book-cell span { position: static; color: #3a352e; text-shadow: none; }
 .book-fallback .book-curl-canvas, .book-fallback .book-grab { display: none; }
-.book-grab { position: absolute; z-index: 15; top: 0; bottom: 0; width: clamp(28px, 6%, 44px); padding: 0; border: 0; border-radius: 0; background: transparent; touch-action: none; cursor: grab; -webkit-user-select: none; user-select: none; }
+.book-grab { position: absolute; z-index: 15; top: 0; bottom: 0; width: clamp(28px, 6%, 44px); padding: 0; border: 0; border-radius: 0; background: transparent; touch-action: pan-y; cursor: grab; -webkit-user-select: none; user-select: none; }
 .book-grab--next { right: 0; }
 .book-grab--previous { left: 0; }
 .book-grab:disabled { pointer-events: none; opacity: 0; }
-.book-grab::after { content: ''; position: absolute; right: 4px; bottom: 5px; width: 19px; height: 19px; background: linear-gradient(135deg, transparent 47%, #a494783d 49%, #f7f1e4 54%); opacity: .55; transition: opacity .2s; }
-.book-grab--previous::after { left: 4px; right: auto; transform: scaleX(-1); }
-.book-grab:hover::after { opacity: 1; }
 .book-stage[data-turning] .book-grab { cursor: grabbing; }
-.book-stage[data-turning] .book-grab::after { opacity: 0; }
 .book-stage[data-turning] .book-cell { pointer-events: none; }
 .book-stage[data-turning] .book-cell img { transform: none; }
 .book-texture-source { position: fixed; left: -10000px; top: 0; pointer-events: none; contain: layout style; }

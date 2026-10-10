@@ -9,7 +9,6 @@ body.home-page .diorama-stage {
 body.home-page .diorama-copy {
   position: absolute; z-index: 2; left: var(--page-inset); top: 50%;
   width: min(32%, 490px); transform: translateY(-44%);
-  opacity: var(--copy-opacity, 1);
 }
 body.home-page .diorama-index {
   display: block; margin-bottom: clamp(20px, 4vh, 44px);
@@ -17,10 +16,21 @@ body.home-page .diorama-index {
   letter-spacing: .13em; text-transform: uppercase;
 }
 body.home-page #intro-title {
-  margin: 0; max-width: 490px; min-height: 2.02em; color: #302d27;
-  font: 780 var(--type-hero)/1.01 var(--font-heading);
-  letter-spacing: -.052em; text-wrap: balance;
+  margin: 0; max-width: 490px; min-height: 2.06em; color: #302d27;
+  font: 830 var(--type-hero)/1.03 var(--font-heading);
+  letter-spacing: -.048em; text-wrap: balance;
 }
+/* The old and new words share a single typographic footprint. A narrow,
+   etched trace passes THROUGH the letterforms, never around the room. */
+.hero-type-reveal { display: grid; isolation: isolate; }
+.hero-type-layer { grid-area: 1 / 1; display: block; align-self: start; }
+.hero-type-outgoing { z-index: 1; }
+.hero-type-incoming { z-index: 2; }
+.hero-type-trace {
+  z-index: 3; color: #9b8a70; opacity: .5; pointer-events: none;
+  mask-image: repeating-linear-gradient(0deg, #000 0 1px, #0000 1px 3px);
+}
+.hero-type-reveal[data-type-state="scanning"] .hero-type-layer { will-change: clip-path, transform; }
 body.home-page #diorama-support {
   margin: 24px 0 0; max-width: 330px; color: #6c6357;
   font: 500 clamp(13px, .88vw, 16px)/1.55 var(--font-body);
@@ -77,7 +87,7 @@ body.home-page.scene-fallback #showcase { height: 100svh; }
   body.home-page .diorama-stage { background: radial-gradient(ellipse at 55% 60%, #ece5d8, #f5f1e9 67%); }
   body.home-page .diorama-copy { left: 6vw; right: 6vw; top: 84px; width: auto; transform: none; }
   body.home-page .diorama-index { margin-bottom: 10px; font-size: 9px; }
-  body.home-page #intro-title { max-width: 100%; font-size: clamp(36px, 9.7vw, 46px); line-height: 1.02; }
+  body.home-page #intro-title { max-width: 100%; font-size: clamp(36px, 10.2vw, 46px); line-height: 1.03; letter-spacing: -.044em; }
   body.home-page #diorama-support { margin-top: 11px; font-size: 11px; }
   body.home-page .diorama-cta { margin-top: 11px; font-size: 11px; }
   body.home-page .diorama-visual { left: 1%; right: 1%; top: 20%; bottom: 6%; }
@@ -96,4 +106,6 @@ body.home-page.scene-fallback #showcase { height: 100svh; }
 }
 @media (prefers-reduced-motion: reduce) {
   body.home-page .diorama-poster, body.home-page .diorama-cta { transition: none; }
+  .hero-type-outgoing, .hero-type-trace { display: none; }
+  .hero-type-incoming { clip-path: none !important; transform: none !important; }
 }

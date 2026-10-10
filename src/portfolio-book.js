@@ -1,6 +1,7 @@
 import { unit, releaseTarget, springStep } from './page-curl-math.js';
 import { paintPage } from './book-page-texture.js';
 import { catalogPages } from './portfolio-catalog.js';
+import { pageGesture, movePageGesture, releasePageGesture } from './book-gesture.js';
 
 const escapeHTML = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;')
   .replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
@@ -35,7 +36,7 @@ function pageMarkup(page) {
 function bookCoverMarkup(logo) {
   return `<div class="book-cover"><span class="book-cover-edition">WIN DESIGN / PORTFOLIO</span>
     <img src="/${escapeHTML(logo)}" alt="WIN DESIGN" width="946" height="512">
-    <div><span>SELECTED INTERIORS</span><strong>Spaces,<br>collected.</strong></div>
+    <div><span>SELECTED INTERIORS</span><strong>Between form<br>and life.</strong></div>
     <span class="book-cover-bottom">SPACE / MATERIAL / DETAIL</span></div>`;
 }
 
@@ -56,7 +57,7 @@ export function initPortfolioBook(data) {
   let coverProgress = 0;
   let busy = false;
   let curl, preparation, gesture, turn, observer;
-  let frame = 0, resizeFrame = 0, version = 0;
+  let frame = 0, resizeFrame = 0, version = 0, operation = 0;
   let disposed = false, near = false, failure = false;
   let width = 0, height = 0;
   const textures = new Map();
@@ -67,7 +68,7 @@ export function initPortfolioBook(data) {
     const handle = document.createElement('button');
     handle.type = 'button';
     handle.className = `book-grab book-grab--${direction > 0 ? 'next' : 'previous'}`;
-    handle.setAttribute('aria-label', direction > 0 ? 'Drag page edge for next page' : 'Drag page edge for previous page');
+    handle.setAttribute('aria-label', direction > 0 ? 'Drag right page for next page' : 'Drag left page for previous page');
     handle.setAttribute('aria-keyshortcuts', 'Space ArrowLeft ArrowRight Enter Escape');
     handle.title = 'Drag to turn. Keyboard: Space to hold, arrows to bend, Enter to release, Escape to cancel.';
     handle.addEventListener('keydown', event => keyTurn(event, direction, handle));
@@ -76,6 +77,7 @@ export function initPortfolioBook(data) {
     handle.addEventListener('pointermove', move);
     handle.addEventListener('pointerup', release);
     handle.addEventListener('pointercancel', cancel);
+    handle.addEventListener('lostpointercapture', lostCapture);
     return handle;
   });
   function mobile() { return mobileQuery.matches; }
@@ -92,13 +94,13 @@ export function initPortfolioBook(data) {
     book.dataset.capacity = String(pages.length * 4);
     book.dataset.emptySlots = String(pages.flatMap(page => page.cells).filter(cell => !cell).length);
     const hint = document.querySelector('.book-hint');
-    if (hint) hint.textContent = coverOpen ? 'Drag a page edge to explore' : 'Drag the cover to open';
+    if (hint) hint.textContent = coverOpen ? 'Swipe a page to explore · Tap a project to view' : 'Drag the cover to open';
     book.dataset.page = String(position);
     book.dataset.mode = mobile() ? 'single' : 'spread';
     handles[0].disabled = !coverOpen || (busy && gesture?.direction !== -1);
     handles[1].disabled = !canAdvanceBook(coverOpen, position, pages.length) || (busy && gesture?.direction !== 1);
-    handles[1].setAttribute('aria-label', coverOpen ? 'Drag page edge for next page' : 'Drag portfolio cover to open');
-    handles[0].setAttribute('aria-label', position === 0 ? 'Drag portfolio cover to close' : 'Drag page edge for previous page');
+    handles[1].setAttribute('aria-label', coverOpen ? 'Drag right page for next page' : 'Drag portfolio cover to open');
+    handles[0].setAttribute('aria-label', position === 0 ? 'Drag portfolio cover to close' : 'Drag left page for previous page');
   }
   function render() {
     const pair = spread(position);
@@ -133,21 +135,15 @@ export function initPortfolioBook(data) {
       width = rect.width; height = rect.height;
       curl.resize(width, height, mobile());
       book.dataset.renderer = 'blender-curved-mesh';
-      let tap;
       curl.canvas.addEventListener('pointerdown', event => {
-        if (!coverOpen && !busy) { grab(event, 1, curl.canvas); return; }
-        if (!busy) tap = { x: event.clientX, y: event.clientY, id: event.pointerId };
+        const hit = curl.pageSurfaceHit(event.clientX, event.clientY);
+        if (!hit) return;
+        grab(event, !coverOpen || hit.side === 'right' ? 1 : -1, curl.canvas, hit.href);
       });
       curl.canvas.addEventListener('pointermove', move);
-      curl.canvas.addEventListener('pointercancel', event => { tap = null; cancel(event); });
-      curl.canvas.addEventListener('pointerup', event => {
-        if (gesture?.handle === curl.canvas) { release(event); tap = null; return; }
-        if (!busy && tap?.id === event.pointerId && Math.hypot(event.clientX - tap.x, event.clientY - tap.y) < 7) {
-          const href = curl.pageHit(event.clientX, event.clientY);
-          if (href) window.location.assign(href);
-        }
-        tap = null;
-      });
+      curl.canvas.addEventListener('pointercancel', cancel);
+      curl.canvas.addEventListener('lostpointercapture', lostCapture);
+      curl.canvas.addEventListener('pointerup', release);
       placeHandles();
     });
     await preparation;
@@ -205,12 +201,12 @@ export function initPortfolioBook(data) {
     if (!coverOpen || (direction < 0 && position === 0)) {
       if (!coverOpen && direction < 0) return;
       busy = true; updateControls();
-      const token = version;
+      const token = version, pendingOperation = ++operation;
       try {
         await prepare();
         const pair = spread(position);
         await Promise.all([-1, ...pair].map(texture));
-        if (disposed || token !== version) return;
+        if (disposed || token !== version || pendingOperation !== operation) return;
         curl.setSpread(textureValues.get(pair[0]), textureValues.get(pair[1]), false);
         curl.setCoverTexture(textureValues.get(-1));
         turn = { kind: 'cover', direction, progress: intent?.progress || 0, corner: 0 };
@@ -226,7 +222,7 @@ export function initPortfolioBook(data) {
     if (target === position) return;
     busy = true;
     updateControls();
-    const token = version;
+    const token = version, pendingOperation = ++operation;
     try {
       await prepare();
       const old = spread(position), upcoming = spread(target);
@@ -234,7 +230,7 @@ export function initPortfolioBook(data) {
       const backKey = upcoming[direction > 0 ? 0 : 1];
       await Promise.all([...new Set([...old, ...upcoming])].map(texture));
       const [front, back] = await Promise.all([texture(frontKey), texture(backKey)]);
-      if (disposed || token !== version || !front || !back) return;
+      if (disposed || token !== version || pendingOperation !== operation || !front || !back) return;
       turn = { kind: 'page', target, progress: intent?.progress || 0, corner: intent?.corner || 0 };
       book.classList.add('book-ready');
       const underneath = direction > 0 ? [old[0], upcoming[1]] : [upcoming[0], old[1]];
@@ -253,25 +249,27 @@ export function initPortfolioBook(data) {
     } catch (error) { reportFailure(error); }
   }
 
-  function grab(event, direction, handle) {
-    if (busy || (event.pointerType !== 'touch' && event.button !== 0)) return;
-    if (handle !== curl?.canvas) event.preventDefault();
+  function grab(event, direction, handle, href = null) {
+    if (busy || failure || disposed || event.isPrimary === false || (event.pointerType !== 'touch' && event.button !== 0)) return;
+    if (gesture && !gesture.released && gesture.pointerId !== event.pointerId) return;
     const rect = object.getBoundingClientRect();
-    gesture = { pointerId: event.pointerId, direction, handle, startX: event.clientX, lastX: event.clientX,
-      time: event.timeStamp, velocity: 0, progress: 0, moved: 0,
+    gesture = pageGesture(event, { direction, handle, href: coverOpen ? href : null,
       corner: Math.max(-1, Math.min(1, (event.clientY - rect.top) / rect.height * 2 - 1)),
-      distance: rect.width * (mobile() ? .72 : .82), released: false };
-    handle.setPointerCapture(event.pointerId);
-    void begin(direction, gesture);
+      distance: rect.width * (mobile() ? .72 : .82) });
   }
 
   function move(event) {
     if (!gesture || gesture.pointerId !== event.pointerId || gesture.released) return;
-    const nextProgress = unit((gesture.startX - event.clientX) * gesture.direction / gesture.distance);
-    const dt = Math.max(8, event.timeStamp - gesture.time) / 1000;
-    gesture.velocity = .35 * gesture.velocity + .65 * (nextProgress - gesture.progress) / dt;
-    gesture.moved = Math.max(gesture.moved, Math.abs(gesture.startX - event.clientX));
-    gesture.lastX = event.clientX; gesture.time = event.timeStamp; gesture.progress = nextProgress;
+    const action = movePageGesture(gesture, event);
+    if (action === 'scroll' || action === 'pending' || action === 'ignore') return;
+    if (event.cancelable) event.preventDefault();
+    if (action === 'start') {
+      if ((gesture.direction > 0 && !canAdvanceBook(coverOpen, position, pages.length)) || (gesture.direction < 0 && !coverOpen)) {
+        clearGesture(); return;
+      }
+      gesture.handle.setPointerCapture(event.pointerId);
+      void begin(gesture.direction, gesture);
+    }
     if (turn && !frame) frame = requestAnimationFrame(() => {
       frame = 0;
       if (!turn || !gesture || gesture.released) return;
@@ -282,18 +280,48 @@ export function initPortfolioBook(data) {
 
   function release(event) {
     if (!gesture || gesture.pointerId !== event.pointerId) return;
-    gesture.released = true;
-    if (event.timeStamp - gesture.time > 100) gesture.velocity = 0;
-    if (gesture.handle.hasPointerCapture(event.pointerId)) gesture.handle.releasePointerCapture(event.pointerId);
+    const action = releasePageGesture(gesture, event);
+    if (action === 'tap') {
+      const href = gesture.href;
+      clearGesture();
+      if (href && coverOpen && !busy) window.location.assign(href);
+      return;
+    }
+    if (action !== 'release') { if (!busy) clearGesture(); return; }
+    if (!busy) {
+      const intent = gesture;
+      if ((intent.direction > 0 && !canAdvanceBook(coverOpen, position, pages.length)) || (intent.direction < 0 && !coverOpen)) {
+        clearGesture(); return;
+      }
+      // Coalesced input can first cross the horizontal threshold on pointerup.
+      // The released intent lets preparation begin and settle the same turn.
+      releaseCapture(intent);
+      void begin(intent.direction, intent);
+      return;
+    }
+    releaseCapture(gesture);
     if (turn) {
       turn.progress = gesture.progress;
       settle(releaseTarget(turn.progress, gesture.velocity), gesture.velocity);
     }
   }
   function cancel(event) {
-    if (!gesture || gesture.pointerId !== event.pointerId) return;
-    gesture.released = true; gesture.cancelled = true;
+    if (!gesture || gesture.released || gesture.pointerId !== event.pointerId) return;
+    releasePageGesture(gesture, event, true);
+    releaseCapture(gesture);
     if (turn) settle(0, 0);
+    else finish(false); // Also invalidate a turn still waiting on textures.
+  }
+  function lostCapture(event) {
+    if (gesture && !gesture.released && gesture.pointerId === event.pointerId) cancel(event);
+  }
+  function releaseCapture(intent) {
+    if (intent?.pointerId !== undefined && intent.handle.hasPointerCapture(intent.pointerId)) intent.handle.releasePointerCapture(intent.pointerId);
+  }
+  function clearGesture() {
+    const previousGesture = gesture;
+    gesture = null;
+    releaseCapture(previousGesture);
   }
 
   // The same held-paper interaction is available without a pointer. This also
@@ -334,7 +362,7 @@ export function initPortfolioBook(data) {
     const started = previousTime;
     const advance = now => {
       if (!turn || disposed) return;
-      const state = springStep(turn.progress, velocity, target, (now - previousTime) / 1000);
+      const state = springStep(turn.progress, velocity, target, (now - previousTime) / 1000, turn.kind === 'cover');
       previousTime = now; velocity = state.velocity; turn.progress = state.position;
       if (reducedQuery.matches || now - started > 1000 || (Math.abs(turn.progress - target) < .001 && Math.abs(velocity) < .018)) {
         turn.progress = target; drawTurn(); finish(target === 1); return;
@@ -346,6 +374,7 @@ export function initPortfolioBook(data) {
   }
 
   function finish(completed) {
+    operation++;
     cancelAnimationFrame(frame); frame = 0;
     if (turn?.kind === 'cover') {
       if (completed) coverOpen = turn.direction > 0;
@@ -355,7 +384,7 @@ export function initPortfolioBook(data) {
     const pair = spread(position);
     if (textureValues.has(pair[0]) && textureValues.has(pair[1])) curl?.setSpread(textureValues.get(pair[0]), textureValues.get(pair[1]), false);
     curl?.hide();
-    turn = null; gesture = null; busy = false;
+    turn = null; clearGesture(); busy = false;
     delete book.dataset.turning;
     render();
     // Cover movement also changes the desktop camera center. Reproject the
@@ -397,14 +426,17 @@ export function initPortfolioBook(data) {
     void begin(event.key === 'ArrowRight' ? 1 : -1);
   });
   window.addEventListener('resize', resize, { passive: true });
-  const onVisibility = () => { if (document.hidden && turn) finish(false); };
+  // Release a pending (uncaptured) tap/scroll even if it ends outside canvas.
+  document.addEventListener('pointerup', release);
+  document.addEventListener('pointercancel', cancel);
+  const onVisibility = () => { if (document.hidden && (busy || gesture)) finish(false); };
   document.addEventListener('visibilitychange', onVisibility);
   if ('IntersectionObserver' in window) {
     observer = new IntersectionObserver(entries => {
       near = entries[0].isIntersecting;
       if (near) void warm();
       else {
-        if (turn) finish(false);
+        if (busy || gesture) finish(false);
         coverOpen = false; coverProgress = 0; position = 0;
         curl?.setCover(0); render(); placeHandles();
       }
@@ -412,11 +444,13 @@ export function initPortfolioBook(data) {
     observer.observe(book);
   } else { near = true; void warm(); }
   window.addEventListener('pagehide', () => {
-    disposed = true; version++;
+    disposed = true; version++; operation++; clearGesture();
     observer?.disconnect();
     cancelAnimationFrame(frame); cancelAnimationFrame(resizeFrame);
     window.removeEventListener('resize', resize);
     document.removeEventListener('visibilitychange', onVisibility);
+    document.removeEventListener('pointerup', release);
+    document.removeEventListener('pointercancel', cancel);
     previous.removeEventListener('click', previousClick); next.removeEventListener('click', nextClick);
     for (const pending of textures.values()) void pending.then(value => value?.dispose(), () => {});
     releaseRetired();

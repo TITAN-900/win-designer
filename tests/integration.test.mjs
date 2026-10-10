@@ -247,7 +247,7 @@ test('editorial image movement is bounded and exactly reversible without accumul
 
 test('the portfolio book has four slots per page with unique projects and empty capacity',()=>{
   const pages=createBookPages(data);
-  assert.equal(pages.length,4);
+  assert.equal(pages.length,8);
   for(const page of pages){
     assert.equal(page.cells.length,4);
     for(const cell of page.cells){
@@ -259,14 +259,16 @@ test('the portfolio book has four slots per page with unique projects and empty 
   const occupied=pages.flatMap(page=>page.cells).filter(Boolean);
   assert.equal(occupied.length,6);
   assert.equal(new Set(occupied.map(cell=>cell.slug)).size,6);
-  assert.equal(pages.flatMap(page=>page.cells).filter(cell=>!cell).length,10);
+  assert.equal(pages.flatMap(page=>page.cells).filter(cell=>!cell).length,26);
   assert.equal(nextBookPosition(-1,false,pages.length),0);
   assert.equal(nextBookPosition(0,false,pages.length),2);
-  assert.equal(nextBookPosition(2,false,pages.length),2);
+  assert.equal(nextBookPosition(2,false,pages.length),4);
+  assert.equal(nextBookPosition(6,false,pages.length),6);
   assert.equal(previousBookPosition(2,false),0);
   assert.equal(previousBookPosition(0,false),0);
   assert.equal(nextBookPosition(0,true,pages.length),2);
-  assert.equal(nextBookPosition(2,true,pages.length),2);
+  assert.equal(nextBookPosition(2,true,pages.length),4);
+  assert.equal(nextBookPosition(6,true,pages.length),6);
   assert.equal(previousBookPosition(2,true),0);
   assert.equal(previousBookPosition(0,true),0);
   assert.doesNotMatch(read('assets/css/portfolio-book.css'),/rotateY/);

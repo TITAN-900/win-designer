@@ -1,6 +1,7 @@
 // Paint the same measured page layout onto paper textures. Photos, labels and
 // branding all deform with the sheet; no flat DOM image sits above the curl.
 import { pageRasterSize } from './book-quality.js';
+import { paintCover } from './book-cover-print.js';
 
 export async function paintPage(markup, width, height, mobile, maxTextureSize) {
   await document.fonts.ready;
@@ -15,6 +16,8 @@ export async function paintPage(markup, width, height, mobile, maxTextureSize) {
       image.loading = 'eager';
       await image.decode();
     }));
+    const coverLogo = source.querySelector('.book-cover img');
+    if (coverLogo) return paintCover(coverLogo.src, mobile, maxTextureSize);
     const canvas = document.createElement('canvas');
     const raster = pageRasterSize(width, height, mobile, maxTextureSize);
     const scale = raster.scale;

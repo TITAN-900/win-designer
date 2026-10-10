@@ -1,9 +1,13 @@
 {
-  "pageCount": 4,
+  "pageCount": 8,
   "slots": [
     null, null, null, null,
     "walnut-residence", "stone-kitchen", "private-suite", "open-living",
     null, null, null, null,
-    "foyer-cabinetry", "built-in-study", null, null
+    "foyer-cabinetry", "built-in-study", null, null,
+    null, null, null, null,
+    null, null, null, null,
+    null, null, null, null,
+    null, null, null, null
   ]
 }

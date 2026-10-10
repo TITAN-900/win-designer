@@ -4,6 +4,7 @@ import { clamp01, smooth, loopState, headline, isShellCore } from './diorama-tim
 import { RoomCrossfade } from './room-crossfade.js';
 import { RoomDaylight, heroQualityProfile, setRoomTextureQuality, interiorEnvelope, captureRoomEmission, setRoomEmission } from './room-daylight.js';
 import { activateSceneFallback } from './scene-fallback.js';
+import { HeroTypeReveal } from './hero-type-reveal.js';
 
 const canvas = document.querySelector('#viewer');
 const visual = document.querySelector('.diorama-visual');
@@ -15,6 +16,7 @@ const counter = document.querySelector('#diorama-counter');
 const loading = document.querySelector('#loading');
 const errorPanel = document.querySelector('#error');
 const reducedQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+const typeReveal = new HeroTypeReveal(title, { reducedMotion: () => reducedQuery.matches });
 const smallQuery = window.matchMedia('(max-width: 760px)');
 const url = path => `${import.meta.env.BASE_URL}${path}`;
 const scene = new THREE.Scene();
@@ -229,11 +231,11 @@ function draw(state = loopState(elapsed, reducedQuery.matches), force = false) {
   const local = state.space === 0 ? state.firstLocal : state.secondLocal;
   const [label, heading, deck] = headline(state.space, local);
   if (index.textContent !== label) index.textContent = label;
-  if (title.textContent !== heading) title.textContent = heading;
+  typeReveal.show(heading);
   if (support.textContent !== deck) support.textContent = deck;
   counter.textContent = `0${state.space + 1} / 02`;
-  // The short copy changes only while momentarily dimmed at the midpoint.
-  hero.style.setProperty('--copy-opacity', transition ? Math.max(.08, Math.abs(state.blend - .5) * 2) : 1);
+  // A short masked typographic sweep accompanies each architectural state.
+  // Keep the copy present through room crossfades instead of dimming it away.
   canvas.dataset.space = `0${state.space + 1}`;
   canvas.dataset.build = local.toFixed(3);
   canvas.dataset.daylight = (state.space === 0 ? state.firstLight : state.secondLight).toFixed(3);
@@ -406,6 +408,7 @@ function dispose() {
   if (disposed) return;
   disposed = true;
   stop();
+  typeReveal.dispose();
   observer?.disconnect();
   window.removeEventListener('resize', onResize);
   document.removeEventListener('visibilitychange', syncPlayback);

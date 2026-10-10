@@ -54,6 +54,7 @@ function harness() {
     THREE: { ...THREE, WebGLRenderer: Renderer, WebGLRenderTarget: Target },
     GLTFLoader: class { loadAsync() { const load = deferred(); loads.push(load); return load.promise; } },
     document, window, activateSceneFallback, loopState, clamp01, smooth, headline, isShellCore,
+    HeroTypeReveal: class { show() {} dispose() {} },
     interiorEnvelope, setRoomEmission,
     console: { error() {} },
     requestAnimationFrame() { return ++calls.frames; }, cancelAnimationFrame() {},

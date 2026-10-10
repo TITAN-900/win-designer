@@ -1,9 +1,9 @@
-/* WIN DESIGN: sculptural Syne display, precise Manrope text.
+/* WIN DESIGN: editorial Archivo display, precise Manrope text.
    Two local variable fonts; real weights, no synthetic bold or remote fonts. */
 @font-face {
-  font-family: 'Syne';
-  src: url('../fonts/syne-latin-wght-normal.woff2') format('woff2');
-  font-weight: 400 800;
+  font-family: 'Archivo';
+  src: url('../fonts/archivo-latin-wght-normal.woff2') format('woff2');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -16,7 +16,7 @@
 }
 
 :root {
-  --font-heading: 'Syne', sans-serif;
+  --font-heading: 'Archivo', sans-serif;
   --font-body: 'Manrope', Arial, sans-serif;
   --type-display-xl: clamp(3.4rem, 6.2vw, 6.5rem);
   --type-display: clamp(3rem, 5vw, 5rem);
@@ -29,8 +29,8 @@
   --type-label: .6875rem;
   --weight-regular: 450;
   --weight-medium: 600;
-  --weight-display: 750;
-  --weight-display-strong: 800;
+  --weight-display: 760;
+  --weight-display-strong: 850;
   --leading-heading: 1.02;
   --leading-body: 1.63;
   --tracking-heading: -.048em;

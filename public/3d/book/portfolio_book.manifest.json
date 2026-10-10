@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "generator": "scripts/build_portfolio_book.py",
   "source": "design/portfolio_book.blend",
   "asset": "/3d/book/portfolio_book.glb",
@@ -39,6 +39,11 @@
     "Book_Endpaper_Right",
     "Book_Spine",
     "Book_Binding",
+    "Book_Headband_Head",
+    "Book_Headband_Tail",
+    "Book_Hinge_Left",
+    "Book_Hinge_Right",
+    "Book_Cover_Print_Left",
     "Book_Stack_Left",
     "Book_EdgeLines_Left",
     "Book_Stack_Right",
@@ -69,12 +74,32 @@
       "triangles": 300
     },
     "Book_Spine": {
-      "vertices": 28,
-      "triangles": 52
+      "vertices": 650,
+      "triangles": 1296
     },
     "Book_Binding": {
-      "vertices": 51,
-      "triangles": 64
+      "vertices": 650,
+      "triangles": 1296
+    },
+    "Book_Headband_Head": {
+      "vertices": 650,
+      "triangles": 1296
+    },
+    "Book_Headband_Tail": {
+      "vertices": 650,
+      "triangles": 1296
+    },
+    "Book_Hinge_Left": {
+      "vertices": 48,
+      "triangles": 92
+    },
+    "Book_Hinge_Right": {
+      "vertices": 48,
+      "triangles": 92
+    },
+    "Book_Cover_Print_Left": {
+      "vertices": 36,
+      "triangles": 34
     },
     "Book_Stack_Left": {
       "vertices": 196,
@@ -113,8 +138,8 @@
       "triangles": 360
     }
   },
-  "total_triangles": 19580,
-  "glb_bytes": 516488,
+  "total_triangles": 24866,
+  "glb_bytes": 951656,
   "validation": {
     "front_normals": "positive Z",
     "back_normals": "negative Z",

@@ -39,11 +39,11 @@ export function loopState(elapsedMs, reducedMotion = false) {
 
 export function headline(space, local) {
   if (space === 0) {
-    if (local < .24) return ['01 / Living + Kitchen', 'From structure.', 'Structure · Space'];
-    if (local < .86) return ['01 / Living + Kitchen', 'Into living.', 'Joinery · Material'];
-    return ['01 / Living + Kitchen', 'Made yours.', 'Ready for living'];
+    if (local < .24) return ['01 / Living + Kitchen', 'The shape of a day.', 'An open beginning.'];
+    if (local < .86) return ['01 / Living + Kitchen', 'Life, taking form.', 'Timber meets stone.'];
+    return ['01 / Living + Kitchen', 'Time finds a place.', 'Light settles in.'];
   }
-  if (local < .24) return ['02 / Bedroom', 'Room to begin.', 'Space · Light'];
-  if (local < .86) return ['02 / Bedroom', 'Made to belong.', 'Timber · Linen'];
-  return ['02 / Bedroom', 'Rest, considered.', 'A quiet retreat'];
+  if (local < .24) return ['02 / Bedroom', 'Room for stillness.', 'Beyond the everyday.'];
+  if (local < .86) return ['02 / Bedroom', 'Softness takes form.', 'Oak, linen, quiet detail.'];
+  return ['02 / Bedroom', 'The day falls quiet.', 'A softer kind of light.'];
 }

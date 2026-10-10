@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { paperRow } from './page-curl-math.js';
 import { bookFrame, bookPixelRatio, visibleGrabBounds } from './book-quality.js';
 import { coverPose } from './book-cover-math.js';
+import { bindingPoint, bindingRadius } from './book-binding-math.js';
 
 const paperMaterial = () => new THREE.MeshStandardMaterial({
   color: 0xffffff, roughness: .86, metalness: 0, side: THREE.DoubleSide,
@@ -16,17 +18,25 @@ export class BookCurl {
     this.host = host;
     this.canvas = document.createElement('canvas');
     this.canvas.className = 'book-curl-canvas';
-    this.canvas.setAttribute('aria-label', 'Three-dimensional WIN DESIGN portfolio. Drag a page edge or select a project photograph.');
+    this.canvas.setAttribute('aria-label', 'Three-dimensional WIN DESIGN portfolio. Swipe a page horizontally or tap a project photograph.');
     host.append(this.canvas);
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.12;
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.scene = new THREE.Scene();
+    const environment = new RoomEnvironment();
+    const pmrem = new THREE.PMREMGenerator(this.renderer);
+    this.environment = pmrem.fromScene(environment, .03, .1, 1000);
+    this.scene.environment = this.environment.texture;
+    this.scene.environmentIntensity = .32;
+    environment.dispose(); pmrem.dispose();
     this.camera = new THREE.PerspectiveCamera(25, 1, .1, 30);
     this.raycaster = new THREE.Raycaster();
-    this.scene.add(new THREE.HemisphereLight(0xfffcf5, 0xc7bfb0, 2.1));
+    this.scene.add(new THREE.HemisphereLight(0xfffcf5, 0xc7bfb0, 1.35));
     this.light = new THREE.DirectionalLight(0xfffaf1, 2.3);
     this.light.position.set(-2, 3, 7);
     this.light.castShadow = true;
@@ -45,6 +55,7 @@ export class BookCurl {
     this.leftWing = new THREE.Group();
     this.scene.add(this.leftWing);
     this.meshes = [];
+    this.bindingMeshes = [];
     this.coverProgress = 0;
   }
 
@@ -63,6 +74,13 @@ export class BookCurl {
       mesh.position.set(0, 0, 0); mesh.rotation.set(0, 0, 0); mesh.scale.set(1, 1, 1);
       mesh.castShadow = mesh.receiveShadow = true;
       this.meshes.push(mesh);
+      if (mesh.userData.binding_flexible) {
+        const position = mesh.geometry.attributes.position;
+        mesh.userData.bindingRest = position.array.slice();
+        position.setUsage(THREE.DynamicDrawUsage);
+        mesh.frustumCulled = false;
+        this.bindingMeshes.push(mesh);
+      }
       if (mesh.name.startsWith('Book_Active_')) {
         mesh.userData.rest = mesh.geometry.attributes.position.array.slice();
         mesh.geometry.attributes.position.setUsage(THREE.DynamicDrawUsage);
@@ -90,12 +108,9 @@ export class BookCurl {
     }
     // Printed bookcloth is an actual surface on the outside of the existing
     // front board, not a DOM overlay or a replacement for the Blender cover.
-    this.coverPrint = new THREE.Mesh(new THREE.PlaneGeometry(.99, 1.30),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .9, metalness: 0 }));
-    this.coverPrint.position.set(-.522, 0, -.0091);
-    this.coverPrint.rotation.y = Math.PI;
-    this.coverPrint.receiveShadow = true;
-    this.leftWing.add(this.coverPrint);
+    this.coverPrint = this.meshes.find(mesh => mesh.name === 'Book_Cover_Print_Left');
+    if (!this.coverPrint || this.bindingMeshes.length < 2) throw new Error('The bound book is missing its authored cover or flexible spine.');
+    this.coverPrint.material = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .86, metalness: 0 });
     this.host.dataset.bookAsset = 'blender';
     this.host.dataset.bookMeshes = String(this.meshes.length);
     this.host.dataset.curlVertices = String(this.front.geometry.attributes.position.count);
@@ -132,6 +147,18 @@ export class BookCurl {
     const pose = coverPose(this.coverProgress);
     this.leftWing.rotation.y = pose.angle;
     this.leftWing.position.set(pose.x, 0, pose.z);
+    for (const mesh of this.bindingMeshes) {
+      const rest = mesh.userData.bindingRest;
+      const position = mesh.geometry.attributes.position, uv = mesh.geometry.attributes.uv;
+      for (let i = 0; i < position.count; i++) {
+        const point = bindingPoint(uv.getX(i), pose.angle,
+          bindingRadius(rest[i * 3], rest[i * 3 + 2]),
+          mesh.userData.binding_anchor_x, mesh.userData.binding_anchor_z);
+        position.setXYZ(i, point.x, rest[i * 3 + 1], point.z);
+      }
+      position.needsUpdate = true;
+      mesh.geometry.computeVertexNormals();
+    }
     // Center the closed book on desktop; keep the approved immersive mobile
     // crop. Framing follows the finger, never a delayed camera animation.
     const center = this.mobile ? .40 : .52 * (1 - this.coverProgress);
@@ -143,6 +170,12 @@ export class BookCurl {
   }
   setCoverTexture(texture) {
     this.coverPrint.material.map = texture;
+    this.coverPrint.material.roughnessMap = texture.userData.coverMaps?.orm || null;
+    this.coverPrint.material.metalnessMap = texture.userData.coverMaps?.orm || null;
+    this.coverPrint.material.normalMap = texture.userData.coverMaps?.normal || null;
+    this.coverPrint.material.normalScale.set(.45, .45);
+    this.coverPrint.material.roughness = 1;
+    this.coverPrint.material.metalness = 1;
     this.coverPrint.material.needsUpdate = true;
   }
 
@@ -217,6 +250,19 @@ export class BookCurl {
     texture.minFilter = THREE.LinearMipmapLinearFilter;
     texture.magFilter = THREE.LinearFilter;
     texture.userData.links = canvas.pageLinks;
+    if (canvas.coverMaps) {
+      texture.flipY = false; texture.needsUpdate = true;
+      const maps = Object.fromEntries(Object.entries(canvas.coverMaps).map(([key, source]) => {
+        const map = new THREE.CanvasTexture(source);
+        map.colorSpace = THREE.NoColorSpace;
+        map.flipY = false;
+        map.anisotropy = texture.anisotropy;
+        this.renderer.initTexture(map);
+        return [key, map];
+      }));
+      texture.userData.coverMaps = maps;
+      texture.addEventListener('dispose', () => Object.values(maps).forEach(map => map.dispose()));
+    }
     this.renderer.initTexture(texture);
     this.host.dataset.pageTexture = `${canvas.width}x${canvas.height}`;
     this.host.dataset.pageAnisotropy = String(texture.anisotropy);
@@ -228,14 +274,19 @@ export class BookCurl {
     const b = new THREE.Vector3(1, 0, .035).project(this.camera);
     return Math.abs(b.x - a.x) * this.width / 2;
   }
-  pageHit(clientX, clientY) {
-    if (this.coverProgress < .999) return null;
+  pageSurfaceHit(clientX, clientY) {
     const rect = this.canvas.getBoundingClientRect();
+    this.scene.updateMatrixWorld(true);
     this.raycaster.setFromCamera(new THREE.Vector2((clientX - rect.left) / rect.width * 2 - 1, 1 - (clientY - rect.top) / rect.height * 2), this.camera);
+    if (this.coverProgress < .999) {
+      return this.raycaster.intersectObject(this.coverPrint, false).length ? { side: 'right', href: null } : null;
+    }
     const hit = this.raycaster.intersectObjects(this.pages, false)[0];
     if (!hit?.uv) return null;
-    return hit.object.material.map?.userData.links?.find(link => hit.uv.x >= link.x && hit.uv.x <= link.x + link.w && 1 - hit.uv.y >= link.y && 1 - hit.uv.y <= link.y + link.h)?.href || null;
+    const href = hit.object.material.map?.userData.links?.find(link => hit.uv.x >= link.x && hit.uv.x <= link.x + link.w && 1 - hit.uv.y >= link.y && 1 - hit.uv.y <= link.y + link.h)?.href || null;
+    return { side: hit.object === this.pages[0] ? 'left' : 'right', href };
   }
+  pageHit(clientX, clientY) { return this.pageSurfaceHit(clientX, clientY)?.href || null; }
   grabBounds(direction) {
     const x = direction > 0 ? 1 : -Math.cos(this.leftAngle);
     const z = direction > 0 ? .035 : Math.sin(this.leftAngle) + .035;
@@ -250,9 +301,13 @@ export class BookCurl {
     if (this.disposed) return;
     this.disposed = true;
     this.canvas.removeEventListener('webglcontextlost', this.onLost);
-    const materials = new Set();
-    for (const mesh of [...this.meshes, this.ground, this.coverPrint].filter(Boolean)) { mesh.geometry.dispose(); materials.add(mesh.material); }
+    const materials = new Set(), maps = new Set();
+    for (const mesh of [...this.meshes, this.ground]) {
+      mesh.geometry.dispose(); materials.add(mesh.material);
+      for (const value of Object.values(mesh.material)) if (value?.isTexture) maps.add(value);
+    }
+    maps.forEach(map => map.dispose());
     materials.forEach(material => material.dispose());
-    this.light.shadow.map?.dispose(); this.renderer.dispose(); this.canvas.remove();
+    this.light.shadow.map?.dispose(); this.environment?.dispose(); this.renderer.dispose(); this.canvas.remove();
   }
 }

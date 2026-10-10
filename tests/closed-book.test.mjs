@@ -78,13 +78,13 @@ test('closed cover and both real leaf stacks remain separated, not deleted or in
   }
 });
 
-test('catalog has six unique published entries, sixteen slots and ten deliberate blanks', () => {
+test('catalog has six unique published entries, thirty-two slots and twenty-six deliberate blanks', () => {
   const pages = catalogPages(data);
   const entries = pages.flatMap(page=>page.cells).filter(Boolean);
-  assert.equal(pages.length,4);
+  assert.equal(pages.length,8);
   assert.equal(entries.length,6);
   assert.equal(new Set(entries.map(entry=>entry.slug)).size,6);
-  assert.equal(pages.flatMap(page=>page.cells).filter(cell=>!cell).length,10);
+  assert.equal(pages.flatMap(page=>page.cells).filter(cell=>!cell).length,26);
   assert.equal(pages[1].cells.filter(Boolean).length,4);
   assert.equal(pages[3].cells.filter(Boolean).length,2);
   assert.ok(pages.every(page=>page.cells.length===4));
