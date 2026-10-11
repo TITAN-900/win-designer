@@ -5,11 +5,8 @@ import { paperRow } from './page-curl-math.js';
 import { bookFrame, bookPixelRatio, visibleGrabBounds } from './book-quality.js';
 import { coverPose } from './book-cover-math.js';
 import { bindingPoint, bindingRadius } from './book-binding-math.js';
-
-const paperMaterial = () => new THREE.MeshStandardMaterial({
-  color: 0xffffff, roughness: .86, metalness: 0, side: THREE.DoubleSide,
-  polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1
-});
+import { applyBookGilding } from './book-gilding.js';
+import { prepareCoverPrint, createPaperMaterial, BOOK_CAMERA_NEAR, BOOK_CAMERA_FAR } from './book-print-surfaces.js';
 
 // Covers, binding, both stacks and the deformable sheet are authored in Blender.
 // JavaScript poses the exported topology and supplies the printed photography.
@@ -34,7 +31,7 @@ export class BookCurl {
     this.scene.environment = this.environment.texture;
     this.scene.environmentIntensity = .32;
     environment.dispose(); pmrem.dispose();
-    this.camera = new THREE.PerspectiveCamera(25, 1, .1, 30);
+    this.camera = new THREE.PerspectiveCamera(25, 1, BOOK_CAMERA_NEAR, BOOK_CAMERA_FAR);
     this.raycaster = new THREE.Raycaster();
     this.scene.add(new THREE.HemisphereLight(0xfffcf5, 0xc7bfb0, 1.35));
     this.light = new THREE.DirectionalLight(0xfffaf1, 2.3);
@@ -96,7 +93,7 @@ export class BookCurl {
     if (!this.front || !this.back || this.pages.some(page => !page)) throw new Error('The Blender book is missing a required paper mesh.');
     const printSurfaces = [this.front, this.back, ...this.pages];
     const replaced = new Set(printSurfaces.map(page => page.material));
-    printSurfaces.forEach(page => { page.material = paperMaterial(); });
+    printSurfaces.forEach(page => { page.material = createPaperMaterial(); });
     for (const material of replaced) {
       if (!this.meshes.some(mesh => mesh.material === material)) material.dispose();
     }
@@ -111,6 +108,8 @@ export class BookCurl {
     this.coverPrint = this.meshes.find(mesh => mesh.name === 'Book_Cover_Print_Left');
     if (!this.coverPrint || this.bindingMeshes.length < 2) throw new Error('The bound book is missing its authored cover or flexible spine.');
     this.coverPrint.material = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .86, metalness: 0 });
+    prepareCoverPrint(this.meshes.find(mesh => mesh.name === 'Book_Cover_Left'), this.coverPrint);
+    this.bindingMeshes.push(...applyBookGilding(THREE, this.meshes).flexibleMeshes);
     this.host.dataset.bookAsset = 'blender';
     this.host.dataset.bookMeshes = String(this.meshes.length);
     this.host.dataset.curlVertices = String(this.front.geometry.attributes.position.count);
