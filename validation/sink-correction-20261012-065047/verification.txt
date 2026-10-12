@@ -1,0 +1,14 @@
+Commit: a371a5c3b874d56fdaecd803370fdc635ffd41ff
+Scope: Space 01 kitchen island sink/faucet only; existing fallback render refreshed from the same camera/settings.
+Original problem: faucet base occupied the stove-side approach to the basin and faced toward the stools.
+Final Blender basin center: (-1.91, .60, .920), footprint .53 x .35 unchanged. Sink lowered 7 mm to contact the stone.
+Final faucet centerline points: (-1.91,.37,.9175),(-1.91,.37,1.16),(-1.91,.40,1.27),(-1.91,.60,1.30),(-1.91,.60,1.19).
+Faucet base moved 490 mm toward the far/seating rim and 40 mm laterally. Foot lowered 12.5 mm to meet stone. Last segment vertical; outlet lands at basin center.
+Working-side island edge Y=.93; basin near rim Y=.775 (155 mm setback), bowl center Y=.60 (330 mm reach); existing cooking aisle 1.42 m.
+Source preservation audit: only sink and faucet changed, 170 other Blender objects unchanged.
+GLB preservation: exact semantic fingerprints pass for all unrelated geometry, UVs, nodes, material/image data and groups. Original sink mesh and faucet topology retained.
+Production build: passed.
+Tests: 109/109 passed.
+Browser: actual Three.js model inspected at 390 and 430 mobile widths, final 430-pixel scene completed with no warnings/errors. Screenshot matches original camera, room and furniture arrangement.
+Physical iPhone/Safari not tested; browser viewport validation only.
+Vercel deployment: success. Live GLB matches verified model SHA256 DB5A695C6D3238D7EB292AFB737C628F3F1C9C6089B11B5BEFA871C6B7BB1F3E

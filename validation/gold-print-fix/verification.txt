@@ -1,0 +1,12 @@
+Commit: a826a4f30131f0fdb08661bcd7507c04c466ceb4
+Scope: physical book gilding; cover/leaf depth conflict repair. No HTML, CSS, navigation, project data or room asset changes.
+Build: pnpm run build passed.
+Tests: 106 passed. Initial HTTP test startup raced server readiness; full suite passed after both listeners were ready.
+Visual: desktop 1440x1000; mobile viewport 390x844 and 430x932 in the Codex browser.
+Cover: closed, held at 20/50/80%, fully open, reversed to 20%; title, WIN DESIGN and original logo intact whenever the exterior faces the viewer.
+Interior: held forward/reverse curls, actual pointer drags forward and backward; ivory faces, gold physical cut edge preserved.
+Console: no warning/error after final page load in clean validation tab.
+Limit: physical iPhone and iOS Safari hardware were not available. Mobile tests are viewport tests, not a claim of real-device Safari verification.
+Gold: metalness 1, roughness .22/.27, environment reflections; real cut-edge triangles and beveled cover/spine details.
+Root cause: 0.00003-unit gap between printed cover and opaque carrier caused depth conflict. Overlapping outer carrier face removed, UVs unchanged, narrower 3–12 camera clip interval, single-sided leaf front/back.
+Production: Vercel success for a826a4f; live book-curl-BPXvxl-O.js matches verified dist file byte-for-byte. Live pointer open and reverse close checked with no new console errors.
