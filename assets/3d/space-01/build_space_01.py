@@ -225,9 +225,12 @@ for i in range(15):
 box("JOINERY_Island stone waterfall top", KITCHEN, (-1.40, .34, .88), (2.93, 1.18, .075), stone, .014, 4)
 box("JOINERY_Island stone end cheek", KITCHEN, (-2.87, .35, .44), (.07, 1.17, .82), stone_edge, .017)
 box("JOINERY_Island oak end panel reveal", KITCHEN, (-2.826, .35, .47), (.009, .91, .61), oak_edge, .002)
-box("JOINERY_Island inset sink dark well", KITCHEN, (-1.91, .60, .927), (.53, .35, .005), bronze, .013)
+# The +Y aisle faces the cooking counter. Keep the bowl near that working
+# edge, with the tap on its far rim and its outlet directly over the center.
+# Both fittings meet the existing stone surface at Z=.9175.
+box("JOINERY_Island inset sink dark well", KITCHEN, (-1.91, .60, .920), (.53, .35, .005), bronze, .013)
 path("JOINERY_Island faucet arch", KITCHEN,
-     [(-1.95,.86,.93),(-1.95,.86,1.16),(-1.95,.83,1.27),(-1.95,.70,1.30),(-1.95,.63,1.19)], .016, bronze)
+     [(-1.91,.37,.9175),(-1.91,.37,1.16),(-1.91,.40,1.27),(-1.91,.60,1.30),(-1.91,.60,1.19)], .016, bronze)
 for i, x in enumerate((-.86, -.26)):
     cylinder(f"FURN_Island stool pedestal {i+1}", FURN, (x,-.68,.355), .025, .67, bronze, 32, .006)
     seat = cylinder(f"FURN_Island upholstered stool seat {i+1}", FURN, (x,-.68,.72), .23, .10, fabric, 64, .045)
