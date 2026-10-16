@@ -6,7 +6,8 @@ import * as THREE from 'three';
 import { coverPose, COVER_HINGE, OPEN_ANGLE } from '../src/book-cover-math.js';
 import { catalogPages } from '../src/portfolio-catalog.js';
 import { releaseTarget } from '../src/page-curl-math.js';
-import { canAdvanceBook } from '../src/portfolio-book.js';
+import { canAdvanceBook, bookLeafPages, pageMarkup, bookCoverMarkup } from '../src/portfolio-book.js';
+import { COVER_BRAND, COVER_COMPANY } from '../src/book-cover-print.js';
 
 const context = { window: {} };
 vm.runInNewContext(readFileSync('assets/data/projects.js', 'utf8'), context);
@@ -78,16 +79,45 @@ test('closed cover and both real leaf stacks remain separated, not deleted or in
   }
 });
 
-test('catalog has six unique published entries, thirty-two slots and twenty-six deliberate blanks', () => {
+test('catalog has the one verified bungalow project, six printed pages and twenty-three incoming slots', () => {
   const pages = catalogPages(data);
   const entries = pages.flatMap(page=>page.cells).filter(Boolean);
-  assert.equal(pages.length,8);
-  assert.equal(entries.length,6);
-  assert.equal(new Set(entries.map(entry=>entry.slug)).size,6);
-  assert.equal(pages.flatMap(page=>page.cells).filter(cell=>!cell).length,26);
-  assert.equal(pages[1].cells.filter(Boolean).length,4);
-  assert.equal(pages[3].cells.filter(Boolean).length,2);
+  assert.equal(pages.length,6);
+  assert.equal(entries.length,1);
+  assert.equal(new Set(entries.map(entry=>entry.slug)).size,1);
+  assert.equal(pages.flatMap(page=>page.cells).filter(cell=>!cell).length,23);
+  assert.equal(pages[0].cells[0].slug,'bungalow-bukit-taman-segar');
+  assert.equal(pages[0].cells[0].project,'BUNGALOW BUKIT TAMAN SEGAR');
   assert.ok(pages.every(page=>page.cells.length===4));
+});
+
+test('front and rear endpapers preserve book anatomy without consuming or duplicating project slots', () => {
+  const pages = catalogPages(data), leaves = bookLeafPages(pages);
+  assert.equal(leaves.length,8);
+  assert.equal(leaves[0],null);
+  assert.equal(leaves.at(-1),null);
+  assert.equal(leaves[1],pages[0],'the first printed page opens on the visible mobile right-hand side');
+  assert.equal(leaves[1].cells[0].slug,'bungalow-bukit-taman-segar');
+  assert.deepEqual(leaves.filter(Boolean).map(page=>page.number),[1,2,3,4,5,6]);
+});
+
+test('every unoccupied saved slot prints INCOMING, while only the genuine project has a link or photograph', () => {
+  const html = catalogPages(data).map(pageMarkup).join('');
+  assert.equal((html.match(/>INCOMING<\/span>/g)||[]).length,23);
+  assert.equal((html.match(/<img /g)||[]).length,1);
+  assert.equal((html.match(/<a class="book-cell"/g)||[]).length,1);
+  assert.match(html,/href="\/projects\/bungalow-bukit-taman-segar\/"/);
+  assert.doesNotMatch(html,/WIN DESIGN|walnut-residence|stone-kitchen/);
+});
+
+test('the manufactured cover uses the supplied company name as print, without loading an invented or legacy logo', () => {
+  assert.equal(COVER_BRAND,'WIN JOINERY');
+  assert.equal(COVER_COMPANY,'WIN JOINERY SDN BHD');
+  assert.match(bookCoverMarkup(),/WIN JOINERY SDN BHD/);
+  assert.doesNotMatch(bookCoverMarkup(),/<img|WIN DESIGN/);
+  const print = readFileSync('src/book-cover-print.js','utf8');
+  assert.doesNotMatch(print,/new Image\(|logoURL|win-design-logo/);
+  assert.match(print,/color\.coverMaps = \{ orm, normal \}/,'physical roughness and fine fibre response remain');
 });
 
 test('saved capacity can grow without renderer changes, with draft filtering and invalid-data rejection', () => {

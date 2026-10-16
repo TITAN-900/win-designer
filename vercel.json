@@ -3,10 +3,22 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "win-designer.vercel.app" }],
+      "destination": "https://win-joinery.vercel.app/:path*",
+      "permanent": true
+    },
     { "source": "/about.html", "destination": "/#portfolio", "permanent": true },
     { "source": "/about", "destination": "/#portfolio", "permanent": true }
   ],
   "headers": [
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+      ]
+    },
     {
       "source": "/models/(.*)",
       "headers": [

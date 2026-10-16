@@ -16,8 +16,7 @@ export async function paintPage(markup, width, height, mobile, maxTextureSize) {
       image.loading = 'eager';
       await image.decode();
     }));
-    const coverLogo = source.querySelector('.book-cover img');
-    if (coverLogo) return paintCover(coverLogo.src, mobile, maxTextureSize);
+    if (source.querySelector('.book-cover')) return paintCover(mobile, maxTextureSize);
     const canvas = document.createElement('canvas');
     const raster = pageRasterSize(width, height, mobile, maxTextureSize);
     const scale = raster.scale;

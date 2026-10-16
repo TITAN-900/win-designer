@@ -1,5 +1,5 @@
 import '../assets/data/projects.js';
-import { projectPath, renderProjectContent } from './project-content.js';
+import { projectPath, projectDescription, renderProjectContent } from './project-content.js';
 
 const { projects, site } = window.WIN_DESIGN_DATA;
 const route = location.pathname.match(/^\/projects\/([^/]+)\/?$/);
@@ -13,14 +13,19 @@ if (project) {
   document.title = `${project.title} | ${site.name}`;
   document.querySelector('link[rel="canonical"]').href = canonical;
   for (const [selector, value] of [
-    ['name="description"', `${project.title}. ${project.intro}`],
+    ['name="description"', projectDescription(project, site)],
     ['property="og:title"', document.title],
-    ['property="og:description"', project.intro],
+    ['property="og:description"', projectDescription(project, site)],
     ['property="og:url"', canonical],
-    ['property="og:image"', new URL(project.cover.src, site.url).href]
+    ['property="og:image"', new URL(project.cover.src, site.url).href],
+    ['property="og:image:alt"', project.cover.alt],
+    ['name="twitter:title"', document.title],
+    ['name="twitter:description"', projectDescription(project, site)],
+    ['name="twitter:image"', new URL(project.cover.src, site.url).href],
+    ['name="twitter:image:alt"', project.cover.alt]
   ]) document.querySelector(`meta[${selector}]`)?.setAttribute('content', value);
 } else {
-  document.title = 'Project unavailable | WIN DESIGN';
+  document.title = `Project unavailable | ${site.name}`;
   content.innerHTML = '<section class="project-missing"><h1>Project unavailable.</h1><a href="/#portfolio">Back to portfolio</a></section>';
   const robots = document.createElement('meta');
   robots.name = 'robots';

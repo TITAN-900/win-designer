@@ -14,24 +14,37 @@ const context={window:{}};
 vm.runInNewContext(read('assets/data/projects.js'),context);
 const data=context.window.WIN_DESIGN_DATA;
 const html=read('index.html');
+const localAsset=path=>path.startsWith('/')?resolve('public',path.slice(1)):path;
 
 test('approved 3D GLB is byte-for-byte unchanged',()=>{
   const hash=createHash('sha256').update(readFileSync('public/models/win_interior_demo.glb')).digest('hex');
   assert.equal(hash,'82d2a5e9c35975556430fca5007b82f9f6d564aa42d69e3a6503f7f009be0944');
 });
-test('original six projects and every referenced image exist',()=>{
-  assert.equal(data.projects.length,6);
+test('the real Bungalow project contains all 39 unique customer photographs',()=>{
+  assert.equal(data.projects.length,1);
+  const project=data.projects[0];
+  assert.equal(project.slug,'bungalow-bukit-taman-segar');
+  assert.equal(project.title,'BUNGALOW BUKIT TAMAN SEGAR');
+  assert.equal(project.gallery.length,39);
+  assert.equal(new Set(project.gallery.map(image=>image.src)).size,39);
   const walk=value=>{
     if(!value||typeof value!=='object')return;
-    if(value.src)assert.ok(existsSync(value.src),value.src);
+    if(value.src)assert.ok(existsSync(localAsset(value.src)),value.src);
+    if(value.srcSet)for(const candidate of value.srcSet.split(',')){
+      const path=candidate.trim().split(/\s+/)[0];
+      assert.ok(existsSync(localAsset(path)),path);
+    }
     for(const child of Object.values(value))walk(child);
   };
   walk(data);
 });
-test('real logo and portfolio navigation remain while public contact data is removed',()=>{
+test('formal company identity and existing navigation are preserved without invented contact details',()=>{
   assert.equal(data.site.phoneHref,undefined);
   assert.equal(data.site.whatsappBase,undefined);
-  assert.ok(html.includes(data.site.logo));
+  assert.equal(data.site.name,'WIN JOINERY SDN BHD');
+  assert.equal(data.site.wordmark,'WIN JOINERY');
+  assert.equal(data.site.logo,undefined);
+  assert.ok(html.includes('class="brand-wordmark">WIN JOINERY</span>'));
   for(const match of html.matchAll(/href="#([^"]+)"/g))assert.ok(html.includes(`id="${match[1]}"`),match[1]);
   for(const section of ['home','portfolio','showcase'])assert.ok(html.includes(`id="${section}"`));
   for(const page of ['index.html','project.html']){
@@ -44,19 +57,16 @@ test('real logo and portfolio navigation remain while public contact data is rem
   }
   assert.doesNotMatch(html,/href="#"/);
 });
-test('the original logo keeps its natural proportions in navigation and footer',()=>{
-  const logo=readFileSync(data.site.logo);
-  const width=logo.readUInt32BE(16),height=logo.readUInt32BE(20);
+test('navigation and footer use a text wordmark, not the removed graphic logo',()=>{
   for(const page of ['index.html','project.html']){
-    const tags=[...read(page).matchAll(/<img\b[^>]*>/g)].map(match=>match[0]).filter(tag=>tag.includes(data.site.logo));
-    assert.equal(tags.length,2,page);
-    for(const tag of tags){
-      assert.ok(tag.includes(`width="${width}"`),`${page}: logo width`);
-      assert.ok(tag.includes(`height="${height}"`),`${page}: logo height`);
-    }
+    const source=read(page);
+    assert.equal([...source.matchAll(/class="brand-wordmark">WIN JOINERY<\/span>/g)].length,2,page);
+    assert.equal([...source.matchAll(/aria-label="WIN JOINERY SDN BHD home"/g)].length,2,page);
+    assert.doesNotMatch(source,/WIN DESIGN|win-design-logo|win-design-social-logo|favicon\.ico/);
+    assert.match(source,/<link rel="icon" href="\/site-icon\.svg"/);
   }
-  assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-brand img\s*\{[^}]*height:\s*auto/);
-  assert.match(read('assets/css/ui-refresh.css'),/\.site-footer \.footer-bottom \.js-year\s*\{\s*display:\s*inline;?\s*\}/);
+  assert.match(read('assets/css/minimal-site.css'),/\.brand-wordmark\s*\{[^}]*white-space:\s*nowrap/);
+  assert.match(read('public/site-icon.svg'),/>WIN<\/text>/);
 });
 test('public pages and shipped data contain no contact or editing affordances',()=>{
   for(const page of ['index.html','project.html','about.html','assets/data/projects.js','src/project-content.js','src/project.js']){
@@ -68,7 +78,8 @@ test('public pages and shipped data contain no contact or editing affordances',(
   assert.doesNotMatch(read('assets/js/main.js'),/initContactForms|FormData|renderTransformationPreview|renderHome/);
 });
 test('production build retains project photography, SEO files and lighting',()=>{
-  for(const p of ['index.html','about.html','project.html','assets/js/main.js','assets/data/projects.js','assets/js/vendor/three.module.min.js','assets/js/studio-sculpture-geometry.js','american-walnut.jpg.jpeg','models/win_interior_demo.glb','robots.txt','sitemap.xml'])assert.ok(existsSync(resolve('dist',p)),p);
+  for(const p of ['index.html','about.html','project.html','assets/data/projects.js','site-icon.svg','robots.txt','sitemap.xml'])assert.ok(existsSync(resolve('dist',p)),p);
+  for(const image of data.projects[0].gallery)assert.ok(existsSync(resolve('dist',image.src.slice(1))),image.src);
   const verify=dir=>{for(const entry of readdirSync(resolve('public',dir),{withFileTypes:true})){const p=dir+'/'+entry.name;if(entry.isDirectory())verify(p);else assert.ok(existsSync(resolve('dist',p)),p);}};
   verify('lighting');
   assert.match(read('about.html'),/http-equiv="refresh" content="0; url=\/#portfolio"/);
@@ -82,15 +93,16 @@ test('Vercel build does not depend on empty local-only directories',()=>{
   assert.doesNotMatch(config,/cpSync\(['"]about['"]/);
 });
 
-test('production SEO always uses the existing official domain',()=>{
-  const origin='https://win-designer.vercel.app';
+test('production SEO consistently uses the confirmed WIN JOINERY domain',()=>{
+  const origin='https://win-joinery.vercel.app';
   assert.equal(data.site.url,`${origin}/`);
-  assert.match(read('vite.config.js'),/SITE_URL \|\| 'https:\/\/win-designer\.vercel\.app'/);
+  assert.match(read('vite.config.js'),/SITE_URL \|\| 'https:\/\/win-joinery\.vercel\.app'/);
   for(const page of ['index.html','project.html']){
     const output=read(`dist/${page}`);
     assert.ok(output.includes(`rel="canonical" href="${origin}/`),page);
     assert.ok(output.includes(`property="og:image" content="${origin}/`),page);
     assert.ok(!output.includes('__SITE_ORIGIN__'),page);
+    assert.doesNotMatch(output,/WIN DESIGN|win-designer\.vercel\.app|win-design-logo|win-design-social-logo/);
   }
   assert.ok(read('dist/robots.txt').includes(origin));
   assert.ok(read('dist/sitemap.xml').includes(origin));
@@ -211,11 +223,11 @@ test('Portfolio navigation follows the reading section in both directions',()=>{
   const listeners={};
   const sections=[{id:'portfolio',top:1000,bottom:6000},{id:'contact',top:6000,bottom:8500}]
     .map(section=>({...section,getBoundingClientRect:()=>({top:section.top-scrollY,bottom:section.bottom-scrollY})}));
-  const links=sections.filter(section=>section.id==='portfolio').map(section=>({href:`https://win-designer.vercel.app/#${section.id}`,active:false,addEventListener(){},getAttribute(){return null;},classList:{toggle(_name,value){const link=links.find(link=>link.href.endsWith('#'+section.id));link.active=value===undefined?!link.active:Boolean(value);}}}));
+  const links=sections.filter(section=>section.id==='portfolio').map(section=>({href:`https://win-joinery.vercel.app/#${section.id}`,active:false,addEventListener(){},getAttribute(){return null;},classList:{toggle(_name,value){const link=links.find(link=>link.href.endsWith('#'+section.id));link.active=value===undefined?!link.active:Boolean(value);}}}));
   const nav={getBoundingClientRect:()=>({bottom:78}),classList:{add(){}}};
   const document={readyState:'complete',body:{},querySelector:selector=>selector==='.site-nav'?nav:null,querySelectorAll:selector=>selector==='[data-nav-section]'?sections:selector==='.nav-links a'?links:[]};
   const window={WIN_DESIGN_DATA:data,addEventListener:(name,fn)=>{listeners[name]=fn;},requestAnimationFrame:fn=>fn()};
-  vm.runInNewContext(read('assets/js/main.js'),{window,document,URL,URLSearchParams,location:{href:'https://win-designer.vercel.app/',pathname:'/'}});
+  vm.runInNewContext(read('assets/js/main.js'),{window,document,URL,URLSearchParams,location:{href:'https://win-joinery.vercel.app/',pathname:'/'}});
   const active=()=>links.filter(link=>link.active).map(link=>new URL(link.href).hash);
   assert.deepEqual(active(),[]);
   scrollY=1000;listeners.scroll();assert.deepEqual(active(),['#portfolio']);
@@ -247,28 +259,31 @@ test('editorial image movement is bounded and exactly reversible without accumul
 
 test('the portfolio book has four slots per page with unique projects and empty capacity',()=>{
   const pages=createBookPages(data);
-  assert.equal(pages.length,8);
+  assert.equal(pages.length,6);
   for(const page of pages){
     assert.equal(page.cells.length,4);
     for(const cell of page.cells){
       if(!cell)continue;
-      assert.ok(existsSync(cell.image.src));
+      assert.ok(existsSync(localAsset(cell.image.src)));
       assert.ok(data.projects.some(project=>project.slug===cell.slug));
     }
   }
   const occupied=pages.flatMap(page=>page.cells).filter(Boolean);
-  assert.equal(occupied.length,6);
-  assert.equal(new Set(occupied.map(cell=>cell.slug)).size,6);
-  assert.equal(pages.flatMap(page=>page.cells).filter(cell=>!cell).length,26);
-  assert.equal(nextBookPosition(-1,false,pages.length),0);
-  assert.equal(nextBookPosition(0,false,pages.length),2);
-  assert.equal(nextBookPosition(2,false,pages.length),4);
-  assert.equal(nextBookPosition(6,false,pages.length),6);
+  assert.equal(occupied.length,1);
+  assert.equal(new Set(occupied.map(cell=>cell.slug)).size,1);
+  assert.equal(pages[0].cells[0].slug,'bungalow-bukit-taman-segar');
+  assert.equal(pages.flatMap(page=>page.cells).filter(cell=>!cell).length,23);
+  // Blank opening/closing endpapers are physical leaves, not project capacity.
+  const leafCount=pages.length+2;
+  assert.equal(nextBookPosition(-1,false,leafCount),0);
+  assert.equal(nextBookPosition(0,false,leafCount),2);
+  assert.equal(nextBookPosition(2,false,leafCount),4);
+  assert.equal(nextBookPosition(6,false,leafCount),6);
   assert.equal(previousBookPosition(2,false),0);
   assert.equal(previousBookPosition(0,false),0);
-  assert.equal(nextBookPosition(0,true,pages.length),2);
-  assert.equal(nextBookPosition(2,true,pages.length),4);
-  assert.equal(nextBookPosition(6,true,pages.length),6);
+  assert.equal(nextBookPosition(0,true,leafCount),2);
+  assert.equal(nextBookPosition(2,true,leafCount),4);
+  assert.equal(nextBookPosition(6,true,leafCount),6);
   assert.equal(previousBookPosition(2,true),0);
   assert.equal(previousBookPosition(0,true),0);
   assert.doesNotMatch(read('assets/css/portfolio-book.css'),/rotateY/);
@@ -302,9 +317,9 @@ test('mobile book fallback keeps both printed pages and their project navigation
 });
 
 test('all content image URLs are served by dev and production preview',async()=>{
-  const urls=new Set(['index.html','about.html','project.html?project=stone-kitchen','models/win_interior_demo.glb','3d/space-01/win_space_01.glb','3d/space-02/win_space_02.glb','assets/js/main.js','assets/js/vendor/three.module.min.js','assets/js/studio-sculpture-geometry.js','american-walnut.jpg.jpeg']);
+  const urls=new Set(['index.html','about.html','site-icon.svg','3d/space-01/win_space_01.glb','3d/space-02/win_space_02.glb']);
   for(const project of data.projects){urls.add(`project.html?project=${project.slug}`);urls.add(`projects/${project.slug}/`);}
-  const walk=value=>{if(!value||typeof value!=='object')return;if(value.src)urls.add(value.src);for(const child of Object.values(value))walk(child);};walk(data);
+  const walk=value=>{if(!value||typeof value!=='object')return;if(value.src)urls.add(value.src.replace(/^\//,''));if(value.srcSet)for(const candidate of value.srcSet.split(','))urls.add(candidate.trim().split(/\s+/)[0].replace(/^\//,''));for(const child of Object.values(value))walk(child);};walk(data);
   for(const match of html.matchAll(/<img\s[^>]*src="([^"]+)"/g))urls.add(match[1]);
   for(const port of [5175,4175])for(const path of urls){const response=await fetch(`http://127.0.0.1:${port}/${path}`,{method:'HEAD'});assert.equal(response.status,200,`${port}/${path}`);}
 });

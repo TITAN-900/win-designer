@@ -1,10 +1,8 @@
 {
-  "pageCount": 8,
+  "pageCount": 6,
   "slots": [
+    "bungalow-bukit-taman-segar", null, null, null,
     null, null, null, null,
-    "walnut-residence", "stone-kitchen", "private-suite", "open-living",
-    null, null, null, null,
-    "foyer-cabinetry", "built-in-study", null, null,
     null, null, null, null,
     null, null, null, null,
     null, null, null, null,

@@ -4,3 +4,6 @@ dist/
 .vercel/
 *.log
 __pycache__/
+# Local visual evidence is delivered separately, not shipped in the website.
+/validation/joinery-v5*/
+/validation/bungalow-photo-audit/

@@ -1,4 +1,4 @@
-/* WIN DESIGN — shared visual system. Typography is owned by typography.css. */
+/* WIN JOINERY — shared visual system. Typography is owned by typography.css. */
 :root {
   --ui-charcoal: #34332e;
   --ui-linen: #f4f0e7;
@@ -86,7 +86,7 @@ body .site-nav .nav-links .nav-cta:hover span { transform: translate(3px, -2px);
 
 /* The authored room remains full-frame. The poster also covers initial loading. */
 body.home-page .studio-layer {
-  background: var(--ui-walnut) url('../win20/hero-condo.webp') center / cover no-repeat;
+  background: var(--ui-walnut);
 }
 body.home-page.scene-ready .studio-layer { background: #817c72; }
 body.home-page .intro {
@@ -145,9 +145,7 @@ body.home-page .loading-panel {
 }
 body.home-page .progress-track { background: #ffffff40; }
 body.home-page #progress-bar { background: #e8d8bd; }
-body.home-page.scene-fallback .studio-layer { background: var(--ui-walnut) url('../win20/hero-condo.webp') center / cover no-repeat; }
-body.home-page.scene-fallback #viewer,
-body.home-page.scene-fallback #showcase { display: none; }
+body.home-page.scene-fallback .studio-layer { background: var(--ui-walnut); }
 body.home-page.scene-fallback .error-panel {
   display: grid;
   top: auto;

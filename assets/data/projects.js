@@ -1,252 +1,93 @@
 (function () {
-  const siteUrl = "https://win-designer.vercel.app/";
+  const siteUrl = "https://win-joinery.vercel.app/";
+  const imageRoot = "/images/bungalow-bukit-taman-segar/";
+  const portraitPhotos = new Set([2, 3, 5, 6, 7, 8, 13, 19, 22, 23, 24, 26, 28, 31, 33, 34, 35, 36, 37, 38]);
 
-  // Future project workflow:
-  // 1. Create a folder such as assets/projects/new-project-name/.
-  // 2. Add optimized cover and gallery images.
-  // 3. Add one project object to the array below.
-  // The homepage and project page will render the new project automatically.
+  // Source photographs are all 1080 × 810 or 810 × 1080. Keep their original
+  // full-resolution JPEG bytes; the 640px WebP candidate is for smaller layouts.
+  // See bungalow-photo-audit.json for the complete source/duplicate audit.
+  function photo(number, alt) {
+    const name = `bungalow-${String(number).padStart(2, "0")}`;
+    const width = portraitPhotos.has(number) ? 810 : 1080;
+    const height = portraitPhotos.has(number) ? 1080 : 810;
+    const src = `${imageRoot}${name}.jpeg`;
+    return {
+      src,
+      original: src,
+      srcSet: `${imageRoot}${name}-640.webp 640w, ${src} ${width}w`,
+      alt,
+      width,
+      height
+    };
+  }
+
+  // One entry is one complete project, not one photograph. To add a future
+  // project, add its real photos and project object here, then assign its slug
+  // to an INCOMING slot in book-layout.json. No 3D-book code changes are needed.
+  const cover = photo(9, "Television joinery with illuminated arched display shelves at Bungalow Bukit Taman Segar");
   const projects = [
     {
-      slug: "walnut-residence",
-      title: "Walnut Residence",
-      type: "Living Room",
-      intro: "Walnut joinery. Softer light.",
-      description: "Fitted storage, warm light, measured proportions.",
-      cover: {
-        src: "livingroom.jpg.jpg",
-        alt: "Warm walnut living room with custom cabinetry and concealed lighting",
-        width: 1280,
-        height: 854
-      },
+      slug: "bungalow-bukit-taman-segar",
+      title: "BUNGALOW BUKIT TAMAN SEGAR",
+      type: "Residential",
+      intro: "",
+      description: "A photographic record of the interior and joinery.",
+      cover,
+      // Ordered from living and dining through kitchens, bedrooms and fitted
+      // storage. Alternate views are retained; they are not duplicate files.
       gallery: [
-        {
-          src: "livingroom.jpg.jpg",
-          alt: "Walnut living room with custom cabinetry",
-          width: 1280,
-          height: 854
-        },
-        {
-          src: "assets/projects/optimized/malaysia-luxury-condo-living.webp",
-          alt: "Completed Malaysian condominium living room with warm walnut finishes",
-          width: 1536,
-          height: 1024
-        },
-        {
-          src: "livingroom3.jpg.jpg",
-          alt: "Open residential living and dining space with warm lighting",
-          width: 1280,
-          height: 960
-        },
-        {
-          src: "assets/win20/project-study.webp",
-          alt: "Built-in cabinetry detail with hidden lighting",
-          width: 1586,
-          height: 992
-        }
-      ],
-      beforeAfter: [
-        {
-          verified: false,
-          note: "Reference pair. Replace with verified same-room, same-angle client photos when available.",
-          before: {
-            src: "assets/projects/optimized/before-empty-concrete-condo.webp",
-            alt: "Before renovation empty condominium interior with bare concrete floor",
-            width: 1536,
-            height: 1024
-          },
-          after: {
-            src: "assets/projects/optimized/after-luxury-condo-living.jpeg.webp",
-            alt: "After renovation completed condominium living room with warm finishes",
-            width: 1280,
-            height: 853
-          }
-        }
-      ]
-    },
-    {
-      slug: "stone-kitchen",
-      title: "Stone Kitchen",
-      type: "Kitchen",
-      intro: "Stone and walnut, in balance.",
-      description: "Durable surfaces. Fitted cabinetry.",
-      cover: {
-        src: "livingroom2.jpg.jpg",
-        alt: "Luxury kitchen with stone island, walnut cabinetry and warm lighting",
-        width: 1280,
-        height: 720
-      },
-      gallery: [
-        {
-          src: "livingroom2.jpg.jpg",
-          alt: "Stone kitchen island with walnut cabinetry",
-          width: 1280,
-          height: 720
-        },
-        {
-          src: "assets/projects/optimized/malaysia-luxury-kitchen-dining.webp",
-          alt: "Malaysian luxury kitchen and dining area with cream stone and walnut cabinetry",
-          width: 1536,
-          height: 1024
-        },
-        {
-          src: "assets/win20/project-kitchen.webp",
-          alt: "Cream marble kitchen with concealed lighting",
-          width: 1536,
-          height: 1024
-        }
-      ],
-      beforeAfter: []
-    },
-    {
-      slug: "private-suite",
-      title: "Private Suite",
-      type: "Bedroom",
-      intro: "Soft texture. Quiet light.",
-      description: "Storage and softness, in balance.",
-      cover: {
-        src: "livingroom4.jpg.jpg",
-        alt: "Calm luxury bedroom with walnut feature wall and soft beige fabrics",
-        width: 1280,
-        height: 960
-      },
-      gallery: [
-        {
-          src: "livingroom4.jpg.jpg",
-          alt: "Luxury bedroom with walnut feature wall",
-          width: 1280,
-          height: 960
-        },
-        {
-          src: "assets/projects/optimized/malaysia-luxury-bedroom.webp",
-          alt: "Completed Malaysian bedroom with beige fabrics and hidden lighting",
-          width: 1536,
-          height: 1024
-        },
-        {
-          src: "assets/win20/project-bedroom.webp",
-          alt: "Premium bedroom with fitted wardrobe wall",
-          width: 1536,
-          height: 1024
-        }
-      ],
-      beforeAfter: []
-    },
-    {
-      slug: "open-living",
-      title: "Open Living",
-      type: "Living and Dining",
-      intro: "Room to gather.",
-      description: "Open planning. Calm finishes.",
-      cover: {
-        src: "livingroom3.jpg.jpg",
-        alt: "Open Malaysian condominium living and dining space with warm walnut accents",
-        width: 1280,
-        height: 960
-      },
-      gallery: [
-        {
-          src: "livingroom3.jpg.jpg",
-          alt: "Open living and dining room with warm walnut details",
-          width: 1280,
-          height: 960
-        },
-        {
-          src: "assets/projects/optimized/malaysia-luxury-condo-living.webp",
-          alt: "Completed Malaysian luxury condominium living room",
-          width: 1536,
-          height: 1024
-        },
-        {
-          src: "assets/win20/project-foyer.webp",
-          alt: "Walnut foyer cabinetry detail",
-          width: 1536,
-          height: 1024
-        }
-      ],
-      beforeAfter: []
-    },
-    {
-      slug: "foyer-cabinetry",
-      title: "Foyer Cabinetry",
-      type: "Custom Cabinetry",
-      intro: "An entrance with intention.",
-      description: "Concealed storage. Stone detail.",
-      cover: {
-        src: "assets/win20/project-foyer.webp",
-        alt: "Luxury Malaysian foyer cabinetry with walnut finishes",
-        width: 1536,
-        height: 1024
-      },
-      gallery: [
-        {
-          src: "assets/win20/project-foyer.webp",
-          alt: "Luxury Malaysian foyer cabinetry",
-          width: 1536,
-          height: 1024
-        },
-        {
-          src: "assets/projects/optimized/malaysia-walnut-foyer-cabinetry.webp",
-          alt: "Walnut foyer cabinetry with hidden lighting",
-          width: 1536,
-          height: 1024
-        },
-        {
-          src: "assets/win20/project-study.webp",
-          alt: "Study cabinetry detail with warm shelves",
-          width: 1586,
-          height: 992
-        }
-      ],
-      beforeAfter: []
-    },
-    {
-      slug: "built-in-study",
-      title: "Built-In Study",
-      type: "Study",
-      intro: "A quieter place to work.",
-      description: "Fitted storage. Warm light.",
-      cover: {
-        src: "assets/win20/project-study.webp",
-        alt: "Elegant Malaysian study with warm built-in cabinetry and hidden LED lighting",
-        width: 1586,
-        height: 992
-      },
-      gallery: [
-        {
-          src: "assets/win20/project-study.webp",
-          alt: "Built-in study cabinetry with warm lighting",
-          width: 1586,
-          height: 992
-        },
-        {
-          src: "assets/projects/optimized/malaysia-study-lounge.webp",
-          alt: "Warm Malaysian study lounge with walnut built-ins",
-          width: 1586,
-          height: 992
-        },
-        {
-          src: "livingroom5.jpg.jpg",
-          alt: "Neutral modern interior detail with warm lighting",
-          width: 1280,
-          height: 960
-        }
+        cover,
+        photo(1, "Wide view of the television wall and illuminated arched shelving"),
+        photo(12, "Side view of television cabinetry and adjacent stone-lined display recess"),
+        photo(37, "Stone-lined display recess with fluted cabinetry and concealed lighting"),
+        photo(35, "Timber cabinet beside a plant and decorative vase"),
+        photo(10, "Fitted television and storage wall below a timber ceiling detail"),
+        photo(8, "Full-height cabinetry framing a television"),
+        photo(11, "Timber dining table beside illuminated fitted shelving"),
+        photo(21, "Dining space with pendant lights and full-height wall panels"),
+        photo(30, "Long fitted counter and illuminated shelving beside the dining table"),
+        photo(36, "Arched glazed display cabinetry beneath a timber ceiling"),
+        photo(20, "Illuminated arched display cabinet with lower drawers"),
+        photo(38, "Curved fluted kitchen island with pendant lighting and fitted appliances"),
+        photo(28, "Side view of the fluted kitchen island and woven pendant lights"),
+        photo(31, "Tall kitchen cabinetry with refrigerator, oven and illuminated counter"),
+        photo(14, "U-shaped kitchen with fitted cabinets and a stone-pattern backsplash"),
+        photo(16, "Kitchen cabinetry, refrigerator and window-side sink"),
+        photo(15, "Kitchen sink and cooking counter with pale cabinetry"),
+        photo(13, "Laundry counter with fitted cabinets and two washing appliances"),
+        photo(39, "Bedroom with upholstered headboard, timber ceiling and fitted wardrobe"),
+        photo(18, "Bedroom showing the bed, timber wardrobe and dressing area"),
+        photo(29, "Upholstered bed beside a full-height timber wardrobe"),
+        photo(19, "Bedroom dressing counter with circular mirror and tall cabinetry"),
+        photo(25, "Full-height pale wardrobe with long handles and timber-lined recess"),
+        photo(3, "Bedroom with timber bed frame, dressing counter and pale wardrobe"),
+        photo(7, "View across the bedroom toward its timber headboard and fitted desk"),
+        photo(6, "Timber bed frame and headboard with a mattress still in protective wrapping"),
+        photo(4, "Fitted dressing desk, circular mirror and overhead timber cabinets"),
+        photo(5, "Bedroom television panel and low fitted drawers"),
+        photo(2, "Pale full-height wardrobe with circular timber handles"),
+        photo(23, "Angled view of pale wardrobe doors and circular timber handles"),
+        photo(33, "Compact bedroom with a timber headboard and concealed lighting"),
+        photo(34, "Fitted television cabinetry with timber shelves and lower drawers"),
+        photo(24, "Timber display shelving above a herringbone floor"),
+        photo(22, "Fitted storage with a curved timber corner shelf"),
+        photo(26, "Timber vanity cabinet, stone counter and circular mirror"),
+        photo(17, "Dark media room with perimeter lighting and furniture in protective covers"),
+        photo(32, "Media room facing a low cabinet and softly lit dark wall panels"),
+        photo(27, "Side view of the media room with vertical lighting details")
       ],
       beforeAfter: []
     }
   ];
 
+  // Keep the established public data API so the working book and project
+  // routes continue using the same loading and presentation pipeline.
   window.WIN_DESIGN_DATA = {
     site: {
-      name: "WIN DESIGN",
+      name: "WIN JOINERY SDN BHD",
+      wordmark: "WIN JOINERY",
       url: siteUrl,
-      logo: "assets/win20/win-design-logo-nav-compact.png",
-      hero: {
-        src: "assets/win20/hero-condo.webp",
-        alt: "Modern Malaysian condominium interior with warm walnut cabinetry and concealed lighting",
-        width: 1536,
-        height: 1024
-      }
+      hero: cover
     },
     projects
   };

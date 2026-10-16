@@ -15,7 +15,7 @@ export class BookCurl {
     this.host = host;
     this.canvas = document.createElement('canvas');
     this.canvas.className = 'book-curl-canvas';
-    this.canvas.setAttribute('aria-label', 'Three-dimensional WIN DESIGN portfolio. Swipe a page horizontally or tap a project photograph.');
+    this.canvas.setAttribute('aria-label', 'Three-dimensional WIN JOINERY SDN BHD portfolio. Swipe a page horizontally or tap a project photograph.');
     host.append(this.canvas);
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;

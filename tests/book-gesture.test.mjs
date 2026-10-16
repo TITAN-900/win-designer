@@ -88,7 +88,7 @@ function harness({ delayLoad = false } = {}) {
     begin() {}
     draw(progress) { draws.push(progress); }
     grabBounds(direction) { return { x: direction > 0 ? 380 : 10, y: 0, width: 30, height: 600 }; }
-    pageSurfaceHit(x, y) { return y < 0 ? null : { side: this.cover === 1 && x < 195 ? 'left' : 'right', href: this.cover === 1 ? '/projects/walnut-residence/' : null }; }
+    pageSurfaceHit(x, y) { return y < 0 ? null : { side: this.cover === 1 && x < 195 ? 'left' : 'right', href: this.cover === 1 ? '/projects/bungalow-bukit-taman-segar/' : null }; }
   }
   const dataContext = { window: {} };
   vm.runInNewContext(readFileSync('assets/data/projects.js', 'utf8'), dataContext);
@@ -134,11 +134,17 @@ test('real controller opens its cover, performs three broad forward and three re
   assert.equal(h.status().cover, 'closed');
   await h.drag(1);
   assert.equal(h.status().cover, 'open');
+  assert.deepEqual(h.spreads.at(-1), [-1, 1], 'opening spread has a blank endpaper and the first project page on the right');
+  assert.equal(h.nodes.get('#bookStatus').textContent, '01 / 06');
+  assert.match(h.nodes.get('[data-book-right]').innerHTML, /BUNGALOW BUKIT TAMAN SEGAR/);
+  assert.equal((h.nodes.get('[data-book-right]').innerHTML.match(/>INCOMING<\/span>/g) || []).length, 3);
   for (const page of [2, 4, 6]) { await h.drag(1); assert.equal(h.status().page, String(page)); assert.equal(h.status().turning, undefined); }
+  assert.equal(h.nodes.get('#bookStatus').textContent, '06 / 06');
   assert.equal(h.nodes.get('#bookNext').disabled, true);
   for (const page of [4, 2, 0]) { await h.drag(-1); assert.equal(h.status().page, String(page)); assert.equal(h.status().turning, undefined); }
   assert.equal(h.navigated.length, 0);
-  assert.equal(h.status().capacity, '32'); assert.equal(h.status().emptySlots, '26');
+  assert.equal(h.status().capacity, '24'); assert.equal(h.status().emptySlots, '23');
+  assert.equal(h.status().printedPages, '6');
   await h.drag(-1);
   assert.equal(h.status().cover, 'closed');
   assert.equal(h.nodes.get('#bookNext').disabled, false);
@@ -148,7 +154,7 @@ test('real controller preserves photo taps, leaves vertical scrolling alone and 
   const h = harness(); h.enter(); await h.flush(); await h.drag(1);
   h.canvas.dispatch('pointerdown', point(260, 250, 0, 20));
   h.canvas.dispatch('pointerup', point(262, 252, 30, 20));
-  assert.deepEqual(h.navigated, ['/projects/walnut-residence/']);
+  assert.deepEqual(h.navigated, ['/projects/bungalow-bukit-taman-segar/']);
   h.canvas.dispatch('pointerdown', point(260, 250, 0, 21));
   const vertical = point(262, 330, 30, 21);
   h.canvas.dispatch('pointermove', vertical);

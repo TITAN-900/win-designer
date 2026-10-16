@@ -1,0 +1,949 @@
+{
+  "sourceDirectory": "BUNGALOW BUKIT TAMAN SEGAR",
+  "items": 39,
+  "validUniqueImages": 39,
+  "duplicates": 0,
+  "unreadable": 0,
+  "nonImages": 0,
+  "sourceBytes": 3206229,
+  "deliveryBytes": 5213049,
+  "policy": "Originals unchanged. Full-resolution delivery copies are byte-identical JPEGs. EXIF orientation respected. No crop, upscale, grading, retouching or AI. WebP 90 mobile derivatives only.",
+  "images": [
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.21 PM.jpeg",
+      "sourceBytes": 84492,
+      "index": 1,
+      "width": 1080,
+      "height": 810,
+      "sha256": "517b0ca0ab7e1a5bf858d6f5fd7f22120cab17ba0ff1a703bc9a9881a24b2dfa",
+      "pixelSha256": "7f15b3f72219077d9a376d74a76be9b99c681eddd2f59332286e45d48b9c7890",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-01-640.webp",
+          "bytes": 42412
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-01.jpeg",
+          "bytes": 84492
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.22 PM (1).jpeg",
+      "sourceBytes": 48539,
+      "index": 2,
+      "width": 810,
+      "height": 1080,
+      "sha256": "e0394e8e359485952bef4edd952faad85b896606b01c9fde555ceda13da1061c",
+      "pixelSha256": "5942cfe8f3ec0356f1d85a01bbc60ae24c1adbdcd5b82bd6e249e74636bd2465",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-02-640.webp",
+          "bytes": 31292
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-02.jpeg",
+          "bytes": 48539
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.22 PM (2).jpeg",
+      "sourceBytes": 69912,
+      "index": 3,
+      "width": 810,
+      "height": 1080,
+      "sha256": "147a168111e507d098952cab7605bf3b85df6a9a4886b693ee4cdf6adccfe808",
+      "pixelSha256": "8a90abf9642ad8f1ca5282230bb2cd4b7950186e4605f080fdd771205f603d09",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-03-640.webp",
+          "bytes": 52502
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-03.jpeg",
+          "bytes": 69912
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.22 PM (3).jpeg",
+      "sourceBytes": 73589,
+      "index": 4,
+      "width": 1080,
+      "height": 810,
+      "sha256": "15689b7c26522f47207b77fe53b30416ae4bbe71f9d0cc2b21e43787096a22d2",
+      "pixelSha256": "4fb4daa51aca554a37949fecbe6e0ee4d65739840305ffa5bdbdc0c860375632",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-04-640.webp",
+          "bytes": 30834
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-04.jpeg",
+          "bytes": 73589
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.22 PM.jpeg",
+      "sourceBytes": 68697,
+      "index": 5,
+      "width": 810,
+      "height": 1080,
+      "sha256": "435d4b30076edcbd850bc064425921ead1dc9e01ca712fae944cde53202caf8c",
+      "pixelSha256": "ecfa5b6139feb903976d66b90a87441cc611643efb7e6b2c50df1e7fbf05c38a",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-05-640.webp",
+          "bytes": 50196
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-05.jpeg",
+          "bytes": 68697
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.23 PM (1).jpeg",
+      "sourceBytes": 77767,
+      "index": 6,
+      "width": 810,
+      "height": 1080,
+      "sha256": "e99992ea92614e633b629fe740566a0175bae8ab8bfe24517ac33c71510b6067",
+      "pixelSha256": "8cd4ae9dcac3db8458874da9cda19ea3257f503436f98362b99abacc2b45f4d1",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-06-640.webp",
+          "bytes": 58616
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-06.jpeg",
+          "bytes": 77767
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.23 PM.jpeg",
+      "sourceBytes": 73313,
+      "index": 7,
+      "width": 810,
+      "height": 1080,
+      "sha256": "f3962777c0c1fc4be58af3224a181d40fcdaef959b9e03a6841317bf7ddc51b0",
+      "pixelSha256": "75e4fcb06eee0293cc6e2b7caf90053999a89f771adaa5216a7798895fdd99ac",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-07-640.webp",
+          "bytes": 51886
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-07.jpeg",
+          "bytes": 73313
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.24 PM (1).jpeg",
+      "sourceBytes": 74090,
+      "index": 8,
+      "width": 810,
+      "height": 1080,
+      "sha256": "41b5c87dde91e34a84df7c5c3924d7d60a60421a99e9d8c919cf4bbd65e6560c",
+      "pixelSha256": "c0e2d5697c8cf82661cf8d282b5e69fa94078fd0cab90721441abaead41a3619",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-08-640.webp",
+          "bytes": 53646
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-08.jpeg",
+          "bytes": 74090
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.24 PM (2).jpeg",
+      "sourceBytes": 69342,
+      "index": 9,
+      "width": 1080,
+      "height": 810,
+      "sha256": "2db9cb4511e5cab047f2e4b663a6db946f3f6deee098372964a27aefa3180e30",
+      "pixelSha256": "15b1764627192bff2cc9ce2cc1b1f156911a478f553acc20006310e3186a72f2",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-09-640.webp",
+          "bytes": 31932
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-09.jpeg",
+          "bytes": 69342
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.24 PM (3).jpeg",
+      "sourceBytes": 88749,
+      "index": 10,
+      "width": 1080,
+      "height": 810,
+      "sha256": "b3feb5a0cd8787016c8ca9f93c33633f4d5f1655e1643250ae4941641b4cc41b",
+      "pixelSha256": "0992a4aa5494043f4bf51be3e22002ac9cc352e28b2b7cb470e53b62b20dac70",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-10-640.webp",
+          "bytes": 44790
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-10.jpeg",
+          "bytes": 88749
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.24 PM.jpeg",
+      "sourceBytes": 86617,
+      "index": 11,
+      "width": 1080,
+      "height": 810,
+      "sha256": "b36951b016fcbdaff0e0bdd43a6c486579a43465bf567e07354087574ef2d9fc",
+      "pixelSha256": "e22acaf670c0f10742308ba0e539b1f7f23d6e1b0599b08e6c2a9689b4ae343a",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-11-640.webp",
+          "bytes": 43912
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-11.jpeg",
+          "bytes": 86617
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.25 PM (1).jpeg",
+      "sourceBytes": 80858,
+      "index": 12,
+      "width": 1080,
+      "height": 810,
+      "sha256": "32aa51685f2d06368fa463f0f8989f5437506bd5a3a4868d25578d072cda424f",
+      "pixelSha256": "97b6e2285f45bf3e8800ee349dacdc646bb8596398568cc958b684501c21ddb0",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-12-640.webp",
+          "bytes": 42154
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-12.jpeg",
+          "bytes": 80858
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.25 PM (2).jpeg",
+      "sourceBytes": 89225,
+      "index": 13,
+      "width": 810,
+      "height": 1080,
+      "sha256": "c9e340f4ed93a05fc435919f1be94459dd768afd024808b255d32789e27eb787",
+      "pixelSha256": "3d23c2fdeab79d2ba4eaaecbaa1c6bd7dccbd49c841257b652e03a5af924c3ac",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-13-640.webp",
+          "bytes": 72684
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-13.jpeg",
+          "bytes": 89225
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.25 PM (3).jpeg",
+      "sourceBytes": 96243,
+      "index": 14,
+      "width": 1080,
+      "height": 810,
+      "sha256": "f030df8e2122d6a0bb1104ad7bacdc135ea9cfc809fa2c87a4d93edf51ccf7b3",
+      "pixelSha256": "d0cb6692bbc80a4afaa78c14f0ff62ae4be1d97dd14f02111fb82b805579726e",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-14-640.webp",
+          "bytes": 47308
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-14.jpeg",
+          "bytes": 96243
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.25 PM.jpeg",
+      "sourceBytes": 96796,
+      "index": 15,
+      "width": 1080,
+      "height": 810,
+      "sha256": "7a184ee3b66dfdf0b5ae8b7804594f8ffd0d473bf8bddce0b92d59a366ba7607",
+      "pixelSha256": "b66a9fc704e669cb15bafb3eb76864c9d1b611bc44440c5e3dabb4fa82669e00",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-15-640.webp",
+          "bytes": 49572
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-15.jpeg",
+          "bytes": 96796
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.26 PM (1).jpeg",
+      "sourceBytes": 90021,
+      "index": 16,
+      "width": 1080,
+      "height": 810,
+      "sha256": "50ac9166726538594d4ead816187cf16435c60014da2eea22db89caa0695c963",
+      "pixelSha256": "6fd700c5c6a79bf12fc313f04c890c30ecd744b4cb04efb5d54fc1cf04243f56",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-16-640.webp",
+          "bytes": 46204
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-16.jpeg",
+          "bytes": 90021
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.26 PM (2).jpeg",
+      "sourceBytes": 63653,
+      "index": 17,
+      "width": 1080,
+      "height": 810,
+      "sha256": "605d46e62c1f64294d572cc0fe96bac5aae8e84cf5e7312fe4e593d1939814d9",
+      "pixelSha256": "2dc37545ed5424efdea6f71f5c414937611ec2b0bd6518901ce8868ea14a5451",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-17-640.webp",
+          "bytes": 33016
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-17.jpeg",
+          "bytes": 63653
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.26 PM (3).jpeg",
+      "sourceBytes": 97268,
+      "index": 18,
+      "width": 1080,
+      "height": 810,
+      "sha256": "d447924e3064905f40e80350309430e96bbddb0c1a38b04b62868985492371ea",
+      "pixelSha256": "95fadfce4b5efd00316cad0c8282d68266f8a89977fd84dfcfd901746a4cc1ee",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-18-640.webp",
+          "bytes": 52394
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-18.jpeg",
+          "bytes": 97268
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.26 PM.jpeg",
+      "sourceBytes": 84062,
+      "index": 19,
+      "width": 810,
+      "height": 1080,
+      "sha256": "01219d4a60b49ba46cf9cc25e62540c3d1757f46cdbb2f528875d6d701e23b95",
+      "pixelSha256": "54090b283c36a4503afb94f2b377d808bc5cfb43a209cfa192ae9d26928b0974",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-19-640.webp",
+          "bytes": 64836
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-19.jpeg",
+          "bytes": 84062
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.27 PM (1).jpeg",
+      "sourceBytes": 95356,
+      "index": 20,
+      "width": 1080,
+      "height": 810,
+      "sha256": "76752105c679b405c5cd77916997cd7a2a6ab04584db5e94a20e53b454c99cfc",
+      "pixelSha256": "89c585231fe23cdab998858d78b0ddd5f44710be2be023aa9808bf0417154599",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-20-640.webp",
+          "bytes": 35852
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-20.jpeg",
+          "bytes": 95356
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.27 PM (2).jpeg",
+      "sourceBytes": 84075,
+      "index": 21,
+      "width": 1080,
+      "height": 810,
+      "sha256": "45c5fcc9f8d92c04f2e1d8f8ac91b30e1698634bd57d26864176a39d53f48b87",
+      "pixelSha256": "688b8f1397a7289ed9f8a12e6456965c654ba6f7ba17fe8b07d36ceed9fc0d5d",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-21-640.webp",
+          "bytes": 41082
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-21.jpeg",
+          "bytes": 84075
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.27 PM.jpeg",
+      "sourceBytes": 61438,
+      "index": 22,
+      "width": 810,
+      "height": 1080,
+      "sha256": "4ea21cc24d6fa0ca608ec19ef3e944c3309b4cb7e7a4ddbbd7997902acf6e960",
+      "pixelSha256": "857cf380daa48bbf0bf3be24e96c5d2c51023eafdfb130a0f80462110073702c",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-22-640.webp",
+          "bytes": 36370
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-22.jpeg",
+          "bytes": 61438
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.28 PM (1).jpeg",
+      "sourceBytes": 52282,
+      "index": 23,
+      "width": 810,
+      "height": 1080,
+      "sha256": "5795f319f9db8923092215ccd5010918caa78ad9e2081b91832e5ed5a2447bb8",
+      "pixelSha256": "0a8671fe0407ecf2d2e0f48f7ddb60818d27120b1880c19e0602610394cbafd7",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-23-640.webp",
+          "bytes": 34300
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-23.jpeg",
+          "bytes": 52282
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.28 PM (2).jpeg",
+      "sourceBytes": 102350,
+      "index": 24,
+      "width": 810,
+      "height": 1080,
+      "sha256": "5da412a569f62d258e29d2930b82f665a9d4ebdc1e51074ff9458eeece6057fd",
+      "pixelSha256": "507dda0e5c49c29cfebb07fde34122a69b592d47e09e70d98ea31da68bc795f1",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-24-640.webp",
+          "bytes": 85448
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-24.jpeg",
+          "bytes": 102350
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.28 PM (3).jpeg",
+      "sourceBytes": 56727,
+      "index": 25,
+      "width": 1080,
+      "height": 810,
+      "sha256": "04437ea8a44b4930639f207ab1605654582985bd9e5bdea92c1836d30aaa7698",
+      "pixelSha256": "8f6756ab35eed159b7b0e9b2e5737c2c1905005e1fcc420f7ead48792f66e74c",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-25-640.webp",
+          "bytes": 20182
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-25.jpeg",
+          "bytes": 56727
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.28 PM.jpeg",
+      "sourceBytes": 97560,
+      "index": 26,
+      "width": 810,
+      "height": 1080,
+      "sha256": "7ab9d3eb5ff0066f8b55ffd53f3260f4bcf326d574ab0499e48b45e5c9014028",
+      "pixelSha256": "512bb7ebeb8c77b0e3e34ac6a99edbeeefe7a2f9d6825b1fc9629eff985d9462",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-26-640.webp",
+          "bytes": 83024
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-26.jpeg",
+          "bytes": 97560
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.29 PM (1).jpeg",
+      "sourceBytes": 81532,
+      "index": 27,
+      "width": 1080,
+      "height": 810,
+      "sha256": "6ab5a708fd576b675cb597cd5a1d35f05536aae729ae8490c126692da66b4714",
+      "pixelSha256": "bf4fa60f70288fa954f5230bc1ea647e56c04737b1d9d16ea60a1cda81f2eb6f",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-27-640.webp",
+          "bytes": 41022
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-27.jpeg",
+          "bytes": 81532
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.29 PM (2).jpeg",
+      "sourceBytes": 130906,
+      "index": 28,
+      "width": 810,
+      "height": 1080,
+      "sha256": "0e7065660f24f8929162d7d11be49195caafb43922933cc644f54d5050d2f070",
+      "pixelSha256": "8dc7624483f1d94f3e44ed3bb0b492a0b982dacb68a915f284ee5cea03fc4dc0",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-28-640.webp",
+          "bytes": 116828
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-28.jpeg",
+          "bytes": 130906
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.29 PM (3).jpeg",
+      "sourceBytes": 103469,
+      "index": 29,
+      "width": 1080,
+      "height": 810,
+      "sha256": "3ead92ceeb9b5e06920f0f0c2c39ef5d38bfb3316b34a002c3b95fee90244b29",
+      "pixelSha256": "7db7a6717065e3429b40e35f56755ead2fcd2a9c3a5fbc69c001b3ed5de748ad",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-29-640.webp",
+          "bytes": 56680
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-29.jpeg",
+          "bytes": 103469
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.29 PM.jpeg",
+      "sourceBytes": 105961,
+      "index": 30,
+      "width": 1080,
+      "height": 810,
+      "sha256": "5ad4dfd6f7b406b77d4dc21a14605234f73e71ba06bafe9a344c27fff079f3ca",
+      "pixelSha256": "2b104422b4fad23e2bbdf0eda767086e840b8cb1827fb14eea68d6f48fb6f4db",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-30-640.webp",
+          "bytes": 53392
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-30.jpeg",
+          "bytes": 105961
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.30 PM (1).jpeg",
+      "sourceBytes": 79266,
+      "index": 31,
+      "width": 810,
+      "height": 1080,
+      "sha256": "5de8a11ec6e898430aeeb3d3086b1328c5c8177fd898e069859cac0da15deed9",
+      "pixelSha256": "813d16ca2c5a9caa640a82207e0f647ce9a3e27a2ac484eb58cdd1a6dc992bba",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-31-640.webp",
+          "bytes": 56922
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-31.jpeg",
+          "bytes": 79266
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.30 PM (2).jpeg",
+      "sourceBytes": 74973,
+      "index": 32,
+      "width": 1080,
+      "height": 810,
+      "sha256": "ded82ffcc8bd65f15adf70cf4c8fc43d56749c5df2bbc1c9800d87a94c0c594e",
+      "pixelSha256": "7ade3b0942c824f4c1292db5b4d886b41465d006695651684852c7249dd78f24",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-32-640.webp",
+          "bytes": 35250
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-32.jpeg",
+          "bytes": 74973
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.30 PM (3).jpeg",
+      "sourceBytes": 58142,
+      "index": 33,
+      "width": 810,
+      "height": 1080,
+      "sha256": "beb58111ceffedb8431922ef93221c5969ecfacf6d5ac63fef396db86f497734",
+      "pixelSha256": "e03e661f42d434038b134e3203be091d250884cd70bf10484f2297dd6b68c68b",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-33-640.webp",
+          "bytes": 41328
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-33.jpeg",
+          "bytes": 58142
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.30 PM.jpeg",
+      "sourceBytes": 73236,
+      "index": 34,
+      "width": 810,
+      "height": 1080,
+      "sha256": "3d90e4cad96dfe476cc8512c15a017a2801571f621051529528be1fbebd6eaef",
+      "pixelSha256": "e713a1d366e8bf6af30116c781e077e9e0a7521caf010be02758c91af2658618",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-34-640.webp",
+          "bytes": 50132
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-34.jpeg",
+          "bytes": 73236
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.31 PM (1).jpeg",
+      "sourceBytes": 54478,
+      "index": 35,
+      "width": 810,
+      "height": 1080,
+      "sha256": "69a24b10b94874b526e358ade762dc6ac30cc4ebe95f46638fb37e34f0c9a720",
+      "pixelSha256": "2ab8c7b620b86c73ca56d45a29005456e9e0ed0a1b23a0d32380d2dee6890a2a",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-35-640.webp",
+          "bytes": 37932
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-35.jpeg",
+          "bytes": 54478
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.31 PM (2).jpeg",
+      "sourceBytes": 86622,
+      "index": 36,
+      "width": 810,
+      "height": 1080,
+      "sha256": "ef3a202b08c38bdfe57863cf326e26e613ae180d0e6fc368173dd7765fec2f67",
+      "pixelSha256": "dd626fe91dcb78195ee34d6a44b16ac0181a61beadb9026ff7ecc0104fa9fa67",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-36-640.webp",
+          "bytes": 63394
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-36.jpeg",
+          "bytes": 86622
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.31 PM (3).jpeg",
+      "sourceBytes": 87475,
+      "index": 37,
+      "width": 810,
+      "height": 1080,
+      "sha256": "4eb5a4531b15cdb502c6aa94f8c5a1c0dff6a2a740b439e02333174d942a0b5f",
+      "pixelSha256": "bd2ecd4e1311ca1207891e3e1a069273f0bf50e70f499e3c8f001f7e6f674d50",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-37-640.webp",
+          "bytes": 69246
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-37.jpeg",
+          "bytes": 87475
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.31 PM.jpeg",
+      "sourceBytes": 114150,
+      "index": 38,
+      "width": 810,
+      "height": 1080,
+      "sha256": "ab1fe82a9fe271a85f573bd35e4d91f9073813efa102d890628337985169c502",
+      "pixelSha256": "c4a1473304ab15fa4bbbe4df559c760dfe8fcf2302f4c561c6fee1d382dab745",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 853,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-38-640.webp",
+          "bytes": 97536
+        },
+        {
+          "width": 810,
+          "height": 1080,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-38.jpeg",
+          "bytes": 114150
+        }
+      ]
+    },
+    {
+      "source": "WhatsApp Image 2026-10-15 at 7.27.32 PM.jpeg",
+      "sourceBytes": 92998,
+      "index": 39,
+      "width": 1080,
+      "height": 810,
+      "sha256": "87492ff38417940ce8f22ea5fca1edd5a2530a84e271cbba7df39aa14e7633f8",
+      "pixelSha256": "3c9a83bdb49bbb7d7ef054a6e37b8ea95c8e9ee49a27d1df3b6accf45cc7ca78",
+      "status": "valid",
+      "delivery": [
+        {
+          "width": 640,
+          "height": 480,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-39-640.webp",
+          "bytes": 50714
+        },
+        {
+          "width": 1080,
+          "height": 810,
+          "src": "/images/bungalow-bukit-taman-segar/bungalow-39.jpeg",
+          "bytes": 92998
+        }
+      ]
+    }
+  ]
+}

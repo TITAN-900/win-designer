@@ -4,9 +4,9 @@ import { cpSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'nod
 import vm from 'node:vm';
 import { projectPath, renderProjectDocument } from './src/project-content.js';
 
-// Canonical metadata must always point to the existing production domain,
-// including local builds and Vercel preview deployments.
-const siteOrigin = (process.env.SITE_URL || 'https://win-designer.vercel.app').replace(/\/$/, '');
+// Keep the production identity stable on local and deployment-preview builds.
+// The hostname must be attached to the existing Vercel project before release.
+const siteOrigin = (process.env.SITE_URL || 'https://win-joinery.vercel.app').replace(/\/$/, '');
 const injectSiteOrigin = value => value.replaceAll('__SITE_ORIGIN__', siteOrigin);
 function projectData() {
   const context = { window: {} };
@@ -51,7 +51,7 @@ export default defineConfig({
         if (!projects.some(project => project.slug === match[1])) {
           response.statusCode = 404;
           response.setHeader('Content-Type', 'text/html; charset=utf-8');
-          response.end('<!doctype html><title>Project unavailable | WIN DESIGN</title><h1>Project unavailable.</h1><a href="/#portfolio">Back to portfolio</a>');
+          response.end('<!doctype html><html lang="en"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, follow"><title>Project unavailable | WIN JOINERY SDN BHD</title><h1>Project unavailable.</h1><a href="/#portfolio">Back to portfolio</a></html>');
           return;
         }
         try {
@@ -62,9 +62,25 @@ export default defineConfig({
       });
     },
     closeBundle() {
-      cpSync('assets', 'dist/assets', { recursive: true });
+      // Do not publish archived project photographs, the retired graphic logo,
+      // Blender source files or customer originals. The public/ directory is
+      // copied by Vite; it contains the audited, deployable project photographs.
+      for (const directory of ['css', 'fonts']) {
+        cpSync(resolve('assets', directory), resolve('dist/assets', directory), { recursive: true });
+      }
+      for (const file of ['js/main.js', 'js/site-integration.js', 'data/projects.js', 'data/book-layout.json']) {
+        const destination = resolve('dist/assets', file);
+        mkdirSync(resolve(destination, '..'), { recursive: true });
+        cpSync(resolve('assets', file), destination);
+      }
+      for (const room of ['space-01', 'space-02']) {
+        const directory = resolve('dist/assets/3d', room);
+        mkdirSync(directory, { recursive: true });
+        cpSync(resolve('assets/3d', room, `win_${room.replace('-', '_')}_poster.png`),
+          resolve(directory, `win_${room.replace('-', '_')}_poster.png`));
+      }
       for (const file of readdirSync('.')) {
-        if (/\.(?:jpe?g|png|ico|xml|txt)$/i.test(file) || /^google.*\.html/.test(file)) {
+        if (file === 'robots.txt' || /^google.*\.html$/.test(file)) {
           cpSync(file, resolve('dist', file));
         }
       }

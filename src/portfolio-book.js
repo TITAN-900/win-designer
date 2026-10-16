@@ -10,6 +10,12 @@ export function createBookPages(data) {
   return catalogPages(data);
 }
 
+// The first printed project page is the right-hand recto after the cover opens.
+// Blank endpapers belong to the binding, not to the saved project capacity.
+export function bookLeafPages(pages) {
+  return [null, ...pages, null];
+}
+
 export function nextBookPosition(current, mobile, pageCount) {
   return Math.min(pageCount - 2, current < 0 ? 0 : current + 2);
 }
@@ -20,22 +26,22 @@ export function canAdvanceBook(coverOpen, position, pageCount) {
   return !coverOpen || position < pageCount - 2;
 }
 
-function pageMarkup(page) {
+export function pageMarkup(page) {
   return `<div class="book-paper">
-    <div class="book-paper-top"><span>WIN DESIGN</span><span>SELECTED INTERIORS / 0${page.number}</span></div>
+    <div class="book-paper-top"><span>WIN JOINERY</span><span>SELECTED INTERIORS / ${String(page.number).padStart(2, '0')}</span></div>
     <div class="book-grid">${page.cells.map(cell => cell ? `
       <a class="book-cell" href="/projects/${encodeURIComponent(cell.slug)}/" aria-label="View ${escapeHTML(cell.project)}">
         <img src="${escapeHTML(cell.image.src)}" alt="${escapeHTML(cell.image.alt)}"
           width="${cell.image.width}" height="${cell.image.height}" loading="lazy" decoding="async">
         <span>${escapeHTML(cell.project)}</span>
-      </a>` : '<div class="book-cell book-cell--empty" aria-hidden="true"></div>').join('')}</div>
-    <div class="book-paper-foot"><span>SPACES / MATERIAL / DETAIL</span><span>0${page.number}</span></div>
+      </a>` : '<div class="book-cell book-cell--empty"><span>INCOMING</span></div>').join('')}</div>
+    <div class="book-paper-foot"><span>SPACES / MATERIAL / DETAIL</span><span>${String(page.number).padStart(2, '0')}</span></div>
   </div>`;
 }
 
-function bookCoverMarkup(logo) {
-  return `<div class="book-cover"><span class="book-cover-edition">WIN DESIGN / PORTFOLIO</span>
-    <img src="/${escapeHTML(logo)}" alt="WIN DESIGN" width="946" height="512">
+export function bookCoverMarkup() {
+  return `<div class="book-cover"><span class="book-cover-edition">WIN JOINERY SDN BHD / PORTFOLIO</span>
+    <span class="book-cover-wordmark">WIN JOINERY</span>
     <div><span>SELECTED INTERIORS</span><strong>Between form<br>and life.</strong></div>
     <span class="book-cover-bottom">SPACE / MATERIAL / DETAIL</span></div>`;
 }
@@ -44,6 +50,7 @@ export function initPortfolioBook(data) {
   const book = document.querySelector('#portfolioBook');
   if (!book) return;
   const pages = createBookPages(data);
+  const leaves = bookLeafPages(pages);
   const left = book.querySelector('[data-book-left]');
   const right = book.querySelector('[data-book-right]');
   const object = book.querySelector('.book-object');
@@ -81,24 +88,29 @@ export function initPortfolioBook(data) {
     return handle;
   });
   function mobile() { return mobileQuery.matches; }
-  function markup(pageIndex) { return pageIndex === -1 ? bookCoverMarkup(data.site.logo) : pageMarkup(pages[pageIndex]); }
+  function markup(pageIndex) {
+    if (pageIndex === -1) return bookCoverMarkup();
+    return leaves[pageIndex] ? pageMarkup(leaves[pageIndex]) : '<div class="book-endpaper" aria-hidden="true"></div>';
+  }
   function spread(pageIndex) { return [Math.floor(pageIndex / 2) * 2, Math.floor(pageIndex / 2) * 2 + 1]; }
-  function destination(direction) { return direction > 0 ? nextBookPosition(position, mobile(), pages.length) : previousBookPosition(position, mobile()); }
+  function destination(direction) { return direction > 0 ? nextBookPosition(position, mobile(), leaves.length) : previousBookPosition(position, mobile()); }
   function updateControls() {
     previous.disabled = !coverOpen || busy || (failure && position === 0);
-    next.disabled = !canAdvanceBook(coverOpen, position, pages.length) || busy;
+    next.disabled = !canAdvanceBook(coverOpen, position, leaves.length) || busy;
     const number = n => String(n).padStart(2, '0');
-    status.textContent = coverOpen ? `${number(position + 1)}—${number(position + 2)} / ${number(pages.length)}` : 'COVER';
+    const visibleNumbers = spread(position).map(index => leaves[index]?.number).filter(Boolean);
+    status.textContent = coverOpen ? `${visibleNumbers.map(number).join('—')} / ${number(pages.length)}` : 'COVER';
     next.setAttribute('aria-label', coverOpen ? 'Next portfolio pages' : 'Open portfolio cover');
     book.dataset.cover = coverOpen ? 'open' : 'closed';
     book.dataset.capacity = String(pages.length * 4);
+    book.dataset.printedPages = String(pages.length);
     book.dataset.emptySlots = String(pages.flatMap(page => page.cells).filter(cell => !cell).length);
     const hint = document.querySelector('.book-hint');
     if (hint) hint.textContent = coverOpen ? 'Swipe a page to explore · Tap a project to view' : 'Drag the cover to open';
     book.dataset.page = String(position);
     book.dataset.mode = mobile() ? 'single' : 'spread';
     handles[0].disabled = !coverOpen || (busy && gesture?.direction !== -1);
-    handles[1].disabled = !canAdvanceBook(coverOpen, position, pages.length) || (busy && gesture?.direction !== 1);
+    handles[1].disabled = !canAdvanceBook(coverOpen, position, leaves.length) || (busy && gesture?.direction !== 1);
     handles[1].setAttribute('aria-label', coverOpen ? 'Drag right page for next page' : 'Drag portfolio cover to open');
     handles[0].setAttribute('aria-label', position === 0 ? 'Drag portfolio cover to close' : 'Drag left page for previous page');
   }
@@ -264,7 +276,7 @@ export function initPortfolioBook(data) {
     if (action === 'scroll' || action === 'pending' || action === 'ignore') return;
     if (event.cancelable) event.preventDefault();
     if (action === 'start') {
-      if ((gesture.direction > 0 && !canAdvanceBook(coverOpen, position, pages.length)) || (gesture.direction < 0 && !coverOpen)) {
+      if ((gesture.direction > 0 && !canAdvanceBook(coverOpen, position, leaves.length)) || (gesture.direction < 0 && !coverOpen)) {
         clearGesture(); return;
       }
       gesture.handle.setPointerCapture(event.pointerId);
@@ -290,7 +302,7 @@ export function initPortfolioBook(data) {
     if (action !== 'release') { if (!busy) clearGesture(); return; }
     if (!busy) {
       const intent = gesture;
-      if ((intent.direction > 0 && !canAdvanceBook(coverOpen, position, pages.length)) || (intent.direction < 0 && !coverOpen)) {
+      if ((intent.direction > 0 && !canAdvanceBook(coverOpen, position, leaves.length)) || (intent.direction < 0 && !coverOpen)) {
         clearGesture(); return;
       }
       // Coalesced input can first cross the horizontal threshold on pointerup.
