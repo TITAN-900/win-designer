@@ -23,6 +23,8 @@ Optional isolated Chrome acceptance suite (Playwright supplied externally):
 
 ```sh
 node scripts/qa-v5.mjs http://127.0.0.1:4175 validation/joinery-v5-local /path/to/playwright/index.mjs
+node scripts/qa-interactions.mjs http://127.0.0.1:4175 validation/joinery-v5-interactions /path/to/playwright/index.mjs
+node scripts/qa-release-edges.mjs http://127.0.0.1:4175 validation/joinery-v5-edges /path/to/playwright/index.mjs
 ```
 
 These browser checks are emulation, not physical iPhone/Android device tests.
@@ -68,6 +70,24 @@ master, not overlaid HTML. Archivo and Manrope remain the two self-hosted fonts.
 Keep the old hostname active. Domain assignment is managed in the existing
 Vercel project's Domains settings. A successful build alone does not establish
 that a hostname is connected; verify both live URLs after deployment.
+
+Host-scoped redirects in `vercel.json` retain the old hostname and forward its
+paths to the new one. Explicit root and project-directory rules cover the
+trailing-slash directory routes as well as the general wildcard. These require
+live verification, not just a local preview test.
+
+## Shareable QR files
+
+`delivery/win-joinery/` contains the final black/white PNG and SVG, plus the
+independent decoding report. Both encode `https://win-joinery.vercel.app/`.
+The PNG is 2220 × 2220 pixels, with 600 DPI metadata; the SVG is scalable for
+print. Keep the four-module white quiet zone intact when placing either file.
+These delivery files are not part of the public website bundle.
+
+`scripts/create_site_qr.py` refuses generation unless the final live homepage
+serves the rebranded content. Its separate validation runtime uses qrcode,
+Pillow, ZXing and Sharp to decode both PNG and the rasterized delivered SVG;
+none of those packages is a public-site dependency.
 
 The release report records only checks actually performed. Browser/device
 limitations and any pending real-device checks must remain explicit.

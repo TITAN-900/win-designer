@@ -1,0 +1,33 @@
+{
+  "url": "https://win-joinery.vercel.app/",
+  "pngPixels": [
+    2220,
+    2220
+  ],
+  "dpi": 600,
+  "quietZoneModules": 4,
+  "errorCorrection": "Q",
+  "pngDecoded": "https://win-joinery.vercel.app/",
+  "svgDecoded": "https://win-joinery.vercel.app/",
+  "svgRasterPixels": [
+    1800,
+    1800
+  ],
+  "svgRasterizer": {
+    "sharp": "0.35.5",
+    "vips": "8.18.7"
+  },
+  "svgDarkModules": 443,
+  "files": [
+    {
+      "name": "win-joinery-website-qr.png",
+      "bytes": 20565,
+      "sha256": "c6658efcc0511d46df9aec4034321beed63278e9686d855dc2715b66f1d0f188"
+    },
+    {
+      "name": "win-joinery-website-qr.svg",
+      "bytes": 8632,
+      "sha256": "76c2a0574b7adc7e866e71c88d3b7c9845eeff766857e8c240f5bdafd0371ff7"
+    }
+  ]
+}

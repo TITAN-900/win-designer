@@ -4,6 +4,18 @@
   "outputDirectory": "dist",
   "redirects": [
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "win-designer.vercel.app" }],
+      "destination": "https://win-joinery.vercel.app/",
+      "permanent": true
+    },
+    {
+      "source": "/projects/:slug/",
+      "has": [{ "type": "host", "value": "win-designer.vercel.app" }],
+      "destination": "https://win-joinery.vercel.app/projects/:slug/",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "win-designer.vercel.app" }],
       "destination": "https://win-joinery.vercel.app/:path*",

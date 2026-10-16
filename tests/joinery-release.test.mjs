@@ -6,13 +6,28 @@ const read = path => readFileSync(path, 'utf8');
 
 test('old domain is retained as a path-preserving redirect only to the confirmed new hostname', () => {
   const config = JSON.parse(read('vercel.json'));
-  const rule = config.redirects.find(rule => rule.has?.some(item => item.type === 'host'));
+  const rule = config.redirects.find(rule => rule.source === '/:path*');
   assert.equal(rule.source, '/:path*');
   assert.deepEqual(rule.has, [{ type: 'host', value: 'win-designer.vercel.app' }]);
   assert.equal(rule.destination, 'https://win-joinery.vercel.app/:path*');
   assert.equal(rule.permanent, true);
   assert.equal(config.buildCommand, 'npm run build');
   assert.equal(config.outputDirectory, 'dist');
+});
+
+test('old-host directory index routes have explicit redirects before the wildcard', () => {
+  const { redirects } = JSON.parse(read('vercel.json'));
+  const wildcardIndex = redirects.findIndex(rule => rule.source === '/:path*');
+  for (const [source, destination] of [
+    ['/', 'https://win-joinery.vercel.app/'],
+    ['/projects/:slug/', 'https://win-joinery.vercel.app/projects/:slug/']
+  ]) {
+    const index = redirects.findIndex(rule => rule.source === source);
+    assert.ok(index >= 0 && index < wildcardIndex);
+    assert.deepEqual(redirects[index].has, [{ type: 'host', value: 'win-designer.vercel.app' }]);
+    assert.equal(redirects[index].destination, destination);
+    assert.equal(redirects[index].permanent, true);
+  }
 });
 
 test('production package contains no retired photo collections, graphic logos or raw working files', () => {

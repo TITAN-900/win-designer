@@ -1,11 +1,15 @@
 """Generate a verified black/white QR only for the live, rebranded production site.
 
-Requires qrcode, Pillow and zxing-cpp. No credentials or remote QR service.
+Requires qrcode, Pillow, zxing-cpp, Node.js and Sharp. No remote QR service.
+Pass --node and --sharp when the local verification runtime is not on PATH.
 """
+import argparse
 import hashlib
-import io
 import json
+import os
 from pathlib import Path
+import subprocess
+import tempfile
 from urllib.request import Request, urlopen
 
 import qrcode
@@ -19,6 +23,10 @@ DEST = ROOT / "delivery/win-joinery"
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--node", default=os.environ.get("NODE_BINARY", "node"))
+    parser.add_argument("--sharp", default=os.environ.get("SHARP_MODULE", "sharp"))
+    args = parser.parse_args()
     request = Request(URL, headers={"User-Agent": "WIN-Joinery-Delivery-Verification/1.0"})
     with urlopen(request, timeout=30) as response:
         content = response.read().decode("utf-8")
@@ -40,20 +48,43 @@ def main():
     decoded = zxingcpp.read_barcode(Image.open(png))
     if decoded is None or decoded.text != URL:
         raise RuntimeError("Independent PNG QR decoder did not return the production URL.")
-    # Verify SVG cells independently using the SVG path rather than trusting PNG.
+    # Check the SVG structure, then rasterize the actual delivered vector with
+    # Sharp/libvips and independently decode those pixels using ZXing.
     import re
     import xml.etree.ElementTree as ET
     root = ET.parse(svg).getroot()
     path = root.find("{http://www.w3.org/2000/svg}path").attrib["d"]
-    # SVG backend emits one move per dark module. Validate its count against the
-    # same QR matrix; final SVG raster/decode can additionally use a browser.
+    # SVG backend emits one move per dark module.
     modules = qr.get_matrix()
     moves = len(re.findall(r"[Mm]", path))
     if moves != sum(sum(row) for row in modules):
         raise RuntimeError("SVG module count differs from the validated QR matrix.")
+    raster_script = """
+        import { createRequire } from 'node:module';
+        const require = createRequire(import.meta.url);
+        const sharp = require(process.argv[3]);
+        await sharp(process.argv[1], { density: 300 })
+          .resize(1800, 1800, { fit: 'inside' })
+          .png().toFile(process.argv[2]);
+        process.stdout.write(JSON.stringify({ sharp: sharp.versions.sharp, vips: sharp.versions.vips }));
+    """
+    with tempfile.TemporaryDirectory(prefix="win-joinery-qr-") as temporary:
+        raster = Path(temporary) / "delivered-svg-raster.png"
+        result = subprocess.run(
+            [args.node, "--input-type=module", "-e", raster_script,
+             str(svg), str(raster), args.sharp],
+            check=True, capture_output=True, text=True,
+        )
+        with Image.open(raster) as raster_image:
+            svg_pixels = list(raster_image.size)
+            svg_decoded = zxingcpp.read_barcode(raster_image)
+        if svg_decoded is None or svg_decoded.text != URL:
+            raise RuntimeError("Independent SVG QR decoder did not return the production URL.")
+        renderer = json.loads(result.stdout)
     report = {"url": URL, "pngPixels": list(bitmap.size), "dpi": 600,
               "quietZoneModules": 4, "errorCorrection": "Q", "pngDecoded": decoded.text,
-              "svgDarkModules": moves,
+              "svgDecoded": svg_decoded.text, "svgRasterPixels": svg_pixels,
+              "svgRasterizer": renderer, "svgDarkModules": moves,
               "files": [{"name": file.name, "bytes": file.stat().st_size,
                          "sha256": hashlib.sha256(file.read_bytes()).hexdigest()} for file in [png, svg]]}
     (DEST / "qr-verification.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
