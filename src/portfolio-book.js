@@ -472,7 +472,17 @@ export function initPortfolioBook(data) {
 }
 
 if (typeof document !== 'undefined' && typeof window !== 'undefined') {
-  const start = () => initPortfolioBook(window.WIN_DESIGN_DATA);
+  const start = async () => {
+    try {
+      const { portfolioData } = await import('./portfolio-public.js');
+      initPortfolioBook(await portfolioData(window.WIN_DESIGN_DATA));
+    } catch (error) {
+      console.error('Portfolio data failed:', error);
+      const message = document.createElement('p');
+      message.className = 'book-error'; message.textContent = 'Portfolio is temporarily unavailable. Please reload to retry.';
+      document.querySelector('#portfolioBook')?.append(message);
+    }
+  };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
 }

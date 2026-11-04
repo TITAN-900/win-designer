@@ -32,7 +32,7 @@ export function renderProjectContent(project, site) {
     ${project.description ? `<div class="project-note"><h2>Space &amp; detail.</h2><p>${escapeHTML(project.description)}</p></div>` : ''}
   </section>
   ${pairs.length ? `<section class="project-comparison" id="projectBeforeAfter" aria-labelledby="comparisonTitle"><h2 id="comparisonTitle">Before / After</h2>${pairs.map((pair, index) => `<div class="compare-grid"><figure>${galleryImage(pair.before, `comparison-${index}`, 0)}<figcaption>Before</figcaption></figure><figure>${galleryImage(pair.after, `comparison-${index}`, 1)}<figcaption>After</figcaption></figure></div>`).join('')}</section>` : ''}
-  <div class="project-return"><a class="portfolio-return" href="/#portfolio">Back to portfolio</a></div>`;
+  <div class="project-return">${/^https?:\/\//i.test(project.externalLink || '') ? `<a class="portfolio-return" href="${escapeHTML(project.externalLink)}" target="_blank" rel="noopener noreferrer">Related project link ↗</a><br>` : ''}<a class="portfolio-return" href="/#portfolio">Back to portfolio</a></div>`;
 }
 export function renderProjectDocument(template, project, site, origin) {
   const title = `${project.title} | ${site.name}`;

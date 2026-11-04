@@ -1,4 +1,6 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
+import portfolioImage from './api/portfolio-image.js';
+import portfolioLogin from './api/portfolio-login.js';
 import { resolve } from 'node:path';
 import { cpSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import vm from 'node:vm';
@@ -16,10 +18,15 @@ function projectData() {
 
 // The site is deployed at a Vercel project root. All runtime assets stay URL based;
 // no build output contains machine-specific URL dependencies.
-export default defineConfig({
+export default defineConfig(({mode}) => {
+  const env = loadEnv(mode, process.cwd(), ['VITE_SUPABASE_', 'PORTFOLIO_ADMIN_']);
+  for (const [key, value] of Object.entries(env)) process.env[key] = value;
+  const cms = Boolean(env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL);
+  return {
   base: '/',
   appType: 'mpa',
   build: {
+    target: 'es2022',
     // The Three.js renderer is intentionally substantial; it is lazy-loaded by
     // the homepage and remains comfortably below this audited warning budget.
     chunkSizeWarningLimit: 900,
@@ -27,7 +34,8 @@ export default defineConfig({
       input: {
         home: resolve('index.html'),
         about: resolve('about.html'),
-        project: resolve('project.html')
+        project: resolve('project.html'),
+        admin: resolve('admin/index.html')
       }
     }
   },
@@ -38,6 +46,7 @@ export default defineConfig({
         const { projects, site } = projectData();
         const slug = context.path.match(/^\/projects\/([^/]+)/)?.[1];
         const project = projects.find(item => item.slug === slug) || projects[0];
+        if (cms) return injectSiteOrigin(html.replace(/<!--PROJECT_CONTENT_START-->[\s\S]*?<!--PROJECT_CONTENT_END-->/, '<!--PROJECT_CONTENT_START--><p role="status">Loading project…</p><!--PROJECT_CONTENT_END-->'));
         return renderProjectDocument(html, project, site, siteOrigin);
       }
       return injectSiteOrigin(html);
@@ -45,10 +54,12 @@ export default defineConfig({
     configureServer(server) {
       server.middlewares.use(async (request, response, next) => {
         const pathname = new URL(request.url, 'http://localhost').pathname;
+        if (pathname === '/api/portfolio-image') return portfolioImage(request, response);
+        if (pathname === '/api/portfolio-login') return portfolioLogin(request, response);
         const match = pathname.match(/^\/projects\/([^/]+)\/?$/);
         if (!match) return next();
         const { projects } = projectData();
-        if (!projects.some(project => project.slug === match[1])) {
+        if (!cms && !projects.some(project => project.slug === match[1])) {
           response.statusCode = 404;
           response.setHeader('Content-Type', 'text/html; charset=utf-8');
           response.end('<!doctype html><html lang="en"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, follow"><title>Project unavailable | WIN JOINERY SDN BHD</title><h1>Project unavailable.</h1><a href="/#portfolio">Back to portfolio</a></html>');
@@ -59,6 +70,16 @@ export default defineConfig({
           response.setHeader('Content-Type', 'text/html; charset=utf-8');
           response.end(html);
         } catch (error) { next(error); }
+      });
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use((request,response,next) => {
+        if(new URL(request.url,'http://localhost').pathname==='/api/portfolio-login')return portfolioLogin(request,response);
+        if(new URL(request.url,'http://localhost').pathname==='/api/portfolio-image')return portfolioImage(request,response);
+        if(cms && /^\/projects\/[^/]+\/?$/.test(new URL(request.url,'http://localhost').pathname)) {
+          response.setHeader('Content-Type','text/html');return response.end(readFileSync('dist/project.html'));
+        }
+        next();
       });
     },
     closeBundle() {
@@ -93,10 +114,10 @@ export default defineConfig({
       for (const project of projects) {
         const directory = resolve('dist', 'projects', project.slug);
         mkdirSync(directory, { recursive: true });
-        writeFileSync(resolve(directory, 'index.html'), renderProjectDocument(template, project, site, siteOrigin));
+        writeFileSync(resolve(directory, 'index.html'), cms ? template : renderProjectDocument(template, project, site, siteOrigin));
       }
       const urls = ['/', ...projects.map(project => projectPath(project.slug))];
       writeFileSync('dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(path => `  <url><loc>${siteOrigin}${path}</loc></url>`).join('\n')}\n</urlset>\n`);
     }
   }]
-});
+}; });

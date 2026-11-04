@@ -2,6 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/", "destination": "/admin/index.html" },
+    { "source": "/projects/:slug/", "destination": "/project.html" }
+  ],
   "redirects": [
     {
       "source": "/",
@@ -25,6 +30,13 @@
     { "source": "/about", "destination": "/#portfolio", "permanent": true }
   ],
   "headers": [
+    {
+      "source": "/admin/:path*",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-store" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
     {
       "source": "/images/(.*)",
       "headers": [
