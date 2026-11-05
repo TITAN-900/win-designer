@@ -57,10 +57,10 @@ test('custom 404 keeps the new identity and a working portfolio return without i
 });
 
 test('only static fallback suppresses empty binding endpapers, never physical book geometry', () => {
-  const css = read('assets/css/portfolio-book.css');
+  const css = read('archive/portfolio-book/assets/css/portfolio-book.css');
   assert.match(css, /\.book-fallback \.book-page:has\(> \.book-endpaper\)\s*\{\s*display:\s*none/);
   assert.doesNotMatch(css, /\.book-ready \.book-page:has/);
-  assert.match(read('src/portfolio-book.js'), /return \[null, \.\.\.pages, null\]/);
+  assert.match(read('archive/portfolio-book/src/portfolio-book.js'), /return \[null, \.\.\.pages, null\]/);
 });
 
 test('legacy layout rules cannot hide the diorama poster and project entry during WebGL fallback', () => {

@@ -72,7 +72,7 @@ test('39 images render once each, retain native proportions and share a complete
     assert.equal(matching.length,1,image.src);
     assert.ok(matching[0].includes(`width="${image.width}" height="${image.height}"`));
     assert.match(matching[0],/srcset="[^"]+640w, [^"]+(?:810|1080)w" sizes="/);
-    if(image.src===project.cover.src)assert.match(matching[0],/fetchpriority="high"/);
+    if(image.src===project.gallery[0].src)assert.match(matching[0],/fetchpriority="high"/);
     else assert.match(matching[0],/loading="lazy"/);
   }
   assert.doesNotMatch(html,/class="lead"/,'missing supporting copy must not leave an empty paragraph');
@@ -104,7 +104,7 @@ test('project template escapes content and keeps a contact-free portfolio return
 });
 
 test('dev and preview serve every dedicated route and reject unknown project routes', async () => {
-  for (const port of [5175, 4175]) {
+  for (const port of [process.env.QA_DEV_PORT || 5175, process.env.QA_PREVIEW_PORT || 4175]) {
     const local = `http://127.0.0.1:${port}`;
     for (const project of projects) {
       const path = projectPath(project.slug);

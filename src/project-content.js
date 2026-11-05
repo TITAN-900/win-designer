@@ -19,13 +19,12 @@ export function projectDescription(project, site) {
 export function renderProjectContent(project, site) {
   // Existing reference pairs do not establish same-project provenance.
   const pairs = (project.beforeAfter || []).filter(pair => pair.verified === true);
-  // The cover is already shown once, at full width. Keep it in the lightbox
-  // sequence without downloading/rendering another identical gallery tile.
-  const gallery = project.gallery.filter(image => image.src !== project.cover.src);
+  // The catalog cover is independent of the owner's saved gallery sequence.
+  const [opening, ...gallery] = project.gallery.length ? project.gallery : [project.cover];
   const group = `project-${project.slug}`;
   return `<section class="project-hero" aria-labelledby="projectTitle">
-    ${galleryImage(project.cover, group, 0, true)}
-    <div class="project-hero-copy">${project.type ? `<p class="brand-line">${escapeHTML(project.type)}</p>` : ''}<h1 id="projectTitle">${escapeHTML(project.title)}</h1>${project.intro ? `<p class="lead">${escapeHTML(project.intro)}</p>` : ''}</div>
+    <div class="project-hero-copy"><a class="portfolio-return" href="/#portfolio">Back to portfolio</a>${project.type ? `<p class="brand-line">${escapeHTML(project.type)}</p>` : ''}<h1 id="projectTitle">${escapeHTML(project.title)}</h1>${project.intro ? `<p class="lead">${escapeHTML(project.intro)}</p>` : ''}</div>
+    ${galleryImage(opening, group, 0, true)}
   </section>
   <section class="project-photography" aria-label="${escapeHTML(project.title)} photography">
     <div class="masonry-gallery" id="projectGallery">${gallery.map((image, index) => galleryImage(image, group, index + 1)).join('')}</div>

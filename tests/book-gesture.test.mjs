@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
-import { pageGesture, movePageGesture, releasePageGesture } from '../src/book-gesture.js';
-import { unit, releaseTarget, springStep } from '../src/page-curl-math.js';
-import { catalogPages } from '../src/portfolio-catalog.js';
+import { pageGesture, movePageGesture, releasePageGesture } from '../archive/portfolio-book/src/book-gesture.js';
+import { unit, releaseTarget, springStep } from '../archive/portfolio-book/src/page-curl-math.js';
+import { catalogPages } from '../archive/portfolio-book/src/portfolio-catalog.js';
 
 const point = (x, y, time = 0, id = 1) => ({ clientX: x, clientY: y, timeStamp: time,
   pointerId: id, pointerType: 'touch', button: 0, isPrimary: true, cancelable: true,
@@ -92,7 +92,7 @@ function harness({ delayLoad = false } = {}) {
   }
   const dataContext = { window: {} };
   vm.runInNewContext(readFileSync('assets/data/projects.js', 'utf8'), dataContext);
-  const source = readFileSync('src/portfolio-book.js', 'utf8')
+  const source = readFileSync('archive/portfolio-book/src/portfolio-book.js', 'utf8')
     .replace(/^import .*;\r?$/gm, '').replaceAll('export ', '')
     .replace("import('./book-curl.js')", 'Promise.resolve({ BookCurl })')
     .replace(/\nif \(typeof document[\s\S]*$/, '');

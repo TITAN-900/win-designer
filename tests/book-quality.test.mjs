@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { bookFrame, bookPixelRatio, pageRasterSize, visibleGrabBounds } from '../src/book-quality.js';
-import { paperRow } from '../src/page-curl-math.js';
+import { bookFrame, bookPixelRatio, pageRasterSize, visibleGrabBounds } from '../archive/portfolio-book/src/book-quality.js';
+import { paperRow } from '../archive/portfolio-book/src/page-curl-math.js';
 
 test('390/430 portrait deliberately crop the flat left stack and retain the complete active reading page', () => {
   for (const width of [390, 430]) {

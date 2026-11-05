@@ -5,11 +5,11 @@ import { createHash } from 'node:crypto';
 import * as zlib from 'node:zlib';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url));
-const glb = read('public/3d/book/portfolio_book.glb');
+const glb = read('archive/portfolio-book/public/3d/book/portfolio_book.glb');
 const jsonLength = glb.readUInt32LE(12);
 const gltf = JSON.parse(glb.subarray(20, 20 + jsonLength).toString('utf8'));
 const binary = glb.subarray(28 + jsonLength);
-const manifest = JSON.parse(read('public/3d/book/portfolio_book.manifest.json'));
+const manifest = JSON.parse(read('archive/portfolio-book/public/3d/book/portfolio_book.manifest.json'));
 const partNames = [
   'Book_Cover_Left', 'Book_Cover_Right', 'Book_Endpaper_Left', 'Book_Endpaper_Right',
   'Book_Spine', 'Book_Binding', 'Book_Stack_Left', 'Book_Stack_Right',

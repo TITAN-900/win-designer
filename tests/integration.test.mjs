@@ -7,7 +7,7 @@ import vm from 'node:vm';
 import {mediaOffset} from '../assets/js/editorial.js';
 import {activateSceneFallback} from '../src/scene-fallback.js';
 import {loopState,headline,isShellCore,SEQUENCE,CYCLE_MS} from '../src/diorama-timeline.js';
-import {createBookPages,nextBookPosition,previousBookPosition} from '../src/portfolio-book.js';
+import {createBookPages,nextBookPosition,previousBookPosition} from '../archive/portfolio-book/src/portfolio-book.js';
 
 const read=p=>readFileSync(p,'utf8');
 const context={window:{}};
@@ -286,8 +286,8 @@ test('the portfolio book has four slots per page with unique projects and empty 
   assert.equal(nextBookPosition(6,true,leafCount),6);
   assert.equal(previousBookPosition(2,true),0);
   assert.equal(previousBookPosition(0,true),0);
-  assert.doesNotMatch(read('assets/css/portfolio-book.css'),/rotateY/);
-  assert.match(read('src/book-curl.js'),/paperRow\(p, row/);
+  assert.doesNotMatch(read('archive/portfolio-book/assets/css/portfolio-book.css'),/rotateY/);
+  assert.match(read('archive/portfolio-book/src/book-curl.js'),/paperRow\(p, row/);
 });
 
 test('the short homepage keeps local accessible images and normal page scrolling',()=>{
@@ -308,12 +308,12 @@ test('the short homepage keeps local accessible images and normal page scrolling
 });
 
 test('mobile book fallback keeps both printed pages and their project navigation',()=>{
-  const css=read('assets/css/portfolio-book.css');
+  const css=read('archive/portfolio-book/assets/css/portfolio-book.css');
   assert.match(css,/\.book-fallback \.book-object\s*\{[^}]*flex-direction:\s*column/);
   assert.match(css,/\.book-fallback \.book-page\s*\{[^}]*display:\s*block/);
   assert.doesNotMatch(css,/\.book-fallback \.book-page--left\s*\{[^}]*display:\s*none/);
-  assert.match(read('src/portfolio-book.js'),/function bookCoverMarkup/);
-  assert.match(html,/>COVER<\/span>/);
+  assert.match(read('archive/portfolio-book/src/portfolio-book.js'),/function bookCoverMarkup/);
+  assert.doesNotMatch(html,/>COVER<\/span>/);
 });
 
 test('all content image URLs are served by dev and production preview',async()=>{
@@ -321,5 +321,5 @@ test('all content image URLs are served by dev and production preview',async()=>
   for(const project of data.projects){urls.add(`project.html?project=${project.slug}`);urls.add(`projects/${project.slug}/`);}
   const walk=value=>{if(!value||typeof value!=='object')return;if(value.src)urls.add(value.src.replace(/^\//,''));if(value.srcSet)for(const candidate of value.srcSet.split(','))urls.add(candidate.trim().split(/\s+/)[0].replace(/^\//,''));for(const child of Object.values(value))walk(child);};walk(data);
   for(const match of html.matchAll(/<img\s[^>]*src="([^"]+)"/g))urls.add(match[1]);
-  for(const port of [5175,4175])for(const path of urls){const response=await fetch(`http://127.0.0.1:${port}/${path}`,{method:'HEAD'});assert.equal(response.status,200,`${port}/${path}`);}
+  for(const port of [process.env.QA_DEV_PORT || 5175,process.env.QA_PREVIEW_PORT || 4175])for(const path of urls){const response=await fetch(`http://127.0.0.1:${port}/${path}`,{method:'HEAD'});assert.equal(response.status,200,`${port}/${path}`);}
 });

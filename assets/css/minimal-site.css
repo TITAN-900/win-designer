@@ -25,7 +25,7 @@ body .site-footer.minimal-footer { display:flex; align-items:center; justify-con
 .minimal-footer .brand-wordmark { font-size:15px; letter-spacing:.085em; }
 body.project-page .project-hero { display:block; position:relative; min-height:0; padding:0; margin-top:78px; color:#34332e; background:#f4f0e7; }
 body.project-page .project-hero::before { display:none; }
-body.project-page .project-hero-media { display:block; width:min(100%,1600px); margin:0 auto; padding:0; border:0; border-radius:0; background:none; cursor:zoom-in; }
+body.project-page .project-hero-media { display:block; width:min(88%,1600px); margin:0 auto 32px; padding:0; border:0; border-radius:14px; overflow:hidden; background:none; cursor:zoom-in; }
 body.project-page .project-hero-image { position:static; display:block; width:100%; height:auto; max-height:none; object-fit:contain; }
 body.project-page .project-hero-copy { position:static; width:100%; padding:40px var(--page-inset) 46px; color:inherit; text-shadow:none; }
 .project-hero-copy .brand-line { margin:0 0 14px; color:inherit; }
@@ -33,7 +33,7 @@ body.project-page .project-hero-copy { position:static; width:100%; padding:40px
 body.project-page .project-hero-copy .lead { margin:20px 0 0; color:inherit; }
 .project-photography { padding:0 var(--page-inset) 64px; }
 .project-photography .masonry-gallery { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(16px,2.5vw,38px); align-items:start; }
-.project-photography .masonry-gallery .gallery-button { margin:0; padding:0; width:100%; overflow:hidden; border:0; border-radius:0; background:none; cursor:zoom-in; }
+.project-photography .masonry-gallery .gallery-button { margin:0; padding:0; width:100%; overflow:hidden; border:0; border-radius:14px; background:none; cursor:zoom-in; }
 .project-photography .masonry-gallery img { display:block; width:100%; height:auto; aspect-ratio:auto; object-fit:contain; }
 .project-note { display:flex; align-items:baseline; justify-content:space-between; gap:24px; padding:36px 0 0; }
 .project-note h2 { margin:0; font-size:clamp(25px,3vw,38px); }
@@ -65,3 +65,12 @@ body.project-page .project-hero-copy .lead { margin:20px 0 0; color:inherit; }
   body .site-footer.minimal-footer { flex-wrap:wrap; gap:14px 24px; padding-block:24px; }
 }
 .project-return { width: min(1360px, 88vw); margin: 0 auto; padding: 24px 0 80px; }
+
+/* Owner photo order is preserved; navigation precedes the opening image. */
+body.project-page .project-hero-copy { padding-top:32px; }
+.project-hero-copy .portfolio-return { margin-bottom:20px; }
+@media(max-width:600px) {
+ body.project-page .project-hero-media { width:calc(100% - 36px); border-radius:12px; }
+ .project-photography { padding-inline:18px; }
+ .project-photography .masonry-gallery .gallery-button { border-radius:12px; }
+}

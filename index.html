@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="assets/css/typography.css">
 <link rel="stylesheet" href="assets/css/diorama-hero.css">
 <link rel="stylesheet" href="assets/css/ui-icons.css">
-<link rel="stylesheet" href="assets/css/portfolio-book.css">
+<link rel="stylesheet" href="assets/css/portfolio-grid.css">
 <link rel="stylesheet" href="assets/css/minimal-site.css">
 <meta property="og:title" content="WIN JOINERY SDN BHD | Interiors &amp; Custom Joinery">
 <meta property="og:description" content="Real interiors. Considered joinery. Explore the WIN JOINERY SDN BHD project portfolio.">
@@ -61,23 +61,12 @@
     </div>
   </div>
 </section>
-<section class="portfolio-book-section" id="portfolio" aria-labelledby="portfolio-title" data-nav-section>
-  <div class="book-intro">
-    <span class="book-eyebrow">WIN JOINERY / SELECTED INTERIORS</span>
-    <h2 id="portfolio-title">Spaces, collected.</h2>
-    <p>A quiet look at interiors, material and detail.</p>
-  </div>
-  <div class="book-stage" id="portfolioBook" role="group" aria-label="Interactive WIN JOINERY SDN BHD portfolio book" tabindex="0">
-    <div class="book-object">
-      <div class="book-page book-page--left" data-book-left></div>
-      <div class="book-page book-page--right" data-book-right></div>
-    </div>
-  </div>
-  <p class="book-hint">Drag the cover to open</p>
-  <div class="book-controls" aria-label="Portfolio page controls">
-    <button id="bookPrevious" type="button" aria-label="Previous portfolio pages"><span class="line-arrow previous" aria-hidden="true"></span> Previous</button>
-    <span id="bookStatus" role="status" aria-live="polite">COVER</span>
-    <button id="bookNext" type="button" aria-label="Next portfolio pages">Next <span class="line-arrow" aria-hidden="true"></span></button>
+<section class="portfolio-section" id="portfolio" aria-labelledby="portfolio-title" data-nav-section>
+  <div class="portfolio-inner">
+    <h2 id="portfolio-title">PORTFOLIO</h2>
+    <p id="portfolio-status" class="portfolio-status" role="status">Loading projects…</p>
+    <div class="portfolio-grid" id="portfolioGrid" aria-busy="true"></div>
+    <noscript><p>Enable JavaScript to view the latest published projects.</p></noscript>
   </div>
 </section>
 <footer class="site-footer minimal-footer">

@@ -2,11 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
-import { BOOK_CAMERA_NEAR, BOOK_CAMERA_FAR, prepareCoverPrint, createPaperMaterial } from '../src/book-print-surfaces.js';
-import { BookCurl } from '../src/book-curl.js';
-import { coverPose } from '../src/book-cover-math.js';
+import { BOOK_CAMERA_NEAR, BOOK_CAMERA_FAR, prepareCoverPrint, createPaperMaterial } from '../archive/portfolio-book/src/book-print-surfaces.js';
+import { BookCurl } from '../archive/portfolio-book/src/book-curl.js';
+import { coverPose } from '../archive/portfolio-book/src/book-cover-math.js';
 
-const glb = readFileSync(new URL('../public/3d/book/portfolio_book.glb', import.meta.url));
+const glb = readFileSync(new URL('../archive/portfolio-book/public/3d/book/portfolio_book.glb', import.meta.url));
 const jsonLength = glb.readUInt32LE(12);
 const gltf = JSON.parse(glb.toString('utf8', 20, 20 + jsonLength));
 const binary = glb.subarray(28 + jsonLength);

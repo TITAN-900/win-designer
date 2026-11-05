@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { bindingPoint, bindingRadius, BINDING_HINGE } from '../src/book-binding-math.js';
-import { coverPose } from '../src/book-cover-math.js';
-import { springStep } from '../src/page-curl-math.js';
+import { bindingPoint, bindingRadius, BINDING_HINGE } from '../archive/portfolio-book/src/book-binding-math.js';
+import { coverPose } from '../archive/portfolio-book/src/book-cover-math.js';
+import { springStep } from '../archive/portfolio-book/src/page-curl-math.js';
 
 test('the hardcover settles with more weight than paper, without overshoot at 30 or 60 fps', () => {
   for (const fps of [30,60]) for (const target of [0,1]) {

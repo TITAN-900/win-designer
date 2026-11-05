@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import * as THREE from 'three';
-import { coverPose, COVER_HINGE, OPEN_ANGLE } from '../src/book-cover-math.js';
-import { catalogPages } from '../src/portfolio-catalog.js';
-import { releaseTarget } from '../src/page-curl-math.js';
-import { canAdvanceBook, bookLeafPages, pageMarkup, bookCoverMarkup } from '../src/portfolio-book.js';
-import { COVER_BRAND, COVER_COMPANY } from '../src/book-cover-print.js';
+import { coverPose, COVER_HINGE, OPEN_ANGLE } from '../archive/portfolio-book/src/book-cover-math.js';
+import { catalogPages } from '../archive/portfolio-book/src/portfolio-catalog.js';
+import { releaseTarget } from '../archive/portfolio-book/src/page-curl-math.js';
+import { canAdvanceBook, bookLeafPages, pageMarkup, bookCoverMarkup } from '../archive/portfolio-book/src/portfolio-book.js';
+import { COVER_BRAND, COVER_COMPANY } from '../archive/portfolio-book/src/book-cover-print.js';
 
 const context = { window: {} };
 vm.runInNewContext(readFileSync('assets/data/projects.js', 'utf8'), context);
@@ -49,7 +49,7 @@ test('cover stays exactly at 20%, 50%, 80% while held, and reverses without accu
 });
 
 test('closed cover and both real leaf stacks remain separated, not deleted or intersecting', () => {
-  const file = readFileSync('public/3d/book/portfolio_book.glb');
+  const file = readFileSync('archive/portfolio-book/public/3d/book/portfolio_book.glb');
   const json = JSON.parse(file.toString('utf8',20,20+file.readUInt32LE(12)));
   const conversion = new THREE.Matrix4().makeRotationX(Math.PI/2);
   const pose = coverPose(0);
@@ -115,7 +115,7 @@ test('the manufactured cover uses the supplied company name as print, without lo
   assert.equal(COVER_COMPANY,'WIN JOINERY SDN BHD');
   assert.match(bookCoverMarkup(),/WIN JOINERY SDN BHD/);
   assert.doesNotMatch(bookCoverMarkup(),/<img|WIN DESIGN/);
-  const print = readFileSync('src/book-cover-print.js','utf8');
+  const print = readFileSync('archive/portfolio-book/src/book-cover-print.js','utf8');
   assert.doesNotMatch(print,/new Image\(|logoURL|win-design-logo/);
   assert.match(print,/color\.coverMaps = \{ orm, normal \}/,'physical roughness and fine fibre response remain');
 });

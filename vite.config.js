@@ -89,7 +89,7 @@ export default defineConfig(({mode}) => {
       for (const directory of ['css', 'fonts']) {
         cpSync(resolve('assets', directory), resolve('dist/assets', directory), { recursive: true });
       }
-      for (const file of ['js/main.js', 'js/site-integration.js', 'data/projects.js', 'data/book-layout.json']) {
+      for (const file of ['js/main.js', 'js/site-integration.js', 'data/projects.js']) {
         const destination = resolve('dist/assets', file);
         mkdirSync(resolve(destination, '..'), { recursive: true });
         cpSync(resolve('assets', file), destination);

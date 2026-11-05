@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { paperRow, releaseTarget, springStep } from '../src/page-curl-math.js';
+import { paperRow, releaseTarget, springStep } from '../archive/portfolio-book/src/page-curl-math.js';
 
 test('paper stays attached at the spine at every progress and corner', () => {
   for (const p of [0, .1, .25, .5, .8, 1]) for (const row of [0, .5, 1]) for (const corner of [-1, 0, 1]) {

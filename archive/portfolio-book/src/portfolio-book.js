@@ -474,7 +474,7 @@ export function initPortfolioBook(data) {
 if (typeof document !== 'undefined' && typeof window !== 'undefined') {
   const start = async () => {
     try {
-      const { portfolioData } = await import('./portfolio-public.js');
+      const { portfolioData } = await import('../../../src/portfolio-public.js');
       initPortfolioBook(await portfolioData(window.WIN_DESIGN_DATA));
     } catch (error) {
       console.error('Portfolio data failed:', error);

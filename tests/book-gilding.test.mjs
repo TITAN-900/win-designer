@@ -2,12 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
-import { applyBookGilding } from '../src/book-gilding.js';
-import { coverPose } from '../src/book-cover-math.js';
-import { bindingPoint, bindingRadius } from '../src/book-binding-math.js';
+import { applyBookGilding } from '../archive/portfolio-book/src/book-gilding.js';
+import { coverPose } from '../archive/portfolio-book/src/book-cover-math.js';
+import { bindingPoint, bindingRadius } from '../archive/portfolio-book/src/book-binding-math.js';
 
 function actualBook() {
-  const bytes = readFileSync(new URL('../public/3d/book/portfolio_book.glb', import.meta.url));
+  const bytes = readFileSync(new URL('../archive/portfolio-book/public/3d/book/portfolio_book.glb', import.meta.url));
   const length = bytes.readUInt32LE(12);
   const gltf = JSON.parse(bytes.subarray(20, 20 + length));
   const binary = bytes.subarray(28 + length);
