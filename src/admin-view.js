@@ -1,0 +1,50 @@
+import { escapeHTML as esc } from './project-content.js';
+
+const paths = {
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  arrow: '<path d="M5 12h14m-5-5 5 5-5 5"/>',
+  back: '<path d="M19 12H5m5-5-5 5 5 5"/>',
+  upload: '<path d="M12 16V4m-4 4 4-4 4 4M4 15v5h16v-5"/>',
+  image: '<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.5"/><path d="m4 17 5-5 4 4 3-3 5 5"/>',
+  up: '<path d="m6 14 6-6 6 6"/>',
+  down: '<path d="m6 10 6 6 6-6"/>',
+  trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5m4-5v5"/>',
+  check: '<path d="m5 12 4 4L19 6"/>',
+  close: '<path d="m6 6 12 12M6 18 18 6"/>',
+  lock: '<rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/>'
+};
+export const icon = name => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${paths[name] || paths.image}</svg>`;
+export const badge = status => `<span class="status-badge ${status === 'PUBLISHED' ? 'published' : 'draft'}">${status === 'PUBLISHED' ? 'Published' : 'Draft'}</span>`;
+export const statusMarkup = '<div id="notice" class="notice" role="status" aria-live="polite" tabindex="-1" hidden></div>';
+
+export function loginMarkup(configured) {
+  return `<section class="login-layout"><div class="login-intro"><a class="wordmark" href="/">WIN JOINERY</a><div><span class="eyebrow">THE PRIVATE STUDIO</span><h1>Your work.<br>A place to grow.</h1><p>A considered space for your portfolio.</p></div><span class="login-signoff">INTERIORS / CRAFT / COLLECTIONS</span></div>
+  <div class="login-surface"><span class="login-lock">${icon('lock')}</span><span class="eyebrow">PORTFOLIO MANAGER</span><h2>Welcome back.</h2><p class="muted">登录后管理作品与照片。</p>${statusMarkup}<form id="login"><label for="username">Username</label><input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="48" placeholder="Your username" required><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Your password" required><button class="btn primary login-submit" ${!configured ? 'disabled' : ''}>登录 ${icon('arrow')}</button></form><a class="return-link" href="/">${icon('back')} Back to website</a></div></section>`;
+}
+export function dashboardMarkup(rows, legacy) {
+  const published = rows.filter(p => p.status === 'PUBLISHED').length;
+  return `<section class="dashboard"><div class="page-heading"><div><span class="eyebrow">YOUR COLLECTION</span><h1>Portfolio studio.</h1><p class="muted">让每一份作品，都被好好呈现。</p></div><button id="add" class="btn primary">${icon('plus')} Add New Project</button></div><div class="collection-toolbar"><div class="filter-group" aria-label="Filter projects"><button class="filter active" data-filter="all" aria-pressed="true">All <span>${rows.length}</span></button><button class="filter" data-filter="PUBLISHED" aria-pressed="false">Published <span>${published}</span></button><button class="filter" data-filter="DRAFT" aria-pressed="false">Drafts <span>${rows.length - published}</span></button></div><span class="collection-caption">YOUR MANAGED PROJECTS</span></div><div id="list"></div>${legacy.length ? `<section class="legacy-section"><div><span class="eyebrow">ALREADY ON YOUR WEBSITE</span><h2>Existing collection.</h2><p>原有作品完整保留。点击编辑并保存后，即可在后台管理。</p></div><div class="legacy-list">${legacy.map(p => `<article><img src="/${esc(p.cover.src.replace(/^\//, ''))}" alt="${esc(p.title)}" loading="lazy"><div><span class="eyebrow">LIVE ON WEBSITE</span><h3>${esc(p.title)}</h3><span class="muted">${p.gallery.length} photographs</span></div><button class="btn secondary" data-import="${esc(p.slug)}">Edit project ${icon('arrow')}</button></article>`).join('')}</div></section>` : ''}</section>`;
+}
+export function projectRowsMarkup(rows, filter) {
+  const projects = rows.filter(p => filter === 'all' || p.status === filter);
+  return projects.map(p => {
+    const photo = p.photos.find(im => im.id === p.cover_id) || p.photos[0];
+    return `<article class="project-row"><div class="project-thumbnail" data-cover="${esc(p.id)}">${photo?.src ? `<img src="${esc(photo.src)}" alt="${esc(p.name)}" loading="lazy">` : icon('image')}</div><div class="project-summary">${badge(p.status)}<h2>${esc(p.name)}</h2><p>${p.photos.length} photos <span aria-hidden="true">·</span> ${p.status === 'PUBLISHED' ? 'Visible on your website' : 'Only visible to you'}</p></div><button class="btn secondary edit-project" data-edit="${esc(p.id)}" aria-label="Edit ${esc(p.name)}">Edit project ${icon('arrow')}</button></article>`;
+  }).join('') || `<div class="empty-collection">${icon('image')}<h2>${filter === 'all' ? 'Your next project starts here.' : 'No projects here yet.'}</h2><p>${filter === 'all' ? '添加照片，整理作品，再从容发布。' : '此状态下暂时没有作品。'}</p></div>`;
+}
+export function editorMarkup(model, persisted) {
+  return `<div class="editor-top"><button id="back" class="text-button">${icon('back')} All projects</button>${badge(model.status)}</div><div class="page-heading editor-heading"><div><span class="eyebrow">PROJECT EDITOR</span><h1>${persisted || model.legacy_slug ? 'Refine your project.' : 'A new perspective.'}</h1><p class="muted">先选照片，再写下作品的名字。</p></div></div><form id="editor"><div class="editor-layout"><section class="project-details" aria-labelledby="detailsTitle"><span class="section-number">01 / THE DETAILS</span><h2 id="detailsTitle">Give it a name.</h2><label for="name">Project Name <span class="required-note">Required</span></label><input id="name" class="project-name" maxlength="160" placeholder="Name your project" required><label for="description">Description <span class="optional">Optional</span></label><textarea id="description" maxlength="4000" placeholder="A few words about the space and your work."></textarea><div class="secondary-field"><label for="link">External Link <span class="optional">Optional</span></label><input id="link" type="url" placeholder="https://" aria-describedby="linkHint"><p id="linkHint" class="field-hint">相关项目网页，没有则留空。</p></div></section><section class="project-photos" aria-labelledby="photosTitle"><div class="photos-heading"><div><span class="section-number">02 / THE PHOTOGRAPHY</span><h2 id="photosTitle">Let the work speak.</h2></div><span id="photoCount" class="photo-count"></span></div><input id="files" class="visually-hidden" tabindex="-1" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple><button type="button" id="choosePhotos" class="upload-panel" aria-controls="files"><span class="upload-icon">${icon('upload')}</span><strong>Upload Project Photos</strong><span class="upload-copy">从手机图库或电脑选择，可多次添加。</span><span class="upload-cta">Choose Photos ${icon('plus')}</span><small>Up to 50 photos · JPEG, PNG, WebP, HEIC*</small></button><p class="field-hint">* HEIC 需浏览器支持解码；若无法读取，请导出为 JPEG。</p><div id="transfer" class="transfer" hidden><div><span id="transferLabel">Preparing photos</span><span id="progressText"></span></div><progress id="progress" max="100" value="0" aria-label="Photo transfer progress"></progress></div><p class="gallery-hint">照片顺序就是公开图库顺序。使用上下箭头调整。</p><div id="photos" class="photos"></div></section></div><div class="actions"><div class="save-context"><span class="save-dot"></span><span id="saveState">${persisted ? 'Saved project' : 'Not saved yet'}</span></div><div class="save-buttons"><button class="btn secondary" type="submit" data-status="DRAFT">${model.status === 'PUBLISHED' ? 'Unpublish' : 'Save Draft'}</button><button class="btn primary" type="submit" data-status="PUBLISHED">${model.status === 'PUBLISHED' ? 'Save Published' : 'Publish'} ${icon('arrow')}</button></div></div>${persisted ? '<div class="danger-zone"><p>删除作品会同时移除后台上传的照片。</p><button type="button" id="delete" class="text-button danger">Delete Project</button></div>' : ''}</form><dialog id="photoPreview" class="photo-preview" aria-label="Photo preview"><button type="button" class="btn preview-close" aria-label="Close photo preview">${icon('close')}</button><img alt="Project photograph preview"><p></p></dialog>`;
+}
+export function photosMarkup(photos, coverId, busy = false) {
+  return photos.map((p, i) => `<article class="photo ${p.id === coverId ? 'is-cover' : ''}"><div class="photo-media"><button type="button" class="preview-photo" data-action="preview" data-index="${i}" aria-label="Preview photo ${i + 1}" ${busy || !(p.preview || p.src) ? 'disabled' : ''}>${p.preview || p.src ? `<img src="${esc(p.preview || p.src)}" alt="Photo ${i + 1}" loading="lazy">` : icon('image')}</button><span class="photo-index">${String(i + 1).padStart(2, '0')}</span>${p.id === coverId ? `<span class="cover-badge">${icon('check')} Cover</span>` : ''}</div><div class="photo-controls"><button type="button" class="cover-button" data-action="cover" data-index="${i}" aria-pressed="${p.id === coverId}" ${busy ? 'disabled' : ''}>${p.id === coverId ? 'Cover photo' : 'Set cover'}</button><div class="photo-tools"><button type="button" data-action="up" data-index="${i}" aria-label="Move photo ${i + 1} earlier" ${busy || i === 0 ? 'disabled' : ''}>${icon('up')}</button><button type="button" data-action="down" data-index="${i}" aria-label="Move photo ${i + 1} later" ${busy || i === photos.length - 1 ? 'disabled' : ''}>${icon('down')}</button><button type="button" class="remove-photo" data-action="remove" data-index="${i}" aria-label="Remove photo ${i + 1}" ${busy ? 'disabled' : ''}>${icon('trash')}</button></div></div></article>`).join('');
+}
+export function changePhoto(model, action, index) {
+  if (!Number.isInteger(index) || index < 0 || index >= model.photos.length) return;
+  if (action === 'cover') model.cover_id = model.photos[index].id;
+  if (action === 'remove') {
+    model.photos.splice(index, 1);
+    if (!model.photos.some(p => p.id === model.cover_id)) model.cover_id = model.photos[0]?.id || null;
+  }
+  const to = action === 'up' ? index - 1 : action === 'down' ? index + 1 : index;
+  if (to >= 0 && to < model.photos.length && to !== index) [model.photos[to], model.photos[index]] = [model.photos[index], model.photos[to]];
+}

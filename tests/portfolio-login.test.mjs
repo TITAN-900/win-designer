@@ -39,7 +39,7 @@ test('missing mapping fails clearly without authenticating anyone',async()=>{
  assert.equal(res.statusCode,503);
 });
 test('frontend uses username text field and never contains mapping configuration',()=>{
- const source=readFileSync('src/admin.js','utf8');
+ const source=readFileSync('src/admin.js','utf8')+readFileSync('src/admin-view.js','utf8');
  assert.match(source,/name="username" type="text"/);assert.doesNotMatch(source,/name="email"|form\.email/);
  for(const file of ['src/admin.js','src/portfolio-api.js'])assert.doesNotMatch(readFileSync(file,'utf8'),/PORTFOLIO_ADMIN_AUTH_EMAIL|PORTFOLIO_ADMIN_USERNAME/);
 });

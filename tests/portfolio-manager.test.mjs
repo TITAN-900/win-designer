@@ -8,7 +8,7 @@ test('remote admin has explicit routes, private cache policy and mobile upload c
  const deployment=JSON.parse(readFileSync('vercel.json','utf8'));
  for(const path of ['/admin','/admin/'])assert.ok(deployment.rewrites.some(r=>r.source===path&&r.destination==='/admin/index.html'));
  assert.ok(deployment.headers.some(r=>r.source==='/admin/:path*'&&r.headers.some(h=>h.key==='Cache-Control'&&h.value.includes('no-store'))));
- const source=readFileSync('src/admin.js','utf8');
+ const source=readFileSync('src/admin.js','utf8')+readFileSync('src/admin-view.js','utf8');
  assert.match(source,/type="file"[^>]*multiple/);
  assert.doesNotMatch(source,/capture=|http:\/\/127\.0\.0\.1|http:\/\/localhost/);
  assert.match(readFileSync('src/admin.css','utf8'),/input,textarea,button\{font-size:16px/);

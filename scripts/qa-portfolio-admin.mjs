@@ -37,20 +37,20 @@ try {
   });
   await page.goto('http://127.0.0.1:5176/admin/');
   await page.locator('[name=username]').fill('test-owner');await page.locator('[name=password]').fill('test-only');await page.getByRole('button',{name:'登录',exact:true}).click();
-  await page.getByRole('button',{name:'Add New Portfolio'}).click();
+  await page.getByRole('button',{name:'Add New Project'}).click();
   await page.locator('#name').fill('TEST — not real content');await page.locator('#description').fill('Local mocked browser test only.');await page.locator('#link').fill('https://example.com/');
   await page.locator('#files').setInputFiles(['public/images/bungalow-bukit-taman-segar/bungalow-09.jpeg','public/images/bungalow-bukit-taman-segar/bungalow-01.jpeg']);
   await page.getByText('照片已准备',{exact:false}).waitFor();assert.equal(await page.locator('.photo').count(),2);
   await page.locator('[data-action=down]').first().click();await page.locator('[data-action=cover]').last().click();
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await page.screenshot({path:`${output}/editor-${width}.png`,fullPage:true});
-  await page.getByRole('button',{name:'Save Draft / 取消发布'}).click();await page.getByText('未完成保存',{exact:false}).waitFor();assert.equal(rows.length,0);
-  await page.getByRole('button',{name:'Save Draft / 取消发布'}).click();await page.getByText('草稿已保存',{exact:false}).waitFor();assert.equal(rows[0].status,'DRAFT');assert.equal(uploads,2);
-  await page.getByRole('button',{name:'编辑',exact:true}).click();await page.getByRole('button',{name:'Publish / 保存已发布'}).click();await page.getByText('已发布。',{exact:true}).waitFor();assert.equal(rows[0].photos.length,2);assert.equal(rows[0].status,'PUBLISHED');
+  await page.getByRole('button',{name:/Save Draft|Unpublish/}).click();await page.getByText('未完成保存',{exact:false}).waitFor();assert.equal(rows.length,0);
+  await page.getByRole('button',{name:/Save Draft|Unpublish/}).click();await page.getByText('草稿已保存',{exact:false}).waitFor();assert.equal(rows[0].status,'DRAFT');assert.equal(uploads,2);
+  await page.getByRole('button',{name:/^Edit TEST/}).click();await page.getByRole('button',{name:/^Publish$|^Save Published$/}).click();await page.getByText('已发布。',{exact:true}).waitFor();assert.equal(rows[0].photos.length,2);assert.equal(rows[0].status,'PUBLISHED');
   const publicPage=await context.newPage();await publicPage.goto('http://127.0.0.1:5176/projects/'+rows[0].slug+'/');await publicPage.locator('#projectTitle').waitFor();assert.equal(await publicPage.locator('#projectTitle').textContent(),rows[0].name);await publicPage.close();
-  await page.getByRole('button',{name:'编辑',exact:true}).click();await page.locator('[data-action=remove]').first().click();await page.getByRole('button',{name:'Save Draft / 取消发布'}).click();await page.getByText('草稿已保存',{exact:false}).waitFor();assert.equal(rows[0].photos.length,1);
-  page.on('dialog',dialog=>dialog.accept());await page.getByRole('button',{name:'编辑',exact:true}).click();await page.locator('#delete').click();await page.getByText('作品已删除。',{exact:true}).waitFor();assert.equal(rows.length,0);
-  await page.locator('#logout').click();await page.getByRole('heading',{name:'Portfolio 管理登录'}).waitFor();assert.equal(errors.length,0,JSON.stringify(errors));
+  await page.getByRole('button',{name:/^Edit TEST/}).click();await page.locator('[data-action=remove]').first().click();await page.getByRole('button',{name:/Save Draft|Unpublish/}).click();await page.getByText('草稿已保存',{exact:false}).waitFor();assert.equal(rows[0].photos.length,1);
+  await page.getByRole('button',{name:/^Edit TEST/}).click();await page.locator('#delete').click();await page.getByRole('button',{name:'Delete project',exact:true}).click();await page.getByText('作品已删除。',{exact:true}).waitFor();assert.equal(rows.length,0);
+  await page.locator('#logout').click();await page.getByRole('heading',{name:'Welcome back.'}).waitFor();assert.equal(errors.length,0,JSON.stringify(errors));
   reports.push({width,passed:true,mode:'MOCKED API, not live Supabase',checks:['unconfigured blocked','login UI','two-file input and actual canvas compression','sort/cover','upload failure/retry','draft','publish','dynamic detail','remove photo','unpublish','delete confirmation','logout','no horizontal overflow']});await context.close();
  }
 }finally{await browser.close();await writeFile(output+'/results.json',JSON.stringify(reports,null,2));}
